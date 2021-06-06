@@ -1,0 +1,18 @@
+FROM golang:1.16 as builder
+
+WORKDIR /go/src
+COPY . .
+
+ENV PATH="/go/bin:${PATH}"
+
+RUN make build
+
+FROM scratch
+
+WORKDIR /app
+
+COPY --from=builder ./go/src/main ./
+
+EXPOSE 3333
+
+CMD ["./main"]

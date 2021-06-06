@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  app:
+    container_name: kbu-store
+    build: .
+    ports:
+      - '3333:3333'
+    volumes:
+      - .:/go/src/
+    extra_hosts:
+      - 'host.docker.internal:172.17.0.1'
+    depends_on:
+      - db
+  db:
+    container_name: kbu-db
+    image: postgres:9.4
+    restart: always
+    tty: true
+    volumes:
+      - .docker/.pgdata:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=kbu_store
+    ports:
+      - '25432:5432'
