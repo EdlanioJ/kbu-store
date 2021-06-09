@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"github.com/EdlanioJ/kbu-store/app/config"
 	"github.com/EdlanioJ/kbu-store/dto"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
@@ -9,21 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func ConnectDB() *gorm.DB {
+func ConnectDB(env, dns, migration string) *gorm.DB {
 	var db *gorm.DB
 	var err error
 
-	config, err := config.LoadConfig("../../")
-
-	if err != nil {
-		logrus.Fatal("can not import config file", err)
-	}
-
-	if config.Env != "test" {
-		db, err = gorm.Open(postgres.Open(config.PGDns), &gorm.Config{})
+	if env != "test" {
+		db, err = gorm.Open(postgres.Open(dns), &gorm.Config{})
 	} else {
-
-		db, err = gorm.Open(sqlite.Open(config.PGDnsTest), &gorm.Config{
+		db, err = gorm.Open(sqlite.Open(dns), &gorm.Config{
 			SkipDefaultTransaction: true,
 		})
 	}
@@ -32,7 +24,7 @@ func ConnectDB() *gorm.DB {
 		logrus.Fatalf("Error connecting to database: %v", err)
 	}
 
-	if config.AutoMigration {
+	if migration == "true" {
 		_ = db.AutoMigrate(&dto.AccountDBModel{}, &dto.StoreDBModel{}, &dto.CategoryDBModel{})
 	}
 

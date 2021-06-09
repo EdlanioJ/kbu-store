@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
-	"github.com/EdlanioJ/kbu-store/app/config"
 	_ "github.com/EdlanioJ/kbu-store/app/docs"
 	"github.com/EdlanioJ/kbu-store/app/routes"
 	"github.com/EdlanioJ/kbu-store/app/utils"
@@ -22,15 +23,24 @@ import (
 // @host localhost:3333
 // @BasePath /api/v1
 func main() {
-	config, err := config.LoadConfig("./")
-	if err != nil {
-		logrus.Fatal("can not import config file", err)
+	var dns string
+	dbConnention := os.Getenv("PG_DNS")
+	dbConnectionTest := os.Getenv("PG_DNS_TEST")
+	port := os.Getenv("PORT")
+	tc, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
+	env := os.Getenv("ENV")
+	migration := os.Getenv("AUTO_MIGRATE_DB")
+
+	if env != "test" {
+		dns = dbConnention
+	} else {
+		dns = dbConnectionTest
 	}
 
-	timeoutContext := time.Duration(config.TimeoutContext) * time.Second
-	db := utils.ConnectDB()
+	timeoutContext := time.Duration(tc) * time.Second
+	db := utils.ConnectDB(env, dns, migration)
 
 	app := routes.New(db, timeoutContext)
 
-	logrus.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
+	logrus.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
 }

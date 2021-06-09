@@ -27,7 +27,7 @@ func (u *fetchTagsByCategory) Exec(c context.Context, categoryID, sort string, p
 		limit = 10
 	}
 	if sort == "" {
-		sort = "total DESC"
+		sort = "count DESC"
 	}
 
 	if page <= 0 {

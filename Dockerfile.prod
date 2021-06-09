@@ -11,6 +11,6 @@ FROM scratch
 
 WORKDIR /app
 
-COPY --from=builder ./go/src/main ./
+COPY --from=builder ./go/src/kbu-store ./
 
-CMD ["./main"]
+CMD ["./kbu-store"]

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"os"
 	"time"
 
 	swagger "github.com/arsmn/fiber-swagger/v2"
@@ -12,13 +13,14 @@ import (
 )
 
 func New(db *gorm.DB, tc time.Duration) *fiber.App {
-	app := fiber.New(fiber.Config{
-		Prefork: true,
-	})
+	app := fiber.New()
 
 	app.Use(helmet.New())
 	app.Use(requestid.New())
-	app.Use(logger.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${status} ${ua} ${latency} ${ip} ${locals:requestid} ${method} ${path}​\n​",
+		Output: os.Stderr,
+	}))
 	v1 := app.Group("/api/v1")
 
 	v1.Get("/docs/*", swagger.Handler)

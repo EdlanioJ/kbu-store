@@ -27,7 +27,7 @@ func (u *fetchTags) Exec(c context.Context, sort string, page, limit int) (res [
 		limit = 10
 	}
 	if sort == "" {
-		sort = "total DESC"
+		sort = "count DESC"
 	}
 
 	if page <= 0 {
