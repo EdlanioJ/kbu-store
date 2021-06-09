@@ -2,4 +2,4 @@ build:
   docker:
     web: Dockerfile.prod
 run:
-  web: kbu-store
+  web: ./kbu-store
