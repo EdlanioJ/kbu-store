@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS stores;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS accounts;
