@@ -14,6 +14,7 @@ import (
 	storeRoute "github.com/EdlanioJ/kbu-store/store/deliver/http"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/gofiber/helmet/v2"
@@ -27,7 +28,6 @@ import (
 // @contact.email edlanioj@gmail.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:3333
 // @BasePath /api/v1
 func main() {
 	config, err := config.LoadConfig(".")
@@ -40,6 +40,7 @@ func main() {
 
 	app := fiber.New()
 
+	app.Use(cors.New())
 	app.Use(helmet.New())
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
