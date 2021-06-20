@@ -30,10 +30,8 @@ func testMock() (*gorm.DB, sqlmock.Sqlmock, *domain.Store) {
 		panic(err)
 	}
 
-	a := new(domain.Account)
-	st := new(domain.Category)
-	a.ID = uuid.NewV4().String()
-	st.ID = uuid.NewV4().String()
+	c := new(domain.Category)
+	c.ID = uuid.NewV4().String()
 
 	store := &domain.Store{
 		Base: domain.Base{
@@ -45,8 +43,8 @@ func testMock() (*gorm.DB, sqlmock.Sqlmock, *domain.Store) {
 		Description: "Store description 001",
 		Status:      domain.StoreStatusActive,
 		ExternalID:  uuid.NewV4().String(),
-		Account:     a,
-		Category:    st,
+		AccountID:   uuid.NewV4().String(),
+		Category:    c,
 		Tags:        []string{"tag 001", "tag 002"},
 		Position: domain.Position{
 			Lat: -8.8867698,
