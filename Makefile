@@ -1,3 +1,6 @@
+.PHONY: test start build swag mock init-migration migrate-up migrate-down
+
+DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
 	go test ./... -cover
@@ -13,3 +16,12 @@ swag:
 
 mock:
 	mockery --output "./domain/mocks" --dir "./" --all
+
+init-migration:
+	migrate create -ext sql -dir db/migration -seq init_schema
+
+migrate-up:
+	migrate -path db/migration -database ${DATABASE} -verbose up
+
+migrate-down:
+	migrate -path db/migration -database ${DATABASE} -verbose down
