@@ -9,13 +9,11 @@ import (
 
 type entityMock struct {
 	store    *domain.Store
-	storType *domain.Category
+	category *domain.Category
 }
 
 func testMock() *entityMock {
-	storType, _ := domain.NewCategory("Store type 001")
-	account := new(domain.Account)
-	account.ID = uuid.NewV4().String()
+	category, _ := domain.NewCategory("Store type 001")
 
 	store := &domain.Store{
 		Base: domain.Base{
@@ -27,12 +25,12 @@ func testMock() *entityMock {
 		Description: "store description 001",
 		Status:      domain.StoreStatusPending,
 		ExternalID:  uuid.NewV4().String(),
-		Account:     account,
-		Category:    storType,
+		AccountID:   uuid.NewV4().String(),
+		Category:    category,
 	}
 
 	return &entityMock{
 		store:    store,
-		storType: storType,
+		category: category,
 	}
 }
