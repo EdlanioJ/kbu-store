@@ -1,14 +1,8 @@
 basePath: /api/v1
 definitions:
-  domain.Account:
+  category_api_http.ErrorResponse:
     properties:
-      balance:
-        type: number
-      created_at:
-        type: string
-      id:
-        type: string
-      updated_at:
+      msg:
         type: string
     type: object
   domain.Category:
@@ -21,20 +15,18 @@ definitions:
         type: string
       status:
         type: string
-      updated_at:
-        type: string
     type: object
   domain.Position:
     properties:
-      latitude:
+      lat:
         type: number
-      longitude:
+      lng:
         type: number
     type: object
   domain.Store:
     properties:
-      account:
-        $ref: '#/definitions/domain.Account'
+      account_id:
+        type: string
       category:
         $ref: '#/definitions/domain.Category'
       created_at:
@@ -55,8 +47,6 @@ definitions:
         items:
           type: string
         type: array
-      updated_at:
-        type: string
     type: object
   domain.Tag:
     properties:
@@ -65,12 +55,12 @@ definitions:
       tag:
         type: string
     type: object
-  dto.CreateCategoryRequest:
+  http.CreateCategoryRequest:
     properties:
       name:
         type: string
     type: object
-  dto.CreateStoreRequest:
+  http.CreateStoreRequest:
     properties:
       category_id:
         type: string
@@ -89,12 +79,7 @@ definitions:
           type: string
         type: array
     type: object
-  dto.ErrorResponse:
-    properties:
-      msg:
-        type: string
-    type: object
-  dto.UpdateStoreRequest:
+  http.UpdateStoreRequest:
     properties:
       category_id:
         type: string
@@ -110,6 +95,11 @@ definitions:
         items:
           type: string
         type: array
+    type: object
+  store_api_http.ErrorResponse:
+    properties:
+      msg:
+        type: string
     type: object
 host: localhost:3333
 info:
@@ -154,7 +144,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
       summary: Get all categories
       tags:
       - categories
@@ -168,7 +158,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateCategoryRequest'
+          $ref: '#/definitions/http.CreateCategoryRequest'
       produces:
       - application/json
       responses:
@@ -179,16 +169,16 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Create  a new Category
+            $ref: '#/definitions/category_api_http.ErrorResponse'
+      summary: Create a new Category
       tags:
       - categories
   /categories/{id}:
@@ -212,19 +202,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get all categories by status
+            $ref: '#/definitions/category_api_http.ErrorResponse'
+      summary: Get categories by id
       tags:
       - categories
-  /categories/{id}/{status}:
+  /categories/{id}/status/{status}:
     get:
       consumes:
       - application/json
@@ -255,15 +245,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
       summary: Get all categories by status
       tags:
       - categories
@@ -307,7 +297,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/category_api_http.ErrorResponse'
       summary: Get all categories by status
       tags:
       - categories
@@ -315,17 +305,20 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all stores
+      description: Get a list of stores
       parameters:
-      - description: List Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: List Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: List Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
         type: string
@@ -336,12 +329,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/domain.Category'
+              $ref: '#/definitions/domain.Store'
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all stores
       tags:
       - stores
@@ -350,12 +343,12 @@ paths:
       - application/json
       description: Create store
       parameters:
-      - description: Create store request
+      - description: Create store
         in: body
-        name: store
+        name: category
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateStoreRequest'
+          $ref: '#/definitions/http.CreateStoreRequest'
       produces:
       - application/json
       responses:
@@ -366,23 +359,23 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Create  a new Store
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Create  a new store
       tags:
       - stores
   /stores/{id}:
     delete:
       consumes:
       - application/json
-      description: Delete store
+      description: Delete one stores
       parameters:
       - description: store ID
         in: path
@@ -393,28 +386,26 @@ paths:
       - application/json
       responses:
         "204":
-          description: No Content
-          schema:
-            type: string
+          description: ""
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Delete Store
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Delete stores
       tags:
       - stores
     get:
       consumes:
       - application/json
-      description: Get store by id
+      description: Get one stores by id
       parameters:
       - description: store ID
         in: path
@@ -431,171 +422,30 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get store by id
-      tags:
-      - stores
-    patch:
-      consumes:
-      - application/json
-      description: Get store by id
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: Update store request body
-        in: body
-        name: store
-        required: true
-        schema:
-          $ref: '#/definitions/dto.UpdateStoreRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.Store'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "422":
-          description: Unprocessable Entity
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get store by id
-      tags:
-      - stores
-  /stores/{id}/active:
-    options:
-      consumes:
-      - application/json
-      description: Set Store status to active
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Active Store
-      tags:
-      - stores
-  /stores/{id}/block:
-    options:
-      consumes:
-      - application/json
-      description: Set Store status to block
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Block Store
-      tags:
-      - stores
-  /stores/{id}/disable:
-    options:
-      consumes:
-      - application/json
-      description: Set Store status to disable
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-          schema:
-            type: string
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Disable Store
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Get stores by id
       tags:
       - stores
   /stores/{id}/owner/{owner}:
     get:
       consumes:
       - application/json
-      description: Get store by owner
+      description: Get one stores by id and owner
       parameters:
       - description: store ID
         in: path
         name: id
         required: true
         type: string
-      - description: owner ID
+      - description: user ID
         in: path
         name: owner
         required: true
@@ -610,38 +460,143 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get store by owner
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Get stores by id and owner
+      tags:
+      - stores
+  /stores/active/{id}:
+    options:
+      consumes:
+      - application/json
+      description: Activate one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Activate stores
+      tags:
+      - stores
+    patch:
+      consumes:
+      - application/json
+      description: Activate one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Create store
+        in: body
+        name: category
+        required: true
+        schema:
+          $ref: '#/definitions/http.UpdateStoreRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "422":
+          description: Unprocessable Entity
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Activate stores
+      tags:
+      - stores
+  /stores/block/{id}:
+    options:
+      consumes:
+      - application/json
+      description: Block one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Block stores
       tags:
       - stores
   /stores/category/{category}:
     get:
       consumes:
       - application/json
-      description: Get all stores by category
+      description: Get a list of stores by category
       parameters:
       - description: category ID
         in: path
         name: category
         required: true
         type: string
-      - description: List Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: List Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: List Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
         type: string
@@ -654,24 +609,56 @@ paths:
             items:
               $ref: '#/definitions/domain.Store'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all stores by category
+      tags:
+      - stores
+  /stores/disable/{id}:
+    options:
+      consumes:
+      - application/json
+      description: Disable one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Disable stores
       tags:
       - stores
   /stores/location/{location}/status/{status}:
     get:
       consumes:
       - application/json
-      description: Get all stores by location and status
+      description: Get a list of stores location and status
       parameters:
-      - description: Status value
+      - description: '@lat,lng'
+        in: path
+        name: location
+        required: true
+        type: string
+      - description: Status
         enum:
         - active
         - pending
@@ -681,27 +668,20 @@ paths:
         name: status
         required: true
         type: string
-      - description: List Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: List Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: List Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
-        type: string
-      - description: Distance in KM
-        in: query
-        name: distance
-        required: true
-        type: integer
-      - description: Location @lat,lng
-        in: path
-        name: location
-        required: true
         type: string
       produces:
       - application/json
@@ -715,30 +695,33 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get all stores by location and status
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Get all stores location and status
       tags:
       - stores
   /stores/owner/{owner}:
     get:
       consumes:
       - application/json
-      description: Get all stores by owner
+      description: Get a list of stores owner
       parameters:
-      - description: owner ID
+      - description: user ID
         in: path
         name: owner
         required: true
         type: string
-      - description: List Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: List Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: List Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
         type: string
@@ -751,14 +734,10 @@ paths:
             items:
               $ref: '#/definitions/domain.Store'
             type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all stores by owner
       tags:
       - stores
@@ -766,7 +745,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all stores by status
+      description: Get a list of stores by status
       parameters:
       - description: Status
         enum:
@@ -778,15 +757,18 @@ paths:
         name: status
         required: true
         type: string
-      - description: Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
         type: string
@@ -802,7 +784,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all stores by status
       tags:
       - stores
@@ -810,24 +792,27 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get all stores by tags
+      description: Get a list of stores
       parameters:
-      - description: tags
+      - description: Tags
         in: query
         items:
           type: string
         name: tags
         required: true
         type: array
-      - description: List Page
+      - default: 1
+        description: Page
         in: query
         name: page
         type: integer
-      - description: List Limit
+      - default: 10
+        description: Limit
         in: query
         name: limit
         type: integer
-      - description: List Sort
+      - default: created_at DESC
+        description: Sort
         in: query
         name: sort
         type: string
@@ -843,8 +828,8 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
-      summary: Get all stores by tags
+            $ref: '#/definitions/store_api_http.ErrorResponse'
+      summary: Get all stores
       tags:
       - stores
   /tags:
@@ -880,7 +865,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all tags
       tags:
       - tags
@@ -922,11 +907,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/dto.ErrorResponse'
+            $ref: '#/definitions/store_api_http.ErrorResponse'
       summary: Get all tags by category
       tags:
       - tags

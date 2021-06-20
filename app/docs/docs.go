@@ -78,7 +78,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -94,7 +94,7 @@ var doc = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Create  a new Category",
+                "summary": "Create a new Category",
                 "parameters": [
                     {
                         "description": "Create category",
@@ -102,7 +102,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateCategoryRequest"
+                            "$ref": "#/definitions/http.CreateCategoryRequest"
                         }
                     }
                 ],
@@ -116,19 +116,19 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -193,7 +193,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -211,7 +211,7 @@ var doc = `{
                 "tags": [
                     "categories"
                 ],
-                "summary": "Get all categories by status",
+                "summary": "Get categories by id",
                 "parameters": [
                     {
                         "type": "string",
@@ -231,25 +231,25 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/categories/{id}/{status}": {
+        "/categories/{id}/status/{status}": {
             "get": {
                 "description": "Get all categories by status",
                 "consumes": [
@@ -294,19 +294,19 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/category_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -314,7 +314,7 @@ var doc = `{
         },
         "/stores": {
             "get": {
-                "description": "Get all stores",
+                "description": "Get a list of stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -328,19 +328,22 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "List Page",
+                        "default": 1,
+                        "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "List Limit",
+                        "default": 10,
+                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "List Sort",
+                        "default": "created_at DESC",
+                        "description": "Sort",
                         "name": "sort",
                         "in": "query"
                     }
@@ -351,14 +354,14 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.Category"
+                                "$ref": "#/definitions/domain.Store"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -374,15 +377,15 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Create  a new Store",
+                "summary": "Create  a new store",
                 "parameters": [
                     {
-                        "description": "Create store request",
-                        "name": "store",
+                        "description": "Create store",
+                        "name": "category",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateStoreRequest"
+                            "$ref": "#/definitions/http.CreateStoreRequest"
                         }
                     }
                 ],
@@ -396,19 +399,173 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stores/active/{id}": {
+            "options": {
+                "description": "Activate one stores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Activate stores",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    }
+                }
+            },
+            "patch": {
+                "description": "Activate one stores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Activate stores",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create store",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/http.UpdateStoreRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stores/block/{id}": {
+            "options": {
+                "description": "Block one stores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Block stores",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -416,7 +573,7 @@ var doc = `{
         },
         "/stores/category/{category}": {
             "get": {
-                "description": "Get all stores by category",
+                "description": "Get a list of stores by category",
                 "consumes": [
                     "application/json"
                 ],
@@ -437,19 +594,22 @@ var doc = `{
                     },
                     {
                         "type": "integer",
-                        "description": "List Page",
+                        "default": 1,
+                        "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "List Limit",
+                        "default": 10,
+                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "List Sort",
+                        "default": "created_at DESC",
+                        "description": "Sort",
                         "name": "sort",
                         "in": "query"
                     }
@@ -464,24 +624,18 @@ var doc = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
             }
         },
-        "/stores/location/{location}/status/{status}": {
-            "get": {
-                "description": "Get all stores by location and status",
+        "/stores/disable/{id}": {
+            "options": {
+                "description": "Disable one stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -491,8 +645,62 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get all stores by location and status",
+                "summary": "Disable stores",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/stores/location/{location}/status/{status}": {
+            "get": {
+                "description": "Get a list of stores location and status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Get all stores location and status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "@lat,lng",
+                        "name": "location",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "enum": [
                             "active",
@@ -501,42 +709,31 @@ var doc = `{
                             "disable"
                         ],
                         "type": "string",
-                        "description": "Status value",
+                        "description": "Status",
                         "name": "status",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "List Page",
+                        "default": 1,
+                        "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "List Limit",
+                        "default": 10,
+                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "List Sort",
+                        "default": "created_at DESC",
+                        "description": "Sort",
                         "name": "sort",
                         "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Distance in KM",
-                        "name": "distance",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Location @lat,lng",
-                        "name": "location",
-                        "in": "path",
-                        "required": true
                     }
                 ],
                 "responses": {
@@ -552,7 +749,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -560,7 +757,7 @@ var doc = `{
         },
         "/stores/owner/{owner}": {
             "get": {
-                "description": "Get all stores by owner",
+                "description": "Get a list of stores owner",
                 "consumes": [
                     "application/json"
                 ],
@@ -574,26 +771,29 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "owner ID",
+                        "description": "user ID",
                         "name": "owner",
                         "in": "path",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "List Page",
+                        "default": 1,
+                        "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "List Limit",
+                        "default": 10,
+                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "List Sort",
+                        "default": "created_at DESC",
+                        "description": "Sort",
                         "name": "sort",
                         "in": "query"
                     }
@@ -608,16 +808,10 @@ var doc = `{
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -625,7 +819,7 @@ var doc = `{
         },
         "/stores/status/{status}": {
             "get": {
-                "description": "Get all stores by status",
+                "description": "Get a list of stores by status",
                 "consumes": [
                     "application/json"
                 ],
@@ -652,18 +846,21 @@ var doc = `{
                     },
                     {
                         "type": "integer",
+                        "default": 1,
                         "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
+                        "default": 10,
                         "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
+                        "default": "created_at DESC",
                         "description": "Sort",
                         "name": "sort",
                         "in": "query"
@@ -682,7 +879,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -690,7 +887,7 @@ var doc = `{
         },
         "/stores/tags/": {
             "get": {
-                "description": "Get all stores by tags",
+                "description": "Get a list of stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -700,33 +897,36 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get all stores by tags",
+                "summary": "Get all stores",
                 "parameters": [
                     {
                         "type": "array",
                         "items": {
                             "type": "string"
                         },
-                        "description": "tags",
+                        "description": "Tags",
                         "name": "tags",
                         "in": "query",
                         "required": true
                     },
                     {
                         "type": "integer",
-                        "description": "List Page",
+                        "default": 1,
+                        "description": "Page",
                         "name": "page",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "description": "List Limit",
+                        "default": 10,
+                        "description": "Limit",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "List Sort",
+                        "default": "created_at DESC",
+                        "description": "Sort",
                         "name": "sort",
                         "in": "query"
                     }
@@ -744,7 +944,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -752,7 +952,7 @@ var doc = `{
         },
         "/stores/{id}": {
             "get": {
-                "description": "Get store by id",
+                "description": "Get one stores by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -762,7 +962,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get store by id",
+                "summary": "Get stores by id",
                 "parameters": [
                     {
                         "type": "string",
@@ -782,25 +982,25 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
             },
             "delete": {
-                "description": "Delete store",
+                "description": "Delete one stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -810,7 +1010,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Delete Store",
+                "summary": "Delete stores",
                 "parameters": [
                     {
                         "type": "string",
@@ -822,240 +1022,24 @@ var doc = `{
                 ],
                 "responses": {
                     "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
+                        "description": ""
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "patch": {
-                "description": "Get store by id",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get store by id",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Update store request body",
-                        "name": "store",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UpdateStoreRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Store"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/{id}/active": {
-            "options": {
-                "description": "Set Store status to active",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Active Store",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/{id}/block": {
-            "options": {
-                "description": "Set Store status to block",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Block Store",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/{id}/disable": {
-            "options": {
-                "description": "Set Store status to disable",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Disable Store",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -1063,7 +1047,7 @@ var doc = `{
         },
         "/stores/{id}/owner/{owner}": {
             "get": {
-                "description": "Get store by owner",
+                "description": "Get one stores by id and owner",
                 "consumes": [
                     "application/json"
                 ],
@@ -1073,7 +1057,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get store by owner",
+                "summary": "Get stores by id and owner",
                 "parameters": [
                     {
                         "type": "string",
@@ -1084,7 +1068,7 @@ var doc = `{
                     },
                     {
                         "type": "string",
-                        "description": "owner ID",
+                        "description": "user ID",
                         "name": "owner",
                         "in": "path",
                         "required": true
@@ -1100,19 +1084,19 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -1167,7 +1151,7 @@ var doc = `{
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -1229,13 +1213,13 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/dto.ErrorResponse"
+                            "$ref": "#/definitions/store_api_http.ErrorResponse"
                         }
                     }
                 }
@@ -1243,19 +1227,10 @@ var doc = `{
         }
     },
     "definitions": {
-        "domain.Account": {
+        "category_api_http.ErrorResponse": {
             "type": "object",
             "properties": {
-                "balance": {
-                    "type": "number"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "updated_at": {
+                "msg": {
                     "type": "string"
                 }
             }
@@ -1274,19 +1249,16 @@ var doc = `{
                 },
                 "status": {
                     "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
         "domain.Position": {
             "type": "object",
             "properties": {
-                "latitude": {
+                "lat": {
                     "type": "number"
                 },
-                "longitude": {
+                "lng": {
                     "type": "number"
                 }
             }
@@ -1294,8 +1266,8 @@ var doc = `{
         "domain.Store": {
             "type": "object",
             "properties": {
-                "account": {
-                    "$ref": "#/definitions/domain.Account"
+                "account_id": {
+                    "type": "string"
                 },
                 "category": {
                     "$ref": "#/definitions/domain.Category"
@@ -1326,9 +1298,6 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
-                },
-                "updated_at": {
-                    "type": "string"
                 }
             }
         },
@@ -1343,7 +1312,7 @@ var doc = `{
                 }
             }
         },
-        "dto.CreateCategoryRequest": {
+        "http.CreateCategoryRequest": {
             "type": "object",
             "properties": {
                 "name": {
@@ -1351,7 +1320,7 @@ var doc = `{
                 }
             }
         },
-        "dto.CreateStoreRequest": {
+        "http.CreateStoreRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -1380,15 +1349,7 @@ var doc = `{
                 }
             }
         },
-        "dto.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "dto.UpdateStoreRequest": {
+        "http.UpdateStoreRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
@@ -1411,6 +1372,14 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                }
+            }
+        },
+        "store_api_http.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "msg": {
+                    "type": "string"
                 }
             }
         }
