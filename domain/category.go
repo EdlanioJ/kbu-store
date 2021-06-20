@@ -11,7 +11,7 @@ import (
 const (
 	CategoryStatusPending  string = "pending"
 	CategoryStatusActive   string = "active"
-	CategoryStatusInactive string = "inactive"
+	CategoryStatusInactive string = "disable"
 )
 
 // Category struct
@@ -21,51 +21,28 @@ type Category struct {
 	Status string `json:"status" valid:"notnull,status"`
 }
 
-// Repositories
 type (
-	FetchCategoryRepository interface {
-		Exec(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
+	// CategoryRepository
+	CategoryRepository interface {
+		Create(ctx context.Context, Category *Category) error
+		GetById(ctx context.Context, id string) (*Category, error)
+		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
+		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
+		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
+		Update(ctx context.Context, Category *Category) error
 	}
-	FetchCategoryByStatusRepository interface {
-		Exec(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
-	}
-	GetCategoryByIDRepository interface {
-		Exec(ctx context.Context, id string) (*Category, error)
-	}
-	GetCategoryByStautsRepository interface {
-		Exec(ctx context.Context, id, status string) (*Category, error)
-	}
-	CreateCategoryRepository interface {
-		Add(ctx context.Context, Category *Category) error
-	}
-	UpdateCategoryRepository interface {
-		Exec(ctx context.Context, Category *Category) error
+	// CategoryUsecase
+	CategoryUsecase interface {
+		Create(ctx context.Context, name string) error
+		GetById(ctx context.Context, id string) (*Category, error)
+		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
+		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
+		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
+		Update(ctx context.Context, Category *Category) error
 	}
 )
 
-// Usecases
-type (
-	FetchCategoryUsecase interface {
-		Exec(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
-	}
-	FetchCategoryByStatusUsecase interface {
-		Exec(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
-	}
-	GetCategoryByIDUsecase interface {
-		Exec(ctx context.Context, id string) (*Category, error)
-	}
-	GetCategoryByStautsUsecase interface {
-		Exec(ctx context.Context, id, status string) (*Category, error)
-	}
-	CreateCategoryUsecase interface {
-		Add(ctx context.Context, name string) error
-	}
-	UpdateCategoryUsecase interface {
-		Exec(ctx context.Context, Category *Category) error
-	}
-)
-
-// Category Entity validator
+// Category validator
 func (s *Category) isValid() (err error) {
 	govalidator.TagMap["status"] = govalidator.Validator(func(str string) bool {
 		return govalidator.IsIn(str, CategoryStatusPending, CategoryStatusActive, CategoryStatusInactive)

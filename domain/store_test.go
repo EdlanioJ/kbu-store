@@ -14,7 +14,7 @@ func TestNewStore(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore("", "", "", category, account, tags, 0, 0)
+		store, err := domain.NewStore("", "", "", category, account.ID, tags, 0, 0)
 
 		is.Nil(store)
 		is.Error(err)
@@ -29,7 +29,7 @@ func TestNewStore(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		is.NotNil(store)
 		is.Nil(err)
@@ -47,7 +47,7 @@ func TestBock(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		store.ID = "001"
 		err := store.Block()
@@ -64,7 +64,7 @@ func TestBock(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		err := store.Block()
 
@@ -83,7 +83,7 @@ func TestActivate(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		store.ID = "001"
 		err := store.Activate()
@@ -100,7 +100,7 @@ func TestActivate(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		err := store.Activate()
 
@@ -119,7 +119,7 @@ func TestInactivate(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		store.ID = "001"
 		err := store.Inactivate()
@@ -136,7 +136,7 @@ func TestInactivate(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		err := store.Inactivate()
 

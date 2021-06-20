@@ -13,5 +13,5 @@ func init() {
 type Base struct {
 	ID        string    `json:"id" valid:"uuidv4"`
 	CreatedAt time.Time `json:"created_at,omitempty" valid:"-"`
-	UpdatedAt time.Time `json:"updated_at,omitempty" valid:"-"`
+	UpdatedAt time.Time `json:"-" valid:"-"`
 }

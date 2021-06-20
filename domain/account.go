@@ -17,23 +17,11 @@ type Account struct {
 }
 
 type (
-	// 	GetAccountByIDRepository represent the get account's repository contract
-	GetAccountByIDRepository interface {
-		Exec(ctx context.Context, id string) (*Account, error)
-	}
-
-	// CreateAccountRepository represent the create account's repository contract
-	CreateAccountRepository interface {
-		Add(ctx context.Context, account *Account) error
-	}
-	// UpdateAccountRepository represent the update account's repository contract
-	UpdateAccountRepository interface {
-		Exec(ctx context.Context, account *Account) error
-	}
-
-	// DeleteAccountRepository represent the delete account's repository contract
-	DeleteAccountRepository interface {
-		Exec(ctx context.Context, id string) error
+	AccountRepository interface {
+		Create(ctx context.Context, account *Account) error
+		GetById(ctx context.Context, id string) (*Account, error)
+		Update(ctx context.Context, account *Account) error
+		Delete(ctx context.Context, id string) error
 	}
 )
 
