@@ -1,19 +1,20 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/spf13/viper"
+)
 
 type Config struct {
-	PGDns          string `mapstructure:"PG_DNS"`
 	TimeoutContext int    `mapstructure:"TIMEOUT_CONTEXT"`
 	Port           int    `mapstructure:"PORT"`
-	AutoMigration  bool   `mapstructure:"AUTO_MIGRATE_DB"`
 	Env            string `mapstructure:"ENV"`
-	PGDnsTest      string `mapstructure:"PG_DNS_TEST"`
+	Dns            string `mapstructure:"PG_DNS"`
+	DnsTest        string `mapstructure:"PG_DNS_TEST"`
 }
 
 func LoadConfig(path string) (config Config, err error) {
 	viper.AddConfigPath(path)
-	viper.SetConfigName(".env")
+	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
 	viper.AutomaticEnv()
