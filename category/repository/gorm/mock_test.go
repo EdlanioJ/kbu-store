@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func setupTest() (*gorm.DB, sqlmock.Sqlmock, *domain.Category) {
+func testMock() (*gorm.DB, sqlmock.Sqlmock, *domain.Category) {
 	db, mock, err := sqlmock.New()
 
 	if err != nil {
