@@ -5,6 +5,7 @@ COPY . .
 
 ENV PATH="/go/bin:${PATH}"
 
+RUN make env
 RUN make build
 
 FROM scratch
