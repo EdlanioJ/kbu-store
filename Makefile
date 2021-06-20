@@ -1,4 +1,4 @@
-.PHONY: test start build swag mock init-migration migrate-up migrate-down
+.PHONY: test start build swag mock init-migration migrate-up migrate-down env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
@@ -25,3 +25,6 @@ migrate-up:
 
 migrate-down:
 	migrate -path db/migration -database ${DATABASE} -verbose down
+
+env:
+	cp .env.example app.env
