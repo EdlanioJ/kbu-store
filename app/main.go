@@ -2,14 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
-	"strconv"
 	"time"
 
+	"github.com/EdlanioJ/kbu-store/app/config"
 	_ "github.com/EdlanioJ/kbu-store/app/docs"
-	"github.com/EdlanioJ/kbu-store/app/routes"
+	"github.com/EdlanioJ/kbu-store/app/factory"
 	"github.com/EdlanioJ/kbu-store/app/utils"
-	"github.com/sirupsen/logrus"
+	categoryRoute "github.com/EdlanioJ/kbu-store/category/deliver/http"
+	storeRoute "github.com/EdlanioJ/kbu-store/store/deliver/http"
+	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/gofiber/helmet/v2"
 )
 
 // @title KBU Store API
@@ -23,24 +30,31 @@ import (
 // @host localhost:3333
 // @BasePath /api/v1
 func main() {
-	var dns string
-	dbConnention := os.Getenv("PG_DNS")
-	dbConnectionTest := os.Getenv("PG_DNS_TEST")
-	port := os.Getenv("PORT")
-	tc, _ := strconv.Atoi(os.Getenv("TIMEOUT_CONTEXT"))
-	env := os.Getenv("ENV")
-	migration := os.Getenv("AUTO_MIGRATE_DB")
-
-	if env != "test" {
-		dns = dbConnention
-	} else {
-		dns = dbConnectionTest
+	config, err := config.LoadConfig(".")
+	if err != nil {
+		panic(err)
 	}
 
-	timeoutContext := time.Duration(tc) * time.Second
-	db := utils.ConnectDB(env, dns, migration)
+	tc := time.Duration(config.TimeoutContext) * time.Second
+	db := utils.ConnectDB()
 
-	app := routes.New(db, timeoutContext)
+	app := fiber.New()
 
-	logrus.Fatal(app.Listen(fmt.Sprintf(":%s", port)))
+	app.Use(helmet.New())
+	app.Use(requestid.New())
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${status} ${ua} ${latency} ${ip} ${locals:requestid} ${method} ${path}​\n​",
+		Output: os.Stderr,
+	}))
+
+	v1 := app.Group("/api/v1")
+	v1.Get("/docs/*", swagger.Handler)
+	su := factory.StoreUsecase(db, tc)
+	tu := factory.TagUsecase(db, tc)
+	cu := factory.CategoryUsecase(db, tc)
+
+	storeRoute.NewStoreRoute(v1, su)
+	storeRoute.NewTagRoutes(v1, tu)
+	categoryRoute.NewCategoryRoutes(v1, cu)
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
 }
