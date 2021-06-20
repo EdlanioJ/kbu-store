@@ -14,7 +14,6 @@
         },
         "version": "1.0.0"
     },
-    "host": "localhost:3333",
     "basePath": "/api/v1",
     "paths": {
         "/categories": {
@@ -63,7 +62,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -101,19 +100,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -178,7 +177,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -216,19 +215,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -279,19 +278,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/category_api_http.ErrorResponse"
+                            "$ref": "#/definitions/category_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -346,7 +345,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -384,19 +383,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -431,19 +430,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -485,25 +484,25 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "422": {
                         "description": "Unprocessable Entity",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -538,19 +537,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -612,7 +611,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -647,19 +646,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -734,7 +733,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -796,7 +795,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -864,7 +863,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -929,7 +928,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -967,19 +966,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -1012,19 +1011,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -1069,19 +1068,19 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -1136,7 +1135,7 @@
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -1198,13 +1197,13 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/store_api_http.ErrorResponse"
+                            "$ref": "#/definitions/store_deliver_http.ErrorResponse"
                         }
                     }
                 }
@@ -1212,7 +1211,7 @@
         }
     },
     "definitions": {
-        "category_api_http.ErrorResponse": {
+        "category_deliver_http.ErrorResponse": {
             "type": "object",
             "properties": {
                 "msg": {
@@ -1360,7 +1359,7 @@
                 }
             }
         },
-        "store_api_http.ErrorResponse": {
+        "store_deliver_http.ErrorResponse": {
             "type": "object",
             "properties": {
                 "msg": {
