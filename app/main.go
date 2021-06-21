@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
@@ -21,7 +20,7 @@ import (
 )
 
 // @title KBU Store API
-// @version 1.0.0
+// @version 1.0.3
 // @description This is a sample swagger for KBU Store
 // @termsOfService http://swagger.io/terms/
 // @contact.name Edlâneo Manuel
@@ -43,10 +42,7 @@ func main() {
 	app.Use(cors.New())
 	app.Use(helmet.New())
 	app.Use(requestid.New())
-	app.Use(logger.New(logger.Config{
-		Format: "[${time}] ${status} ${ua} ${latency} ${ip} ${locals:requestid} ${method} ${path}​\n​",
-		Output: os.Stderr,
-	}))
+	app.Use(logger.New())
 
 	v1 := app.Group("/api/v1")
 	v1.Get("/docs/*", swagger.Handler)
