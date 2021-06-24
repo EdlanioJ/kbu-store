@@ -38,6 +38,8 @@ type (
 		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
 		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
 		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
+		Activate(ctx context.Context, name string) error
+		Disable(ctx context.Context, name string) error
 		Update(ctx context.Context, Category *Category) error
 	}
 )
@@ -69,5 +71,17 @@ func NewCategory(name string) (category *Category, err error) {
 		return nil, err
 	}
 
+	return
+}
+
+func (c *Category) Activate() (err error) {
+	c.Status = CategoryStatusActive
+	err = c.isValid()
+	return
+}
+
+func (c *Category) Disable() (err error) {
+	c.Status = CategoryStatusInactive
+	err = c.isValid()
 	return
 }
