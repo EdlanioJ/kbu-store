@@ -25,6 +25,9 @@ func NewCategoryRoutes(r fiber.Router, us domain.CategoryUsecase) {
 	cr.Get("/:id", handler.getById)
 	cr.Get("/:id/status/:status", handler.getByIdAndStatus)
 	cr.Get("/status/:status", handler.getAllByStatus)
+
+	cr.Patch("/:id/activate", handler.activate)
+	cr.Patch("/:id/disable", handler.disable)
 }
 
 // @Summary Create a new Category
@@ -180,4 +183,64 @@ func (h *categoryHandler) getAllByStatus(c *fiber.Ctx) error {
 		})
 	}
 	return c.JSON(list)
+}
+
+// @Summary Activate categories
+// @Description Activate one category
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Param id path string true "category ID"
+// @Success 204
+// @Failure 500 {object} ErrorResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /categories/activate/{id} [patch]
+func (h *categoryHandler) activate(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Params("id")
+
+	if !govalidator.IsUUIDv4(id) {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			ErrorResponse{
+				Message: "id must be a valid uuidv4",
+			})
+	}
+	err := h.categoryUsecase.Activate(ctx, id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+	return c.SendStatus(fiber.StatusNoContent)
+}
+
+// @Summary Disable categories
+// @Description Disable one category
+// @Tags categories
+// @Accept json
+// @Produce json
+// @Param id path string true "category ID"
+// @Success 204
+// @Failure 500 {object} ErrorResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Router /categories/disable/{id} [patch]
+func (h *categoryHandler) disable(c *fiber.Ctx) error {
+	ctx := c.Context()
+	id := c.Params("id")
+
+	if !govalidator.IsUUIDv4(id) {
+		return c.Status(fiber.StatusBadRequest).JSON(
+			ErrorResponse{
+				Message: "id must be a valid uuidv4",
+			})
+	}
+	err := h.categoryUsecase.Disable(ctx, id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+	return c.SendStatus(fiber.StatusNoContent)
 }

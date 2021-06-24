@@ -16,7 +16,12 @@ func getStatusCode(err error) int {
 	switch err {
 	case domain.ErrNotFound:
 		return fiber.StatusNotFound
-	case domain.ErrBadParam:
+	case domain.ErrActived,
+		domain.ErrBlocked,
+		domain.ErrBadParam,
+		domain.ErrActived,
+		domain.ErrInactived,
+		domain.ErrIsPending:
 		return fiber.StatusBadRequest
 	}
 	return fiber.StatusInternalServerError

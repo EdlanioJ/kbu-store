@@ -17,6 +17,12 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+func testMock() *domain.Category {
+	category, _ := domain.NewCategory("Store type 001")
+
+	return category
+}
+
 func Test_CategoryHandler_Create(t *testing.T) {
 	cr := new(http.CreateCategoryRequest)
 	cr.Name = "Store type 001"
@@ -329,5 +335,111 @@ func Test_CategoryHandler_GetAllByStatus(t *testing.T) {
 			tc.checkResponse(t, err, total, res.StatusCode)
 			categoryUsecase.AssertExpectations(t)
 		})
+	}
+}
+
+func Test_CategoryHandler_Activate(t *testing.T) {
+	testCases := []struct {
+		name          string
+		arg           string
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, err error, statusCode int)
+	}{
+		{
+			name:     "fail on validation id",
+			arg:      "invald_id",
+			builtSts: func(_ *mocks.CategoryUsecase) {},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+			},
+		},
+		{
+			name: "fail on usecase",
+			arg:  uuid.NewV4().String(),
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Activate", mock.Anything, mock.AnythingOfType("string")).Return(domain.ErrNotFound).Once()
+			},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusNotFound)
+			},
+		},
+		{
+			name: "success",
+			arg:  uuid.NewV4().String(),
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Activate", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+			},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusNoContent)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		categoryUsecase := new(mocks.CategoryUsecase)
+		tc.builtSts(categoryUsecase)
+		app := fiber.New()
+		http.NewCategoryRoutes(app, categoryUsecase)
+		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/categories/%s/activate", tc.arg), nil)
+		req.Header.Set("Content-Type", "application/json")
+		res, err := app.Test(req)
+		tc.checkResponse(t, err, res.StatusCode)
+		categoryUsecase.AssertExpectations(t)
+	}
+}
+
+func Test_CategoryHandler_Disable(t *testing.T) {
+	testCases := []struct {
+		name          string
+		arg           string
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, err error, statusCode int)
+	}{
+		{
+			name:     "fail on validation id",
+			arg:      "invald_id",
+			builtSts: func(_ *mocks.CategoryUsecase) {},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+			},
+		},
+		{
+			name: "fail on usecase",
+			arg:  uuid.NewV4().String(),
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Disable", mock.Anything, mock.AnythingOfType("string")).Return(domain.ErrNotFound).Once()
+			},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusNotFound)
+			},
+		},
+		{
+			name: "success",
+			arg:  uuid.NewV4().String(),
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Disable", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+			},
+			checkResponse: func(t *testing.T, err error, statusCode int) {
+				assert.NoError(t, err)
+				assert.Equal(t, statusCode, fiber.StatusNoContent)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		categoryUsecase := new(mocks.CategoryUsecase)
+		tc.builtSts(categoryUsecase)
+		app := fiber.New()
+		http.NewCategoryRoutes(app, categoryUsecase)
+		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/categories/%s/disable", tc.arg), nil)
+		req.Header.Set("Content-Type", "application/json")
+		res, err := app.Test(req)
+		tc.checkResponse(t, err, res.StatusCode)
+		categoryUsecase.AssertExpectations(t)
 	}
 }
