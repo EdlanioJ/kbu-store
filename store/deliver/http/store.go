@@ -31,13 +31,13 @@ func NewStoreRoute(r fiber.Router, us domain.StoreUsecase) {
 	sr.Get("/:id", handler.getById)
 	sr.Get("/:id/owner/:owner", handler.getByIdAndOwner)
 
-	sr.Options("/active/:id", handler.active)
-	sr.Options("/block/:id", handler.block)
-	sr.Options("/disable/:id", handler.disable)
+	sr.Patch("/:id", handler.update)
+	sr.Patch("/:id/activate", handler.active)
+	sr.Patch("/:id/block", handler.block)
+	sr.Patch("/:id/disable", handler.disable)
 
 	sr.Delete("/:id", handler.delete)
 
-	sr.Patch("/:id", handler.update)
 }
 
 // @Summary Create  a new store
@@ -363,7 +363,7 @@ func (h *storeHandler) getByIdAndOwner(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /stores/active/{id} [options]
+// @Router /stores/{id}/activate [patch]
 func (h *storeHandler) active(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
@@ -394,7 +394,7 @@ func (h *storeHandler) active(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /stores/block/{id} [options]
+// @Router /stores/{id}/block [patch]
 func (h *storeHandler) block(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
@@ -425,7 +425,7 @@ func (h *storeHandler) block(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /stores/disable/{id} [options]
+// @Router /stores/{id}/disable [patch]
 func (h *storeHandler) disable(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
