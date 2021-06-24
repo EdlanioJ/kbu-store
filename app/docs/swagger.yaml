@@ -256,6 +256,68 @@ paths:
       summary: Get all categories by status
       tags:
       - categories
+  /categories/activate/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Activate one category
+      parameters:
+      - description: category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+      summary: Activate categories
+      tags:
+      - categories
+  /categories/disable/{id}:
+    patch:
+      consumes:
+      - application/json
+      description: Disable one category
+      parameters:
+      - description: category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+      summary: Disable categories
+      tags:
+      - categories
   /categories/status/{status}:
     get:
       consumes:
@@ -433,6 +495,99 @@ paths:
       summary: Get stores by id
       tags:
       - stores
+  /stores/{id}/activate:
+    patch:
+      consumes:
+      - application/json
+      description: Activate one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+      summary: Activate stores
+      tags:
+      - stores
+  /stores/{id}/block:
+    patch:
+      consumes:
+      - application/json
+      description: Block one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+      summary: Block stores
+      tags:
+      - stores
+  /stores/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: Disable one stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+      summary: Disable stores
+      tags:
+      - stores
   /stores/{id}/owner/{owner}:
     get:
       consumes:
@@ -472,36 +627,6 @@ paths:
       tags:
       - stores
   /stores/active/{id}:
-    options:
-      consumes:
-      - application/json
-      description: Activate one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-      summary: Activate stores
-      tags:
-      - stores
     patch:
       consumes:
       - application/json
@@ -540,37 +665,6 @@ paths:
           schema:
             $ref: '#/definitions/store_deliver_http.ErrorResponse'
       summary: Activate stores
-      tags:
-      - stores
-  /stores/block/{id}:
-    options:
-      consumes:
-      - application/json
-      description: Block one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-      summary: Block stores
       tags:
       - stores
   /stores/category/{category}:
@@ -613,37 +707,6 @@ paths:
           schema:
             $ref: '#/definitions/store_deliver_http.ErrorResponse'
       summary: Get all stores by category
-      tags:
-      - stores
-  /stores/disable/{id}:
-    options:
-      consumes:
-      - application/json
-      description: Disable one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
-      summary: Disable stores
       tags:
       - stores
   /stores/location/{location}/status/{status}:
