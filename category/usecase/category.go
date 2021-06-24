@@ -88,6 +88,59 @@ func (u *CategoryUsecase) GetAllByStatus(c context.Context, status, sort string,
 	}
 	return
 }
+func (u *CategoryUsecase) Activate(c context.Context, id string) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	category, err := u.categoryRepo.GetById(ctx, id)
+	if err != nil {
+		return
+	}
+
+	if category.ID == "" {
+		return domain.ErrNotFound
+	}
+
+	if category.Status == domain.CategoryStatusActive {
+		return domain.ErrActived
+	}
+
+	err = category.Activate()
+	if err != nil {
+		return
+	}
+
+	return u.categoryRepo.Update(ctx, category)
+}
+
+func (u *CategoryUsecase) Disable(c context.Context, id string) (err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
+	category, err := u.categoryRepo.GetById(ctx, id)
+	if err != nil {
+		return
+	}
+
+	if category.ID == "" {
+		return domain.ErrNotFound
+	}
+
+	if category.Status == domain.CategoryStatusInactive {
+		return domain.ErrBlocked
+	}
+
+	if category.Status == domain.CategoryStatusPending {
+		return domain.ErrIsPending
+	}
+
+	err = category.Disable()
+	if err != nil {
+		return
+	}
+
+	return u.categoryRepo.Update(ctx, category)
+}
 
 func (u *CategoryUsecase) Update(c context.Context, Category *domain.Category) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
