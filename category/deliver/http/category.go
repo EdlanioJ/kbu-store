@@ -195,7 +195,7 @@ func (h *categoryHandler) getAllByStatus(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /categories/activate/{id} [patch]
+// @Router /categories/{id}/activate [patch]
 func (h *categoryHandler) activate(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
@@ -225,7 +225,7 @@ func (h *categoryHandler) activate(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /categories/disable/{id} [patch]
+// @Router /categories/{id}/disable [patch]
 func (h *categoryHandler) disable(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")

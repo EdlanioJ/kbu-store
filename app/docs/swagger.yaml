@@ -213,6 +213,68 @@ paths:
       summary: Get categories by id
       tags:
       - categories
+  /categories/{id}/activate:
+    patch:
+      consumes:
+      - application/json
+      description: Activate one category
+      parameters:
+      - description: category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+      summary: Activate categories
+      tags:
+      - categories
+  /categories/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: Disable one category
+      parameters:
+      - description: category ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+      summary: Disable categories
+      tags:
+      - categories
   /categories/{id}/status/{status}:
     get:
       consumes:
@@ -254,68 +316,6 @@ paths:
           schema:
             $ref: '#/definitions/category_deliver_http.ErrorResponse'
       summary: Get all categories by status
-      tags:
-      - categories
-  /categories/activate/{id}:
-    patch:
-      consumes:
-      - application/json
-      description: Activate one category
-      parameters:
-      - description: category ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-      summary: Activate categories
-      tags:
-      - categories
-  /categories/disable/{id}:
-    patch:
-      consumes:
-      - application/json
-      description: Disable one category
-      parameters:
-      - description: category ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
-      summary: Disable categories
       tags:
       - categories
   /categories/status/{status}:
