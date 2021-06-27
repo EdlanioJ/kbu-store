@@ -7,14 +7,9 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type entityMock struct {
-	store    *domain.Store
-	category *domain.Category
-}
-
-func testMock() *entityMock {
-	category, _ := domain.NewCategory("Store type 001")
-
+func getStore() *domain.Store {
+	c := new(domain.Category)
+	c.ID = uuid.NewV4().String()
 	store := &domain.Store{
 		Base: domain.Base{
 			ID:        uuid.NewV4().String(),
@@ -26,11 +21,15 @@ func testMock() *entityMock {
 		Status:      domain.StoreStatusPending,
 		ExternalID:  uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
-		Category:    category,
+		Category:    c,
 	}
 
-	return &entityMock{
-		store:    store,
-		category: category,
-	}
+	return store
+}
+
+func getCategory() *domain.Category {
+
+	mockStorType, _ := domain.NewCategory("Store type 001")
+
+	return mockStorType
 }
