@@ -4,7 +4,7 @@ import (
 	"time"
 
 	gormRepo "github.com/EdlanioJ/kbu-store/category/repository/gorm"
-	"github.com/EdlanioJ/kbu-store/category/usecase"
+	"github.com/EdlanioJ/kbu-store/data/usecase"
 	"gorm.io/gorm"
 )
 

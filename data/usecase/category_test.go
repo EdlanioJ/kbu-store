@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/EdlanioJ/kbu-store/category/usecase"
+	"github.com/EdlanioJ/kbu-store/data/usecase"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
 	uuid "github.com/satori/go.uuid"
@@ -89,7 +89,7 @@ func Test_CategoryUsecase_GetById(t *testing.T) {
 			name: "success",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				category := testMock()
+				category := getCategory()
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(category, nil).Once()
 			},
 			checkResponse: func(t *testing.T, res *domain.Category, err error) {
@@ -144,7 +144,7 @@ func Test_CategoryUsecase_GetByIdAndStatus(t *testing.T) {
 				status: domain.CategoryStatusActive,
 			},
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				categoryRepo.On("GetByIdAndStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(testMock(), nil).Once()
+				categoryRepo.On("GetByIdAndStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(getCategory(), nil).Once()
 			},
 			checkResponse: func(t *testing.T, res *domain.Category, err error) {
 				assert.NoError(t, err)
@@ -201,7 +201,7 @@ func Test_CategoryUsecase_GetAll(t *testing.T) {
 				limit: 0,
 			},
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				category := testMock()
+				category := getCategory()
 				categories := make([]*domain.Category, 0)
 				categories = append(categories, category)
 				categoryRepo.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
@@ -265,7 +265,7 @@ func Test_CategoryUsecase_GetAllByStatus(t *testing.T) {
 				limit:  0,
 			},
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				category := testMock()
+				category := getCategory()
 				categories := make([]*domain.Category, 0)
 				categories = append(categories, category)
 				categoryRepo.On("GetAllByStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
@@ -291,7 +291,7 @@ func Test_CategoryUsecase_GetAllByStatus(t *testing.T) {
 }
 
 func Test_CategoryUsecase_Update(t *testing.T) {
-	category := testMock()
+	category := getCategory()
 	type args struct {
 		category *domain.Category
 	}
@@ -385,7 +385,7 @@ func Test_CategoryRepo_Activate(t *testing.T) {
 			name: "fail on get category by id returns actived category",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusActive
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 			},
@@ -398,7 +398,7 @@ func Test_CategoryRepo_Activate(t *testing.T) {
 			name: "fail on activate",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Name = ""
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 			},
@@ -410,7 +410,7 @@ func Test_CategoryRepo_Activate(t *testing.T) {
 			name: "fail on update",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 			},
@@ -422,7 +422,7 @@ func Test_CategoryRepo_Activate(t *testing.T) {
 			name: "success",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
 			},
@@ -473,7 +473,7 @@ func Test_CategoryRepo_Disable(t *testing.T) {
 			name: "fail on get category by id returns blocked category",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusInactive
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 			},
@@ -486,7 +486,7 @@ func Test_CategoryRepo_Disable(t *testing.T) {
 			name: "fail on get category by id returns pending category",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusPending
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 			},
@@ -499,7 +499,7 @@ func Test_CategoryRepo_Disable(t *testing.T) {
 			name: "fail on activate",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusActive
 				c.Name = ""
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
@@ -512,7 +512,7 @@ func Test_CategoryRepo_Disable(t *testing.T) {
 			name: "fail on update",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusActive
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
@@ -525,7 +525,7 @@ func Test_CategoryRepo_Disable(t *testing.T) {
 			name: "success",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
-				c := testMock()
+				c := getCategory()
 				c.Status = domain.CategoryStatusActive
 				categoryRepo.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(c, nil).Once()
 				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
