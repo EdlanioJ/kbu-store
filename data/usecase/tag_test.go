@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
+	"github.com/EdlanioJ/kbu-store/data/usecase"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
-	"github.com/EdlanioJ/kbu-store/store/usecase"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
