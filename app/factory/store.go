@@ -3,9 +3,9 @@ package factory
 import (
 	"time"
 
-	gormAccountRepo "github.com/EdlanioJ/kbu-store/account/repository/gorm"
 	gormCategoryRepo "github.com/EdlanioJ/kbu-store/category/repository/gorm"
 	"github.com/EdlanioJ/kbu-store/data/usecase"
+	gormAccountRepo "github.com/EdlanioJ/kbu-store/infra/db/repository/gorm"
 	gormStoreRepo "github.com/EdlanioJ/kbu-store/store/repository/gorm"
 	"gorm.io/gorm"
 )

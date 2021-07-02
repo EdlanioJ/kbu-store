@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func testMock() (*gorm.DB, sqlmock.Sqlmock, *domain.Account) {
+func dbMock() (*gorm.DB, sqlmock.Sqlmock) {
 	db, mock, err := sqlmock.New()
 
 	if err != nil {
@@ -27,7 +27,10 @@ func testMock() (*gorm.DB, sqlmock.Sqlmock, *domain.Account) {
 		panic(err)
 	}
 
-	accountMock, _ := domain.NewAccount(20.75)
+	return gormDB, mock
+}
 
-	return gormDB, mock, accountMock
+func getAccount() *domain.Account {
+	account, _ := domain.NewAccount(20.75)
+	return account
 }

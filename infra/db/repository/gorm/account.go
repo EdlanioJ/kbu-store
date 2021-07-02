@@ -3,8 +3,8 @@ package gorm
 import (
 	"context"
 
-	"github.com/EdlanioJ/kbu-store/db/model"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/infra/db/model"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +20,7 @@ func NewAccountRepository(db *gorm.DB) *accountRepository {
 
 func (r *accountRepository) Create(ctx context.Context, account *domain.Account) (err error) {
 	accountEntity := &model.Account{}
-	accountEntity.Parser(account)
+	accountEntity.FromAccountDomain(account)
 
 	err = r.db.WithContext(ctx).
 		Table("accounts").
@@ -43,7 +43,7 @@ func (r *accountRepository) GetById(ctx context.Context, id string) (res *domain
 
 func (r *accountRepository) Update(ctx context.Context, account *domain.Account) (err error) {
 	accountModel := &model.Account{}
-	accountModel.Parser(account)
+	accountModel.FromAccountDomain(account)
 
 	err = r.db.WithContext(ctx).
 		Table("accounts").
