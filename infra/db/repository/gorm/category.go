@@ -3,8 +3,8 @@ package gorm
 import (
 	"context"
 
-	"github.com/EdlanioJ/kbu-store/db/model"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/infra/db/model"
 	"gorm.io/gorm"
 )
 
@@ -20,7 +20,7 @@ func NewCategoryRepository(db *gorm.DB) *categoryRepository {
 
 func (r *categoryRepository) Create(ctx context.Context, category *domain.Category) (err error) {
 	categoryModel := &model.Category{}
-	categoryModel.Parser(category)
+	categoryModel.FromCategoryDomain(category)
 
 	err = r.db.WithContext(ctx).
 		Table("categories").
@@ -98,7 +98,7 @@ func (r *categoryRepository) GetByIdAndStatus(ctx context.Context, id, status st
 
 func (r *categoryRepository) Update(ctx context.Context, category *domain.Category) (err error) {
 	categoryEntity := &model.Category{}
-	categoryEntity.Parser(category)
+	categoryEntity.FromCategoryDomain(category)
 
 	err = r.db.WithContext(ctx).
 		Table("categories").

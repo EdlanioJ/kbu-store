@@ -7,14 +7,15 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/EdlanioJ/kbu-store/category/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/infra/db/repository/gorm"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_GormCategoryRepository(t *testing.T) {
 	t.Run("category repo  -> create", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 
 		repo := gorm.NewCategoryRepository(db)
 
@@ -33,7 +34,8 @@ func Test_GormCategoryRepository(t *testing.T) {
 
 	t.Run("category repo -> get all", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 
 		repo := gorm.NewCategoryRepository(db)
 
@@ -62,7 +64,8 @@ func Test_GormCategoryRepository(t *testing.T) {
 
 	t.Run("category repo -> get all status", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 		repo := gorm.NewCategoryRepository(db)
 
 		page := 2
@@ -91,7 +94,8 @@ func Test_GormCategoryRepository(t *testing.T) {
 
 	t.Run("category repo -> get by id", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 		repo := gorm.NewCategoryRepository(db)
 
 		query := `SELECT * FROM "categories" WHERE id = $1 ORDER BY "categories"."id" LIMIT 1`
@@ -110,7 +114,8 @@ func Test_GormCategoryRepository(t *testing.T) {
 
 	t.Run("category repo -> get by id and status", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 		repo := gorm.NewCategoryRepository(db)
 
 		query := `SELECT * FROM "categories" WHERE id = $1 AND status = $2 ORDER BY "categories"."id" LIMIT 1`
@@ -129,7 +134,8 @@ func Test_GormCategoryRepository(t *testing.T) {
 
 	t.Run("category repo -> update", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, category := testMock()
+		db, mock := dbMock()
+		category := getCategory()
 		repo := gorm.NewCategoryRepository(db)
 
 		query := `UPDATE "categories" SET "created_at"=$1,"updated_at"=$2,"name"=$3,"status"=$4 WHERE "id" = $5`

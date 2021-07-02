@@ -3,8 +3,8 @@ package factory
 import (
 	"time"
 
-	gormRepo "github.com/EdlanioJ/kbu-store/category/repository/gorm"
 	"github.com/EdlanioJ/kbu-store/data/usecase"
+	gormRepo "github.com/EdlanioJ/kbu-store/infra/db/repository/gorm"
 	"gorm.io/gorm"
 )
 

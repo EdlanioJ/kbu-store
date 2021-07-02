@@ -13,7 +13,7 @@ func (Category) TableName() string {
 	return "categories"
 }
 
-func (s *Category) Parser(d *domain.Category) *Category {
+func (s *Category) FromCategoryDomain(d *domain.Category) *Category {
 	s.ID = d.ID
 	s.Name = d.Name
 	s.Status = d.Status

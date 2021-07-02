@@ -34,3 +34,8 @@ func getAccount() *domain.Account {
 	account, _ := domain.NewAccount(20.75)
 	return account
 }
+
+func getCategory() *domain.Category {
+	category, _ := domain.NewCategory("store type 001")
+	return category
+}
