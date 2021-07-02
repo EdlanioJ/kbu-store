@@ -1,10 +1,5 @@
 basePath: /api/v1
 definitions:
-  category_deliver_http.ErrorResponse:
-    properties:
-      msg:
-        type: string
-    type: object
   domain.Category:
     properties:
       created_at:
@@ -55,12 +50,12 @@ definitions:
       tag:
         type: string
     type: object
-  http.CreateCategoryRequest:
+  handler.CreateCategoryRequest:
     properties:
       name:
         type: string
     type: object
-  http.CreateStoreRequest:
+  handler.CreateStoreRequest:
     properties:
       category_id:
         type: string
@@ -79,7 +74,12 @@ definitions:
           type: string
         type: array
     type: object
-  http.UpdateStoreRequest:
+  handler.ErrorResponse:
+    properties:
+      msg:
+        type: string
+    type: object
+  handler.UpdateStoreRequest:
     properties:
       category_id:
         type: string
@@ -95,11 +95,6 @@ definitions:
         items:
           type: string
         type: array
-    type: object
-  store_deliver_http.ErrorResponse:
-    properties:
-      msg:
-        type: string
     type: object
 info:
   contact:
@@ -143,7 +138,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all categories
       tags:
       - categories
@@ -157,7 +152,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/http.CreateCategoryRequest'
+          $ref: '#/definitions/handler.CreateCategoryRequest'
       produces:
       - application/json
       responses:
@@ -168,15 +163,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Create a new Category
       tags:
       - categories
@@ -201,15 +196,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get categories by id
       tags:
       - categories
@@ -232,15 +227,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Activate categories
       tags:
       - categories
@@ -263,15 +258,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Disable categories
       tags:
       - categories
@@ -306,15 +301,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all categories by status
       tags:
       - categories
@@ -358,7 +353,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/category_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all categories by status
       tags:
       - categories
@@ -395,7 +390,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores
       tags:
       - stores
@@ -409,7 +404,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/http.CreateStoreRequest'
+          $ref: '#/definitions/handler.CreateStoreRequest'
       produces:
       - application/json
       responses:
@@ -420,15 +415,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Create  a new store
       tags:
       - stores
@@ -451,15 +446,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Delete stores
       tags:
       - stores
@@ -483,15 +478,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get stores by id
       tags:
       - stores
@@ -514,15 +509,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Activate stores
       tags:
       - stores
@@ -545,15 +540,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Block stores
       tags:
       - stores
@@ -576,15 +571,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Disable stores
       tags:
       - stores
@@ -614,15 +609,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get stores by id and owner
       tags:
       - stores
@@ -642,7 +637,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/http.UpdateStoreRequest'
+          $ref: '#/definitions/handler.UpdateStoreRequest'
       produces:
       - application/json
       responses:
@@ -651,19 +646,19 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "422":
           description: Unprocessable Entity
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Activate stores
       tags:
       - stores
@@ -705,7 +700,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores by category
       tags:
       - stores
@@ -757,7 +752,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores location and status
       tags:
       - stores
@@ -799,7 +794,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores by owner
       tags:
       - stores
@@ -846,7 +841,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores by status
       tags:
       - stores
@@ -890,7 +885,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all stores
       tags:
       - stores
@@ -927,7 +922,7 @@ paths:
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all tags
       tags:
       - tags
@@ -969,11 +964,11 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/store_deliver_http.ErrorResponse'
+            $ref: '#/definitions/handler.ErrorResponse'
       summary: Get all tags by category
       tags:
       - tags

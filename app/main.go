@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
-	_ "github.com/EdlanioJ/kbu-store/app/docs"
 	"github.com/EdlanioJ/kbu-store/app/factory"
+	_ "github.com/EdlanioJ/kbu-store/app/http/docs"
 	routes "github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/infra/db"
 	swagger "github.com/arsmn/fiber-swagger/v2"
