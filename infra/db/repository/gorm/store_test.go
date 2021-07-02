@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/EdlanioJ/kbu-store/store/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/infra/db/repository/gorm"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
@@ -15,7 +15,8 @@ import (
 func Test_GormStoreRepository(t *testing.T) {
 	t.Run("store repo -> create", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		query := `INSERT INTO "stores" ("id","created_at","updated_at","name","description","status","external_id","account_id","category_id","tags","lat","lng") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
@@ -32,7 +33,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get by id", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		query := `SELECT * FROM "stores" WHERE id = $1 ORDER BY "stores"."id"`
@@ -52,7 +54,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get by id and owner", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		query := `SELECT * FROM "stores" WHERE id = $1 AND external_id = $2 ORDER BY "stores"."id" LIMIT 1`
@@ -72,7 +75,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -99,7 +103,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all by category", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -127,7 +132,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all by location", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -166,7 +172,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all by owner", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -194,7 +201,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all by status", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -222,7 +230,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> get all by tags", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		page := 2
@@ -250,7 +259,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> update", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		query := `UPDATE "stores" SET "created_at"=$1,"updated_at"=$2,"name"=$3,"description"=$4,"status"=$5,"external_id"=$6,"account_id"=$7,"category_id"=$8,"tags"=$9,"lat"=$10,"lng"=$11 WHERE "id" = $12`
@@ -268,7 +278,8 @@ func Test_GormStoreRepository(t *testing.T) {
 
 	t.Run("store repo -> delete", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, store := testMock()
+		db, mock := dbMock()
+		store := getStore()
 		repo := gorm.NewStoreRepository(db)
 
 		query := `DELETE FROM "stores" WHERE id = $1`

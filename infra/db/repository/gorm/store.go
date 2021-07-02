@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/EdlanioJ/kbu-store/db/model"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/infra/db/model"
 	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
@@ -22,7 +22,7 @@ func NewStoreRepository(db *gorm.DB) *storeRepository {
 
 func (r *storeRepository) Create(ctx context.Context, store *domain.Store) (err error) {
 	storeModel := &model.Store{}
-	storeModel.Parser(store)
+	storeModel.FromStoreDomain(store)
 
 	err = r.db.WithContext(ctx).
 		Create(storeModel).
@@ -170,7 +170,7 @@ func (r *storeRepository) GetAllByTags(ctx context.Context, tags []string, sort 
 }
 func (r *storeRepository) Update(ctx context.Context, store *domain.Store) (err error) {
 	storeEntity := &model.Store{}
-	storeEntity.Parser(store)
+	storeEntity.FromStoreDomain(store)
 
 	err = r.db.WithContext(ctx).
 		Save(storeEntity).
