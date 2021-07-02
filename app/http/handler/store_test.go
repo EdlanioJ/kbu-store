@@ -1,4 +1,4 @@
-package http_test
+package handler_test
 
 import (
 	"encoding/json"
@@ -7,18 +7,38 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
-	"github.com/EdlanioJ/kbu-store/store/deliver/http"
 	"github.com/gofiber/fiber/v2"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
+func getStore() *domain.Store {
+	mockStorType, _ := domain.NewCategory("Store type 001")
+
+	storeMock := &domain.Store{
+		Base: domain.Base{
+			ID:        uuid.NewV4().String(),
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		},
+		Name:        "Store 001",
+		Description: "store description 001",
+		Status:      domain.StoreStatusPending,
+		ExternalID:  uuid.NewV4().String(),
+		AccountID:   uuid.NewV4().String(),
+		Category:    mockStorType,
+	}
+
+	return storeMock
+}
 func Test_StoreHandler_Create(t *testing.T) {
-	cr := http.CreateStoreRequest{
+	cr := handler.CreateStoreRequest{
 		Name:        "Store 001",
 		Description: "Store description",
 		CategoryID:  uuid.NewV4().String(),
@@ -71,7 +91,7 @@ func Test_StoreHandler_Create(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodPost, "/stores/", strings.NewReader(tc.arg))
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -115,7 +135,7 @@ func Test_StoreHandler_GetAll(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAll", mock.Anything, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(stores, int64(1), nil).Once()
@@ -132,7 +152,7 @@ func Test_StoreHandler_GetAll(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/?sort=%s&page=%d&limit=%d", tc.args.sort, tc.args.page, tc.args.limit), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -193,7 +213,7 @@ func Test_StoreHandler_GetAllByCategory(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAllByCategory", mock.Anything, mockArgs.categoryId, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(stores, int64(1), nil).Once()
@@ -210,7 +230,7 @@ func Test_StoreHandler_GetAllByCategory(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/category/%s?sort=%s&page=%d&limit=%d", tc.args.categoryId, tc.args.sort, tc.args.page, tc.args.limit), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -295,7 +315,7 @@ func Test_StoreHandler_GetAllBCloseLocation(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAllByByCloseLocation", mock.Anything, mockArgs.lat, mockArgs.lng, mockArgs.distance, mockArgs.status, mockArgs.limit, mockArgs.page, mockArgs.sort).Return(stores, int64(1), nil).Once()
@@ -312,7 +332,7 @@ func Test_StoreHandler_GetAllBCloseLocation(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/location/%s/status/%s?sort=%s&page=%d&limit=%d&distance=%d", fmt.Sprintf("@%v,%v", tc.args.lat, tc.args.lng), tc.args.status, tc.args.sort, tc.args.page, tc.args.limit, tc.args.distance), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -373,7 +393,7 @@ func Test_StoreHandler_GetAllByOwner(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAllByOwner", mock.Anything, mockArgs.ownerId, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(stores, int64(1), nil).Once()
@@ -390,7 +410,7 @@ func Test_StoreHandler_GetAllByOwner(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/owner/%s?sort=%s&page=%d&limit=%d", tc.args.ownerId, tc.args.sort, tc.args.page, tc.args.limit), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -437,7 +457,7 @@ func Test_StoreHandler_GetAllByStatus(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAllByStatus", mock.Anything, mockArgs.status, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(stores, int64(1), nil).Once()
@@ -454,7 +474,7 @@ func Test_StoreHandler_GetAllByStatus(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/status/%s?sort=%s&page=%d&limit=%d", tc.args.status, tc.args.sort, tc.args.page, tc.args.limit), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -501,7 +521,7 @@ func Test_StoreHandler_GetAllByTags(t *testing.T) {
 			name: "success",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				store := mockTest()
+				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
 				storeUsecase.On("GetAllByTags", mock.Anything, mock.Anything, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(stores, int64(1), nil).Once()
@@ -518,7 +538,7 @@ func Test_StoreHandler_GetAllByTags(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/tags/?tags=%s&sort=%s&page=%d&limit=%d", tc.args.tags, tc.args.sort, tc.args.page, tc.args.limit), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -559,7 +579,7 @@ func Test_StoreHandler_GetById(t *testing.T) {
 			name: "success",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(mockTest(), nil).Once()
+				storeUsecase.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(getStore(), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
@@ -573,7 +593,7 @@ func Test_StoreHandler_GetById(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/%s", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -639,7 +659,7 @@ func Test_StoreHandler_GetByIdAndOwner(t *testing.T) {
 				owner: uuid.NewV4().String(),
 			},
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetByIdAndOwner", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(mockTest(), nil).Once()
+				storeUsecase.On("GetByIdAndOwner", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(getStore(), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
@@ -653,7 +673,7 @@ func Test_StoreHandler_GetByIdAndOwner(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/stores/%s/owner/%s", tc.args.id, tc.args.owner), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -708,7 +728,7 @@ func Test_StoreHandler_Active(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/stores/%s/activate", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -763,7 +783,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/stores/%s/block", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -818,7 +838,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/stores/%s/disable", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -873,7 +893,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
 			app := fiber.New()
-			http.NewStoreRoute(app, storeUsecase)
+			handler.NewStoreRoute(app, storeUsecase)
 			req := httptest.NewRequest(fiber.MethodDelete, fmt.Sprintf("/stores/%s", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -889,7 +909,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 		request string
 	}
 
-	ur := http.UpdateStoreRequest{
+	ur := handler.UpdateStoreRequest{
 		Name:        "store 002",
 		Description: "description 002",
 		CategoryID:  uuid.NewV4().String(),
@@ -963,7 +983,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
 		app := fiber.New()
-		http.NewStoreRoute(app, storeUsecase)
+		handler.NewStoreRoute(app, storeUsecase)
 		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/stores/%s", tc.args.id), strings.NewReader(tc.args.request))
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)

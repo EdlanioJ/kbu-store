@@ -10,7 +10,6 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/factory"
 	routes "github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/infra/db"
-	storeRoute "github.com/EdlanioJ/kbu-store/store/deliver/http"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -53,7 +52,7 @@ func main() {
 	tu := factory.TagUsecase(database, tc)
 	cu := factory.CategoryUsecase(database, tc)
 
-	storeRoute.NewStoreRoute(v1, su)
+	routes.NewStoreRoute(v1, su)
 	routes.NewTagRoutes(v1, tu)
 	routes.NewCategoryRoutes(v1, cu)
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", config.Port)))
