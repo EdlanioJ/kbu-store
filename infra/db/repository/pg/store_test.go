@@ -10,13 +10,13 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/EdlanioJ/kbu-store/domain"
-	"github.com/EdlanioJ/kbu-store/store/repository/pg"
+	"github.com/EdlanioJ/kbu-store/infra/db/repository/pg"
 	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
-func mockStore() *domain.Store {
+func getStore() *domain.Store {
 	c := new(domain.Category)
 	c.ID = uuid.NewV4().String()
 
@@ -42,7 +42,7 @@ func mockStore() *domain.Store {
 }
 
 func Test_StoreRepo_Create(t *testing.T) {
-	s := mockStore()
+	s := getStore()
 	testCases := []struct {
 		name          string
 		arg           *domain.Store
@@ -109,7 +109,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 
 func Test_StoreRepo_GetById(t *testing.T) {
 	id := uuid.NewV4().String()
-	s := mockStore()
+	s := getStore()
 	testCases := []struct {
 		name          string
 		arg           string
@@ -197,7 +197,7 @@ func Test_StoreRepo_GetByIdAndOwner(t *testing.T) {
 		owner string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		id:    uuid.NewV4().String(),
 		owner: uuid.NewV4().String(),
@@ -273,7 +273,7 @@ func Test_StoreRepo_GetAll(t *testing.T) {
 		sort  string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:  1,
 		limit: 10,
@@ -364,7 +364,7 @@ func Test_StoreRepo_GetAllByCategory(t *testing.T) {
 		categoryId string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:       1,
 		limit:      10,
@@ -456,7 +456,7 @@ func Test_StoreRepo_GetAllByOwner(t *testing.T) {
 		ownerId string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:    1,
 		limit:   10,
@@ -548,7 +548,7 @@ func Test_StoreRepo_GetAllByStatus(t *testing.T) {
 		status string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:   1,
 		limit:  10,
@@ -643,7 +643,7 @@ func Test_StoreRepo_GetAllByLocation(t *testing.T) {
 		lng      float64
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:     1,
 		limit:    10,
@@ -736,7 +736,7 @@ func Test_StoreRepo_GetAllByTags(t *testing.T) {
 		tags  []string
 	}
 
-	s := mockStore()
+	s := getStore()
 	a := args{
 		page:  1,
 		limit: 10,
@@ -821,7 +821,7 @@ func Test_StoreRepo_GetAllByTags(t *testing.T) {
 }
 
 func Test_StoreRepo_Update(t *testing.T) {
-	s := mockStore()
+	s := getStore()
 	testCases := []struct {
 		name          string
 		arg           *domain.Store
