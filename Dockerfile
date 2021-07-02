@@ -12,7 +12,10 @@ RUN apt-get update && \
   go get google.golang.org/grpc/cmd/protoc-gen-go-grpc && \
   go get google.golang.org/protobuf/cmd/protoc-gen-go && \
   go get github.com/vektra/mockery/v2/.../ && \
-  go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+  go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest && \
+  wget https://github.com/ktr0731/evans/releases/download/0.9.3/evans_linux_amd64.tar.gz && \
+  tar -xzvf evans_linux_amd64.tar.gz && \
+  mv evans ../bin && rm -f evans_linux_amd64.tar.gz
 
 
 CMD ["tail", "-f", "/dev/null"]
