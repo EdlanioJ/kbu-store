@@ -6,7 +6,7 @@ ENV GO111MODULE=on
 ENV CGO_ENABLED=1
 
 RUN apt-get update && \
-  apt-get install build-essential -y && \
+  apt-get install build-essential protobuf-compiler -y && \
   go get github.com/spf13/cobra/cobra && \
   go get -u github.com/swaggo/swag/cmd/swag && \
   go get github.com/vektra/mockery/v2/.../ && \
