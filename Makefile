@@ -6,13 +6,13 @@ test:
 	go test ./... -cover
 
 start:
-	go run ./app/main.go
+	go run ./application/main.go
 
 build:
-	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./app/main.go
+	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./application/main.go
 
 swag:
-	swag init -g "./app/main.go" -d "./" -o "./app/http/docs"
+	swag init -g "./application/main.go" -d "./" -o "./application/http/docs"
 
 mock:
 	mockery --output "./domain/mocks" --dir "./" --all

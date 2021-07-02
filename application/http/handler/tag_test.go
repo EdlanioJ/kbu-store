@@ -6,7 +6,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/EdlanioJ/kbu-store/app/http/handler"
+	"github.com/EdlanioJ/kbu-store/application/http/handler"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
 	"github.com/gofiber/fiber/v2"
