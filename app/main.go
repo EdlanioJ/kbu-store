@@ -8,13 +8,14 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/config"
 	_ "github.com/EdlanioJ/kbu-store/app/docs"
 	"github.com/EdlanioJ/kbu-store/app/factory"
-	"github.com/EdlanioJ/kbu-store/app/utils"
 	categoryRoute "github.com/EdlanioJ/kbu-store/category/deliver/http"
+	"github.com/EdlanioJ/kbu-store/infra/db"
 	storeRoute "github.com/EdlanioJ/kbu-store/store/deliver/http"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/helmet/v2"
+	"gorm.io/gorm"
 )
 
 // @title KBU Store API
@@ -27,13 +28,19 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func main() {
+	var database *gorm.DB
 	config, err := config.LoadConfig(".")
 	if err != nil {
 		panic(err)
 	}
 
 	tc := time.Duration(config.TimeoutContext) * time.Second
-	db := utils.ConnectDB()
+
+	if config.Env == "test" {
+		database = db.GORMConnection(config.DnsTest, config.Env)
+	} else {
+		database = db.GORMConnection(config.Dns, config.Env)
+	}
 
 	app := fiber.New()
 
@@ -42,9 +49,9 @@ func main() {
 
 	v1 := app.Group("/api/v1")
 	v1.Get("/docs/*", swagger.Handler)
-	su := factory.StoreUsecase(db, tc)
-	tu := factory.TagUsecase(db, tc)
-	cu := factory.CategoryUsecase(db, tc)
+	su := factory.StoreUsecase(database, tc)
+	tu := factory.TagUsecase(database, tc)
+	cu := factory.CategoryUsecase(database, tc)
 
 	storeRoute.NewStoreRoute(v1, su)
 	storeRoute.NewTagRoutes(v1, tu)
