@@ -18,7 +18,7 @@ func StoreUsecase(db *gorm.DB, contextTimeout time.Duration) *usecase.StoreUseca
 }
 
 func TagUsecase(db *gorm.DB, contextTimeout time.Duration) *usecase.TagUsecase {
-	tagRepo := gormStoreRepo.NewTagsRepository(db)
+	tagRepo := gormRepo.NewTagsRepository(db)
 
 	return usecase.NewtagUsecase(tagRepo, contextTimeout)
 }

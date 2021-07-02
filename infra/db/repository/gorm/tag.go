@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/EdlanioJ/kbu-store/db/model"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/infra/db/model"
 	"gorm.io/gorm"
 )
 

@@ -8,7 +8,7 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/EdlanioJ/kbu-store/domain"
-	"github.com/EdlanioJ/kbu-store/store/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/infra/db/repository/gorm"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +16,7 @@ import (
 func Test_TagsRepository(t *testing.T) {
 	t.Run("tags repo -> get all", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, _ := testMock()
+		db, mock := dbMock()
 		repo := gorm.NewTagsRepository(db)
 
 		tag := new(domain.Tag)
@@ -54,7 +54,7 @@ func Test_TagsRepository(t *testing.T) {
 
 	t.Run("tags repo -> get all by category", func(t *testing.T) {
 		is := assert.New(t)
-		db, mock, _ := testMock()
+		db, mock := dbMock()
 		repo := gorm.NewTagsRepository(db)
 
 		tag := new(domain.Tag)
