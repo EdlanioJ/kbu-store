@@ -8,7 +8,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/config"
 	_ "github.com/EdlanioJ/kbu-store/app/docs"
 	"github.com/EdlanioJ/kbu-store/app/factory"
-	categoryRoute "github.com/EdlanioJ/kbu-store/category/deliver/http"
+	categoryRoute "github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/infra/db"
 	storeRoute "github.com/EdlanioJ/kbu-store/store/deliver/http"
 	swagger "github.com/arsmn/fiber-swagger/v2"

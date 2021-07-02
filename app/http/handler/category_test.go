@@ -1,4 +1,4 @@
-package http_test
+package handler_test
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/EdlanioJ/kbu-store/category/deliver/http"
+	"github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
 	"github.com/gofiber/fiber/v2"
@@ -17,14 +17,14 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func testMock() *domain.Category {
+func getCategory() *domain.Category {
 	category, _ := domain.NewCategory("Store type 001")
 
 	return category
 }
 
 func Test_CategoryHandler_Create(t *testing.T) {
-	cr := new(http.CreateCategoryRequest)
+	cr := new(handler.CreateCategoryRequest)
 	cr.Name = "Store type 001"
 	c, _ := json.Marshal(cr)
 
@@ -73,7 +73,7 @@ func Test_CategoryHandler_Create(t *testing.T) {
 
 			tc.builtSts(categoryUsecase)
 			app := fiber.New()
-			http.NewCategoryRoutes(app, categoryUsecase)
+			handler.NewCategoryRoutes(app, categoryUsecase)
 			req := httptest.NewRequest(fiber.MethodPost, "/categories/", strings.NewReader(tc.arg))
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -114,7 +114,7 @@ func Test_CategoryHandler_GetById(t *testing.T) {
 			name: "success",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
-				categoryUsecase.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(testMock(), nil).Once()
+				categoryUsecase.On("GetById", mock.Anything, mock.AnythingOfType("string")).Return(getCategory(), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
@@ -128,7 +128,7 @@ func Test_CategoryHandler_GetById(t *testing.T) {
 			categoryUsecase := new(mocks.CategoryUsecase)
 			tc.builtSts(categoryUsecase)
 			app := fiber.New()
-			http.NewCategoryRoutes(app, categoryUsecase)
+			handler.NewCategoryRoutes(app, categoryUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/categories/%s", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -182,7 +182,7 @@ func Test_CategoryHandler_GetByIdAndStatus(t *testing.T) {
 				status: domain.CategoryStatusActive,
 			},
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
-				categoryUsecase.On("GetByIdAndStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(testMock(), nil).Once()
+				categoryUsecase.On("GetByIdAndStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(getCategory(), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
@@ -196,7 +196,7 @@ func Test_CategoryHandler_GetByIdAndStatus(t *testing.T) {
 			categoryUsecase := new(mocks.CategoryUsecase)
 			tc.builtSts(categoryUsecase)
 			app := fiber.New()
-			http.NewCategoryRoutes(app, categoryUsecase)
+			handler.NewCategoryRoutes(app, categoryUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/categories/%s/status/%s", tc.args.id, tc.args.status), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -243,7 +243,7 @@ func Test_CategoryHandler_GetAll(t *testing.T) {
 			},
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
 				categories := make([]*domain.Category, 0)
-				categories = append(categories, testMock())
+				categories = append(categories, getCategory())
 				categoryUsecase.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, total string, statusCode int) {
@@ -259,7 +259,7 @@ func Test_CategoryHandler_GetAll(t *testing.T) {
 			categoryUsecase := new(mocks.CategoryUsecase)
 			tc.builtSts(categoryUsecase)
 			app := fiber.New()
-			http.NewCategoryRoutes(app, categoryUsecase)
+			handler.NewCategoryRoutes(app, categoryUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/categories/?sort=%s&page=%d&limit=%d", tc.args.sort, tc.args.page, tc.args.limit), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -311,7 +311,7 @@ func Test_CategoryHandler_GetAllByStatus(t *testing.T) {
 			},
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
 				categories := make([]*domain.Category, 0)
-				categories = append(categories, testMock())
+				categories = append(categories, getCategory())
 				categoryUsecase.On("GetAllByStatus", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, total string, statusCode int) {
@@ -327,7 +327,7 @@ func Test_CategoryHandler_GetAllByStatus(t *testing.T) {
 			categoryUsecase := new(mocks.CategoryUsecase)
 			tc.builtSts(categoryUsecase)
 			app := fiber.New()
-			http.NewCategoryRoutes(app, categoryUsecase)
+			handler.NewCategoryRoutes(app, categoryUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/categories/status/%s?sort=%s&page=%d&limit=%d", tc.args.status, tc.args.sort, tc.args.page, tc.args.limit), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -382,7 +382,7 @@ func Test_CategoryHandler_Activate(t *testing.T) {
 		categoryUsecase := new(mocks.CategoryUsecase)
 		tc.builtSts(categoryUsecase)
 		app := fiber.New()
-		http.NewCategoryRoutes(app, categoryUsecase)
+		handler.NewCategoryRoutes(app, categoryUsecase)
 		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/categories/%s/activate", tc.arg), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)
@@ -435,7 +435,7 @@ func Test_CategoryHandler_Disable(t *testing.T) {
 		categoryUsecase := new(mocks.CategoryUsecase)
 		tc.builtSts(categoryUsecase)
 		app := fiber.New()
-		http.NewCategoryRoutes(app, categoryUsecase)
+		handler.NewCategoryRoutes(app, categoryUsecase)
 		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/categories/%s/disable", tc.arg), nil)
 		req.Header.Set("Content-Type", "application/json")
 		res, err := app.Test(req)

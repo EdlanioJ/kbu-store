@@ -1,9 +1,10 @@
-package http
+package handler
 
 import (
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 )
 
 type ErrorResponse struct {
@@ -14,12 +15,12 @@ func getStatusCode(err error) int {
 	logrus.Error(err)
 
 	switch err {
-	case domain.ErrNotFound:
+	case domain.ErrNotFound,
+		gorm.ErrRecordNotFound:
 		return fiber.StatusNotFound
 	case domain.ErrActived,
 		domain.ErrBlocked,
 		domain.ErrBadParam,
-		domain.ErrActived,
 		domain.ErrInactived,
 		domain.ErrIsPending:
 		return fiber.StatusBadRequest
