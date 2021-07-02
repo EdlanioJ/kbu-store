@@ -1,4 +1,4 @@
-.PHONY: test start build swag mock init-migration migrate-up migrate-down env
+.PHONY: test start build swag mock create-migration migrate-up migrate-down env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
@@ -17,14 +17,14 @@ swag:
 mock:
 	mockery --output "./domain/mocks" --dir "./" --all
 
-init-migration:
-	migrate create -ext sql -dir db/migration -seq init_schema
+create-migration:
+	migrate create -ext sql -dir infra/db/migration -seq init_schema
 
 migrate-up:
-	migrate -path db/migration -database ${DATABASE} -verbose up
+	migrate -path infra/db/migration -database ${DATABASE} -verbose up
 
 migrate-down:
-	migrate -path db/migration -database ${DATABASE} -verbose down
+	migrate -path infra/db/migration -database ${DATABASE} -verbose down
 
 env:
 	cp .env.example app.env
