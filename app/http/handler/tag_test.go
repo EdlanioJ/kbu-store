@@ -1,4 +1,4 @@
-package http_test
+package handler_test
 
 import (
 	"errors"
@@ -6,9 +6,9 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/EdlanioJ/kbu-store/app/http/handler"
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
-	"github.com/EdlanioJ/kbu-store/store/deliver/http"
 	"github.com/gofiber/fiber/v2"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -73,7 +73,7 @@ func Test_TagHandler_GetAll(t *testing.T) {
 			tagUsecase := new(mocks.TagUsecase)
 			tc.builtSts(tagUsecase)
 			app := fiber.New()
-			http.NewTagRoutes(app, tagUsecase)
+			handler.NewTagRoutes(app, tagUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/tags/?sort=%s&page=%d&limit=%d", tc.args.sort, tc.args.page, tc.args.limit), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
@@ -158,7 +158,7 @@ func Test_TagHandler_GetAllByCategory(t *testing.T) {
 			tagUsecase := new(mocks.TagUsecase)
 			tc.builtSts(tagUsecase)
 			app := fiber.New()
-			http.NewTagRoutes(app, tagUsecase)
+			handler.NewTagRoutes(app, tagUsecase)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/tags/category/%s?sort=%s&page=%d&limit=%d", tc.args.categoryId, tc.args.sort, tc.args.page, tc.args.limit), nil)
 			req.Header.Set("Content-Type", "application/json")
 			res, err := app.Test(req)
