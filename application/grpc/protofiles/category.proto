@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option go_package = "application/grpc/pb";
+
+import "google/protobuf/timestamp.proto";
+
+message Category {
+  string ID = 1;
+  string name = 2;
+  string status = 3;
+  google.protobuf.Timestamp createdAt = 4;
+}
+
+enum CategoryStatus {
+  pending = 0;
+	active = 1;
+	desable = 2;
+}
+message CreateRequest {
+  string name = 1;
+}
+
+message Request {
+  string id = 1;
+}
+
+message GetByIdAndStatusRequest {
+  string id = 1;
+  CategoryStatus status = 2;
+}
+
+message GetAllByStatusRequest {
+  CategoryStatus status = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string sort = 4;
+}
+
+message GetAllRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string sort = 3;
+}
+
+message Empty {}
+
+message ListResponse {
+  repeated Category categories = 1;
+  int64 total = 2;
+}
+
+service CategoryService {
+  rpc Create (CreateRequest) returns (Empty) {};
+  rpc GetById (Request) returns (Category) {};
+  rpc GetByIdAndStatus (GetByIdAndStatusRequest) returns (Category) {};
+  rpc GetAll (GetAllRequest) returns (ListResponse) {};
+  rpc GetAllByStatus (GetAllByStatusRequest) returns (ListResponse) {};
+  rpc Activate (Request) returns (Empty) {};
+  rpc Disable (Request) returns (Empty) {};
+}
