@@ -1,4 +1,4 @@
-.PHONY: test start build swag mock create-migration migrate-up migrate-down env
+.PHONY: test start build swag mock create-migration migrate-up migrate-down grpc-gen env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
@@ -25,6 +25,9 @@ migrate-up:
 
 migrate-down:
 	migrate -path infra/db/migration -database ${DATABASE} -verbose down
+
+grpc-gen:
+	protoc --proto_path=application/grpc application/grpc/protofiles/*.proto --go_out=. --go-grpc_out=.
 
 env:
 	cp .env.example app.env
