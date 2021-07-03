@@ -3,6 +3,7 @@ syntax = "proto3";
 option go_package = "application/grpc/pb";
 
 import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
 
 message Category {
   string ID = 1;
@@ -42,19 +43,17 @@ message GetAllRequest {
   string sort = 3;
 }
 
-message Empty {}
-
 message ListResponse {
   repeated Category categories = 1;
   int64 total = 2;
 }
 
 service CategoryService {
-  rpc Create (CreateRequest) returns (Empty) {};
+  rpc Create (CreateRequest) returns (google.protobuf.Empty) {};
   rpc GetById (Request) returns (Category) {};
   rpc GetByIdAndStatus (GetByIdAndStatusRequest) returns (Category) {};
   rpc GetAll (GetAllRequest) returns (ListResponse) {};
   rpc GetAllByStatus (GetAllByStatusRequest) returns (ListResponse) {};
-  rpc Activate (Request) returns (Empty) {};
-  rpc Disable (Request) returns (Empty) {};
+  rpc Activate (Request) returns (google.protobuf.Empty) {};
+  rpc Disable (Request) returns (google.protobuf.Empty) {};
 }
