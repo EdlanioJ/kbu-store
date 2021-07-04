@@ -1,15 +1,15 @@
-.PHONY: test start build swag mock create-migration migrate-up migrate-down grpc-gen env
+.PHONY: test start-http build swag mock create-migration migrate-up migrate-down grpc-gen env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
 	go test ./... -cover
 
-start:
-	go run ./application/main.go
+start-http:
+	go run ./main.go http
 
 build:
-	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./application/main.go
+	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./main.go
 
 swag:
 	swag init -g "./application/http/server.go" -d "./" -o "./application/http/docs"

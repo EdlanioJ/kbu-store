@@ -15,4 +15,4 @@ WORKDIR /app
 COPY --from=builder ./go/src/kbu-store ./
 COPY --from=builder ./go/src/app.env ./
 
-CMD ["./kbu-store"]
+CMD ["./kbu-store", "http"]
