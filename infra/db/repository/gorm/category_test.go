@@ -43,7 +43,7 @@ func Test_GormCategoryRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "categories" ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "categories"`
+		queryCount := `SELECT count(*) FROM "categories"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
@@ -72,7 +72,7 @@ func Test_GormCategoryRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "categories" WHERE status = $1 ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "categories"`
+		queryCount := `SELECT count(*) FROM "categories"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
