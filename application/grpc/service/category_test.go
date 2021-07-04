@@ -120,3 +120,61 @@ func Test_CategoryGrpcService_GetById(t *testing.T) {
 		})
 	}
 }
+
+func Test_CategoryGrpcService_GetByIdAndStatus(t *testing.T) {
+	a := &pb.GetByIdAndStatusRequest{
+		Id:     uuid.NewV4().String(),
+		Status: pb.CategoryStatus_active,
+	}
+	testCases := []struct {
+		name          string
+		arg           *pb.GetByIdAndStatusRequest
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, res *pb.Category, err error)
+	}{
+		{
+			name: "fail on id validation",
+			arg: &pb.GetByIdAndStatusRequest{
+				Id:     "invalid_id",
+				Status: pb.CategoryStatus_pending,
+			},
+			builtSts: func(_ *mocks.CategoryUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "fail on usecase",
+			arg:  a,
+			builtSts: func(usecase *mocks.CategoryUsecase) {
+				usecase.On("GetByIdAndStatus", mock.Anything, a.Id, a.Status.String()).Return(nil, errors.New("Unexpected Error")).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "success",
+			arg:  a,
+			builtSts: func(usecase *mocks.CategoryUsecase) {
+				usecase.On("GetByIdAndStatus", mock.Anything, a.Id, a.Status.String()).Return(getCategory(), nil).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			usecase := new(mocks.CategoryUsecase)
+			tc.builtSts(usecase)
+			s := service.NewCategotyServer(usecase)
+			res, err := s.GetByIdAndStatus(context.TODO(), tc.arg)
+			tc.checkResponse(t, res, err)
+		})
+	}
+}

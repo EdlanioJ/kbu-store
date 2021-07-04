@@ -47,3 +47,22 @@ func (s *categotyService) GetById(ctx context.Context, in *pb.Request) (*pb.Cate
 		CreatedAt: timestamppb.New(res.CreatedAt),
 	}, nil
 }
+
+func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetByIdAndStatusRequest) (*pb.Category, error) {
+	_, err := uuid.FromString(in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.categoryUsecase.GetByIdAndStatus(ctx, in.Id, in.Status.String())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Category{
+		ID:        res.ID,
+		Name:      res.Name,
+		Status:    res.Status,
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}, nil
+}
