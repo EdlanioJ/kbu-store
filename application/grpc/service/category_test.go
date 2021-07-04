@@ -335,3 +335,59 @@ func Test_CategoryGrpcService_Activate(t *testing.T) {
 		})
 	}
 }
+
+func Test_CategoryGrpcService_Disable(t *testing.T) {
+	a := &pb.Request{
+		Id: uuid.NewV4().String(),
+	}
+	testCases := []struct {
+		name          string
+		arg           *pb.Request
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, res *empty.Empty, err error)
+	}{
+		{
+			name: "fail on id validation",
+			arg: &pb.Request{
+				Id: "invalid_id",
+			},
+			builtSts: func(_ *mocks.CategoryUsecase) {},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "fail on usecase",
+			arg:  a,
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Disable", mock.Anything, a.Id).Return(errors.New("Unexpexted Error")).Once()
+			},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "success",
+			arg:  a,
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("Disable", mock.Anything, a.Id).Return(nil).Once()
+			},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			usecase := new(mocks.CategoryUsecase)
+			tc.builtSts(usecase)
+			s := service.NewCategotyServer(usecase)
+			res, err := s.Disable(context.TODO(), tc.arg)
+			tc.checkResponse(t, res, err)
+		})
+	}
+}
