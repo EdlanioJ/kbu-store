@@ -38,8 +38,8 @@ type (
 		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
 		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
 		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
-		Activate(ctx context.Context, name string) error
-		Disable(ctx context.Context, name string) error
+		Activate(ctx context.Context, id string) error
+		Disable(ctx context.Context, id string) error
 		Update(ctx context.Context, Category *Category) error
 	}
 )
