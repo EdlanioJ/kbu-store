@@ -7,12 +7,19 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/application/grpc/service"
+	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/domain/mocks"
 	"github.com/golang/protobuf/ptypes/empty"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
+func getCategory() *domain.Category {
+	category, _ := domain.NewCategory("Store type 001")
+
+	return category
+}
 func Test_CategoryGrpcService_Create(t *testing.T) {
 	a := &pb.CreateRequest{
 		Name: "New Category",
@@ -53,6 +60,62 @@ func Test_CategoryGrpcService_Create(t *testing.T) {
 			tc.builtSts(usecase)
 			s := service.NewCategotyServer(usecase)
 			res, err := s.Create(context.TODO(), tc.arg)
+			tc.checkResponse(t, res, err)
+		})
+	}
+}
+
+func Test_CategoryGrpcService_GetById(t *testing.T) {
+	a := &pb.Request{
+		Id: uuid.NewV4().String(),
+	}
+	testCases := []struct {
+		name          string
+		arg           *pb.Request
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, res *pb.Category, err error)
+	}{
+		{
+			name: "fail on id validation",
+			arg: &pb.Request{
+				Id: "invalid_id",
+			},
+			builtSts: func(_ *mocks.CategoryUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "fail on usecase",
+			arg:  a,
+			builtSts: func(usecase *mocks.CategoryUsecase) {
+				usecase.On("GetById", mock.Anything, a.Id).Return(nil, errors.New("Unexpected Error")).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "success",
+			arg:  a,
+			builtSts: func(usecase *mocks.CategoryUsecase) {
+				usecase.On("GetById", mock.Anything, a.Id).Return(getCategory(), nil).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.Category, err error) {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			usecase := new(mocks.CategoryUsecase)
+			tc.builtSts(usecase)
+			s := service.NewCategotyServer(usecase)
+			res, err := s.GetById(context.TODO(), tc.arg)
 			tc.checkResponse(t, res, err)
 		})
 	}
