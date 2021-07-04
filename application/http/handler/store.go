@@ -167,8 +167,8 @@ func (h *storeHandler) getAllByCloseLocation(c *fiber.Ctx) error {
 		})
 	}
 
-	lat, _ := strconv.ParseFloat(strings.TrimSpace(location[0]), 8)
-	lng, _ := strconv.ParseFloat(strings.TrimSpace(location[1]), 8)
+	lat, _ := strconv.ParseFloat(strings.TrimSpace(location[0]), 64)
+	lng, _ := strconv.ParseFloat(strings.TrimSpace(location[1]), 64)
 
 	stores, total, err := h.storeUsecase.GetAllByByCloseLocation(ctx, lat, lng, distance, status, limit, page, sort)
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
