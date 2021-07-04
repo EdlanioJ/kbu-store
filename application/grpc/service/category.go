@@ -108,3 +108,17 @@ func (s *categotyService) GetAllByStatus(ctx context.Context, in *pb.GetAllBySta
 		Total:      total,
 	}, nil
 }
+
+func (s *categotyService) Activate(ctx context.Context, in *pb.Request) (*empty.Empty, error) {
+	_, err := uuid.FromString(in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.categoryUsecase.Activate(ctx, in.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
