@@ -83,7 +83,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "stores" ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "stores"`
+		queryCount := `SELECT count(*) FROM "stores"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
@@ -111,7 +111,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "stores" WHERE category_id = $1 ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "stores"`
+		queryCount := `SELECT count(*) FROM "stores"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
@@ -147,7 +147,7 @@ func Test_GormStoreRepository(t *testing.T) {
 			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng"}).
 			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.Category.ID, store.ExternalID, store.Position.Lat, store.Position.Lng)
 
-		queryCount := `SELECT count(1) FROM (SELECT *,(((acos(sin((-8.8867698 * pi() / 180)) * sin((lat * pi() / 180)) + cos((-8.8867698 * pi() / 180)) * cos((lat * pi() / 180)) * cos(((13.4771186 - lng) * pi() / 180)))) * 180 / pi()) * 60 * 1.1515 * 1.609344 ) AS distance FROM "stores") stores WHERE distance <= $1 AND status = $2`
+		queryCount := `SELECT count(*) FROM (SELECT *,(((acos(sin((-8.8867698 * pi() / 180)) * sin((lat * pi() / 180)) + cos((-8.8867698 * pi() / 180)) * cos((lat * pi() / 180)) * cos(((13.4771186 - lng) * pi() / 180)))) * 180 / pi()) * 60 * 1.1515 * 1.609344 ) AS distance FROM "stores") stores WHERE distance <= $1 AND status = $2`
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).
@@ -180,7 +180,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "stores" WHERE external_id = $1 ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "stores"`
+		queryCount := `SELECT count(*) FROM "stores"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
@@ -209,7 +209,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "stores" WHERE status = $1 ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "stores"`
+		queryCount := `SELECT count(*) FROM "stores"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
@@ -238,7 +238,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		limit := 10
 		sort := "created_at DESC"
 		query := fmt.Sprintf(`SELECT * FROM "stores" WHERE tags && $1 ORDER BY %s LIMIT %d`, sort, limit)
-		queryCount := `SELECT count(1) FROM "stores"`
+		queryCount := `SELECT count(*) FROM "stores"`
 
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
