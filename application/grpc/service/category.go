@@ -66,3 +66,24 @@ func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetByIdAn
 		CreatedAt: timestamppb.New(res.CreatedAt),
 	}, nil
 }
+
+func (s *categotyService) GetAll(ctx context.Context, in *pb.GetAllRequest) (*pb.ListResponse, error) {
+	var categories []*pb.Category
+	res, total, err := s.categoryUsecase.GetAll(ctx, in.Sort, int(in.Page), int(in.Limit))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range res {
+		categories = append(categories, &pb.Category{
+			ID:        item.ID,
+			Name:      item.Name,
+			Status:    item.Status,
+			CreatedAt: timestamppb.New(item.CreatedAt),
+		})
+	}
+	return &pb.ListResponse{
+		Categories: categories,
+		Total:      total,
+	}, nil
+}

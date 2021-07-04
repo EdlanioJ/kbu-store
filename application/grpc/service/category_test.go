@@ -178,3 +178,53 @@ func Test_CategoryGrpcService_GetByIdAndStatus(t *testing.T) {
 		})
 	}
 }
+
+func Test_CategoryGrpcService_GetAll(t *testing.T) {
+	a := &pb.GetAllRequest{
+		Page:  1,
+		Limit: 10,
+		Sort:  "created_at",
+	}
+	testCases := []struct {
+		name          string
+		arg           *pb.GetAllRequest
+		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
+		checkResponse func(t *testing.T, res *pb.ListResponse, err error)
+	}{
+		{
+			name: "fail",
+			arg:  a,
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categoryUsecase.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "success",
+			arg:  a,
+			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
+				categories := make([]*domain.Category, 0)
+				categories = append(categories, getCategory())
+				categoryUsecase.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
+			},
+			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Total, int64(1))
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			usecase := new(mocks.CategoryUsecase)
+			tc.builtSts(usecase)
+			s := service.NewCategotyServer(usecase)
+			res, err := s.GetAll(context.TODO(), tc.arg)
+			tc.checkResponse(t, res, err)
+		})
+	}
+}
