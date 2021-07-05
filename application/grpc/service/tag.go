@@ -5,6 +5,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/domain"
+	uuid "github.com/satori/go.uuid"
 )
 
 type tagService struct {
@@ -21,6 +22,31 @@ func NewTagServer(usecase domain.TagUsecase) pb.TagServiceServer {
 func (s *tagService) GetAll(ctx context.Context, in *pb.TagListRequest) (*pb.TagListResponse, error) {
 	var tags []*pb.Tag
 	res, total, err := s.tagUsecase.GetAll(ctx, in.Sort, int(in.Page), int(in.Limit))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range res {
+		tags = append(tags, &pb.Tag{
+			Tag:   item.Name,
+			Count: int32(item.Count),
+		})
+	}
+
+	return &pb.TagListResponse{
+		Tags:  tags,
+		Total: total,
+	}, nil
+}
+
+func (s *tagService) GetAllByCategory(ctx context.Context, in *pb.TagListByCategoryRequest) (*pb.TagListResponse, error) {
+	var tags []*pb.Tag
+	_, err := uuid.FromString(in.CategoryId)
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := s.tagUsecase.GetAllByCategory(ctx, in.CategoryId, in.Sort, int(in.Page), int(in.Limit))
 	if err != nil {
 		return nil, err
 	}
