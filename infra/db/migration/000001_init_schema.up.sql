@@ -1,4 +1,4 @@
-CREATE TABLE stores (
+CREATE TABLE IF NOT EXISTS stores (
   id uuid PRIMARY KEY,
   created_at timestamp with time zone NULL,
   updated_at timestamp with time zone NULL,
@@ -13,7 +13,7 @@ CREATE TABLE stores (
   lng numeric(11, 8) NULL
 );
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
   id uuid PRIMARY KEY,
   created_at timestamp with time zone NULL,
   updated_at timestamp with time zone NULL,
@@ -21,7 +21,7 @@ CREATE TABLE categories (
   status character varying(20) NULL
 );
 
-CREATE TABLE accounts (
+CREATE TABLE IF NOT EXISTS accounts (
   id uuid PRIMARY KEY,
   created_at timestamp with time zone NULL,
   updated_at timestamp with time zone NULL,
