@@ -135,3 +135,38 @@ func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreReq
 		Total:  total,
 	}, nil
 }
+
+func (s *storeService) GetAllByByCloseLocation(ctx context.Context, in *pb.ListStoreByLocationRequest) (*pb.ListStoreResponse, error) {
+	var stores []*pb.Store
+	err := validators.ValidateLatitude(in.GetLatitude())
+	if err != nil {
+		return nil, err
+	}
+
+	err = validators.ValidateLongitude(in.GetLongitude())
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := s.storeUsecase.GetAllByByCloseLocation(ctx,
+		in.GetLatitude(),
+		in.GetLongitude(),
+		int(in.GetDistance()),
+		in.GetStatus().String(),
+		int(in.GetLimit()),
+		int(in.GetPage()),
+		in.GetSort(),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range res {
+		stores = append(stores, s.newPBStore(item))
+	}
+
+	return &pb.ListStoreResponse{
+		Stores: stores,
+		Total:  total,
+	}, nil
+}
