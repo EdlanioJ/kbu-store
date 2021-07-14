@@ -83,7 +83,7 @@ func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdA
 		return nil, err
 	}
 
-	err = validators.ValidateUUIDV4("id", in.GetOwner())
+	err = validators.ValidateUUIDV4("owner", in.GetOwner())
 	if err != nil {
 		return nil, err
 	}
@@ -116,7 +116,7 @@ func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*
 
 func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
 	var stores []*pb.Store
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateUUIDV4("category", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -177,6 +177,28 @@ func (s *storeService) GetAllByTags(ctx context.Context, in *pb.ListStoreByTagsR
 	if err != nil {
 		return nil, err
 	}
+	for _, item := range res {
+		stores = append(stores, s.newPBStore(item))
+	}
+
+	return &pb.ListStoreResponse{
+		Stores: stores,
+		Total:  total,
+	}, nil
+}
+
+func (s *storeService) GetAllByOwner(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
+	var stores []*pb.Store
+	err := validators.ValidateUUIDV4("owner", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := s.storeUsecase.GetAllByOwner(ctx, in.GetId(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
+	if err != nil {
+		return nil, err
+	}
+
 	for _, item := range res {
 		stores = append(stores, s.newPBStore(item))
 	}

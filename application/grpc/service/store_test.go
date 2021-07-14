@@ -321,7 +321,7 @@ func Test_StoreGrpcService_GetAllByCategory(t *testing.T) {
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("GetAllByCategory", mock.Anything, a.Id, a.Sort, int(a.Limit), int(a.Page)).
+					On("GetAllByCategory", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
 					Return(nil, int64(0), errors.New("Unexpected Error"))
 			},
 			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
@@ -505,6 +505,72 @@ func Test_StoreGrpcService_GetAllByTags(t *testing.T) {
 		tc.builtSts(usecase)
 		s := service.NewStoreServer(usecase)
 		res, err := s.GetAllByTags(context.TODO(), tc.arg)
+		tc.checkResponse(t, res, err)
+	}
+}
+
+func Test_StoreGrpcService_GetAllByOwner(t *testing.T) {
+	a := &pb.ListStoreRequest{
+		Id:    uuid.NewV4().String(),
+		Page:  1,
+		Limit: 10,
+		Sort:  "created_at",
+	}
+
+	store := getStore()
+	testCases := []struct {
+		name          string
+		arg           *pb.ListStoreRequest
+		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
+	}{
+		{
+			name: "should fail if owner id is invalid",
+			arg: &pb.ListStoreRequest{
+				Id: "invalid_id",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should fail if usecase returns error",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("GetAllByOwner", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
+					Return(nil, int64(0), errors.New("Unexpected Error"))
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should succeed",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				stores := make([]*domain.Store, 0)
+				stores = append(stores, store)
+				storeUsecase.
+					On("GetAllByOwner", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
+					Return(stores, int64(1), nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Total, int64(1))
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		usecase := new(mocks.StoreUsecase)
+		tc.builtSts(usecase)
+		s := service.NewStoreServer(usecase)
+		res, err := s.GetAllByOwner(context.TODO(), tc.arg)
 		tc.checkResponse(t, res, err)
 	}
 }
