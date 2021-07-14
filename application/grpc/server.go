@@ -16,7 +16,8 @@ import (
 )
 
 func StartServer(database *gorm.DB, tc time.Duration, port int) {
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(middleware.ErrorUnaryInterceptor()))
+	errorInterceptor := middleware.NewErrorInterceptor()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(errorInterceptor.Unary()))
 	reflection.Register(grpcServer)
 
 	categoryUsecase := factory.CategoryUsecase(database, tc)

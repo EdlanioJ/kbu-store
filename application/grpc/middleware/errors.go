@@ -12,7 +12,13 @@ import (
 	"gorm.io/gorm"
 )
 
-func ErrorUnaryInterceptor() grpc.UnaryServerInterceptor {
+type ErrorInterceptor struct {
+}
+
+func NewErrorInterceptor() *ErrorInterceptor {
+	return &ErrorInterceptor{}
+}
+func (i *ErrorInterceptor) Unary() grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		resp, err := handler(ctx, req)
 		if err != nil {
