@@ -70,3 +70,41 @@ func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.St
 		CreatedAt: timestamppb.New(res.CreatedAt),
 	}, nil
 }
+
+func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdAndOwnerRequest) (*pb.Store, error) {
+	err := validators.ValidateUUIDV4("id", in.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	err = validators.ValidateUUIDV4("id", in.GetOwner())
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := s.storeUsecase.GetByIdAndOwner(ctx, in.GetID(), in.GetOwner())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Store{
+		ID:          res.ID,
+		Name:        res.Name,
+		Description: res.Description,
+		Status:      res.Status,
+		ExternalID:  res.ExternalID,
+		AccountID:   res.AccountID,
+		Tags:        res.Tags,
+		Location: &pb.Location{
+			Latitude:  res.Position.Lat,
+			Longitude: res.Position.Lng,
+		},
+		Category: &pb.Category{
+			ID:        res.Category.ID,
+			Name:      res.Category.Name,
+			Status:    res.Category.Status,
+			CreatedAt: timestamppb.New(res.Category.CreatedAt),
+		},
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}, nil
+}

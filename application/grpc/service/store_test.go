@@ -164,3 +164,75 @@ func Test_StoreGrpcService_GetById(t *testing.T) {
 		tc.checkResponse(t, res, err)
 	}
 }
+
+func Test_StoreGrpcService_GetByIdAndOwner(t *testing.T) {
+	a := &pb.GetStoreByIdAndOwnerRequest{
+		ID:    uuid.NewV4().String(),
+		Owner: uuid.NewV4().String(),
+	}
+	store := getStore()
+	testCases := []struct {
+		name          string
+		arg           *pb.GetStoreByIdAndOwnerRequest
+		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		checkResponse func(t *testing.T, res *pb.Store, err error)
+	}{
+		{
+			name: "should fail if id is not a valid uuidv4",
+			arg: &pb.GetStoreByIdAndOwnerRequest{
+				ID: "invalid_id",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
+			name: "should fail if owner is not a valid uuidv4",
+			arg: &pb.GetStoreByIdAndOwnerRequest{
+				ID:    uuid.NewV4().String(),
+				Owner: "invalid_id",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
+			name: "should fail if usecase fails",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("GetByIdAndOwner", mock.Anything, a.ID, a.Owner).
+					Return(nil, errors.New("Unexpected Error"))
+			},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
+			name: "should succeed",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("GetByIdAndOwner", mock.Anything, a.ID, a.Owner).
+					Return(store, nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.NoError(t, err)
+				assert.NotNil(t, res)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		usecase := new(mocks.StoreUsecase)
+		tc.builtSts(usecase)
+		s := service.NewStoreServer(usecase)
+		res, err := s.GetByIdAndOwner(context.TODO(), tc.arg)
+		tc.checkResponse(t, res, err)
+	}
+}
