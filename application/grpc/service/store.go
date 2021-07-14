@@ -208,3 +208,17 @@ func (s *storeService) GetAllByOwner(ctx context.Context, in *pb.ListStoreReques
 		Total:  total,
 	}, nil
 }
+
+func (s *storeService) Active(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
+	err := validators.ValidateUUIDV4("owner", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storeUsecase.Active(ctx, in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
