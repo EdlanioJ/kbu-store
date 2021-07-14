@@ -5,7 +5,9 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/validators"
 	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type storeService struct {
@@ -35,4 +37,36 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 	}
 
 	return &empty.Empty{}, nil
+}
+
+func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.Store, error) {
+	err := validators.ValidateUUIDV4("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	res, err := s.storeUsecase.GetById(ctx, in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.Store{
+		ID:          res.ID,
+		Name:        res.Name,
+		Description: res.Description,
+		Status:      res.Status,
+		ExternalID:  res.ExternalID,
+		AccountID:   res.AccountID,
+		Tags:        res.Tags,
+		Location: &pb.Location{
+			Latitude:  res.Position.Lat,
+			Longitude: res.Position.Lng,
+		},
+		Category: &pb.Category{
+			ID:        res.Category.ID,
+			Name:      res.Category.Name,
+			Status:    res.Category.Status,
+			CreatedAt: timestamppb.New(res.Category.CreatedAt),
+		},
+		CreatedAt: timestamppb.New(res.CreatedAt),
+	}, nil
 }
