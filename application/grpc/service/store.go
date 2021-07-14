@@ -64,7 +64,11 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 }
 
 func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.Store, error) {
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateRequired("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -78,11 +82,19 @@ func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.St
 }
 
 func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdAndOwnerRequest) (*pb.Store, error) {
-	err := validators.ValidateUUIDV4("id", in.GetID())
+	err := validators.ValidateRequired("id", in.GetID())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetID())
 	if err != nil {
 		return nil, err
 	}
 
+	err = validators.ValidateRequired("owner", in.GetOwner())
+	if err != nil {
+		return nil, err
+	}
 	err = validators.ValidateUUIDV4("owner", in.GetOwner())
 	if err != nil {
 		return nil, err
@@ -116,7 +128,11 @@ func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*
 
 func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
 	var stores []*pb.Store
-	err := validators.ValidateUUIDV4("category", in.GetId())
+	err := validators.ValidateRequired("category", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("category", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -189,7 +205,11 @@ func (s *storeService) GetAllByTags(ctx context.Context, in *pb.ListStoreByTagsR
 
 func (s *storeService) GetAllByOwner(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
 	var stores []*pb.Store
-	err := validators.ValidateUUIDV4("owner", in.GetId())
+	err := validators.ValidateRequired("owner", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("owner", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -210,7 +230,11 @@ func (s *storeService) GetAllByOwner(ctx context.Context, in *pb.ListStoreReques
 }
 
 func (s *storeService) Active(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateRequired("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -224,7 +248,11 @@ func (s *storeService) Active(ctx context.Context, in *pb.StoreRequest) (*empty.
 }
 
 func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateRequired("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -238,7 +266,11 @@ func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.E
 }
 
 func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateRequired("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetId())
 	if err != nil {
 		return nil, err
 	}

@@ -122,6 +122,17 @@ func Test_StoreGrpcService_GetById(t *testing.T) {
 		checkResponse func(t *testing.T, res *pb.Store, err error)
 	}{
 		{
+			name: "should fail if id is empty",
+			arg: &pb.StoreRequest{
+				Id: "",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
 			name: "should fail if id is not a valid uuidv4",
 			arg: &pb.StoreRequest{
 				Id: "invalid_id",
@@ -182,9 +193,32 @@ func Test_StoreGrpcService_GetByIdAndOwner(t *testing.T) {
 		checkResponse func(t *testing.T, res *pb.Store, err error)
 	}{
 		{
+			name: "should fail if id is empty",
+			arg: &pb.GetStoreByIdAndOwnerRequest{
+				ID: "",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
 			name: "should fail if id is not a valid uuidv4",
 			arg: &pb.GetStoreByIdAndOwnerRequest{
 				ID: "invalid_id",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.Store, err error) {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			},
+		},
+		{
+			name: "should fail if owner is empty",
+			arg: &pb.GetStoreByIdAndOwnerRequest{
+				ID:    uuid.NewV4().String(),
+				Owner: "",
 			},
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, res *pb.Store, err error) {
@@ -309,6 +343,17 @@ func Test_StoreGrpcService_GetAllByCategory(t *testing.T) {
 		builtSts      func(storeUsecase *mocks.StoreUsecase)
 		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
 	}{
+		{
+			name: "should fail if category id is empty",
+			arg: &pb.ListStoreRequest{
+				Id: "",
+			},
+			builtSts: func(_ *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
 		{
 			name: "should fail if category id is not a valid uuidv4",
 			arg: &pb.ListStoreRequest{
@@ -529,6 +574,17 @@ func Test_StoreGrpcService_GetAllByOwner(t *testing.T) {
 		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
 	}{
 		{
+			name: "should fail if owner id is empty",
+			arg: &pb.ListStoreRequest{
+				Id: "",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
 			name: "should fail if owner id is invalid",
 			arg: &pb.ListStoreRequest{
 				Id: "invalid_id",
@@ -590,6 +646,17 @@ func Test_StoreGrpcService_Activate(t *testing.T) {
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
+			name: "should fail if id is empty",
+			arg: &pb.StoreRequest{
+				Id: "",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
 			name: "should fail if invalid id",
 			arg: &pb.StoreRequest{
 				Id: "invaalid_id",
@@ -648,6 +715,17 @@ func Test_StoreGrpcService_Block(t *testing.T) {
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
+			name: "should fail if id is empty",
+			arg: &pb.StoreRequest{
+				Id: "",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
 			name: "should fail if invalid id",
 			arg: &pb.StoreRequest{
 				Id: "invaalid_id",
@@ -705,6 +783,17 @@ func Test_StoreGrpcService_Disable(t *testing.T) {
 		builtSts      func(storeUsecase *mocks.StoreUsecase)
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
+		{
+			name: "should fail if id is empty",
+			arg: &pb.StoreRequest{
+				Id: "",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
 		{
 			name: "should fail if invalid id",
 			arg: &pb.StoreRequest{
