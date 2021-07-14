@@ -8,7 +8,6 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/validators"
-	"github.com/asaskevich/govalidator"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -114,10 +113,11 @@ func (h *storeHandler) getAllByCategory(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page"))
 	limit, _ := strconv.Atoi(c.Query("limit"))
 	categoryID := c.Params("category")
-	if !govalidator.IsUUIDv4(categoryID) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("category", categoryID)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "category must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
