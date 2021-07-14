@@ -108,7 +108,7 @@ message UpdateStoreRequest {
 }
 
 message ListStoreResponse {
-  repeated Store categories = 1;
+  repeated Store stores = 1;
   int64 total = 2;
 }
 

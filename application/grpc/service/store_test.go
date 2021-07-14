@@ -236,3 +236,57 @@ func Test_StoreGrpcService_GetByIdAndOwner(t *testing.T) {
 		tc.checkResponse(t, res, err)
 	}
 }
+
+func Test_StoreGrpcService_GetAll(t *testing.T) {
+	a := &pb.GetAllStoreRequest{
+		Page:  1,
+		Limit: 10,
+		Sort:  "created_at",
+	}
+	store := getStore()
+	testCases := []struct {
+		name          string
+		arg           *pb.GetAllStoreRequest
+		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
+	}{
+		{
+			name: "should fails if usecase returns error",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("GetAll", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					Return(nil, int64(0), errors.New("Unexpected Error"))
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should succeed",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				stores := make([]*domain.Store, 0)
+
+				stores = append(stores, store)
+				storeUsecase.
+					On("GetAll", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					Return(stores, int64(1), nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Total, int64(1))
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		usecase := new(mocks.StoreUsecase)
+		tc.builtSts(usecase)
+		s := service.NewStoreServer(usecase)
+		res, err := s.GetAll(context.TODO(), tc.arg)
+		tc.checkResponse(t, res, err)
+	}
+}

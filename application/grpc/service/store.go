@@ -108,3 +108,39 @@ func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdA
 		CreatedAt: timestamppb.New(res.CreatedAt),
 	}, nil
 }
+
+func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*pb.ListStoreResponse, error) {
+	var stores []*pb.Store
+
+	res, total, err := s.storeUsecase.GetAll(ctx, in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
+	if err != nil {
+		return nil, err
+	}
+	for _, item := range res {
+		stores = append(stores, &pb.Store{
+			ID:          item.ID,
+			Name:        item.Name,
+			Description: item.Description,
+			Status:      item.Status,
+			ExternalID:  item.ExternalID,
+			AccountID:   item.AccountID,
+			Tags:        item.Tags,
+			Location: &pb.Location{
+				Latitude:  item.Position.Lat,
+				Longitude: item.Position.Lng,
+			},
+			Category: &pb.Category{
+				ID:        item.Category.ID,
+				Name:      item.Category.Name,
+				Status:    item.Category.Status,
+				CreatedAt: timestamppb.New(item.Category.CreatedAt),
+			},
+			CreatedAt: timestamppb.New(item.CreatedAt),
+		})
+	}
+
+	return &pb.ListStoreResponse{
+		Stores: stores,
+		Total:  total,
+	}, nil
+}
