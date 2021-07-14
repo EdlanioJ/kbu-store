@@ -22,7 +22,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
-			name: "fail",
+			name: "should fail if usecase returns error",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Create",
@@ -42,7 +42,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should success",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Create",
