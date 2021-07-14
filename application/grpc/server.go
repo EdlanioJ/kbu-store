@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/application/factory"
+	"github.com/EdlanioJ/kbu-store/application/grpc/middleware"
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/application/grpc/service"
 	log "github.com/sirupsen/logrus"
@@ -15,7 +16,7 @@ import (
 )
 
 func StartServer(database *gorm.DB, tc time.Duration, port int) {
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(middleware.ErrorUnaryInterceptor()))
 	reflection.Register(grpcServer)
 
 	categoryUsecase := factory.CategoryUsecase(database, tc)
@@ -33,7 +34,7 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 		log.Error(err)
 	}
 
-	log.Infof("gRPC server has been started on port %d", port)
+	log.Infof("gRPC server started at port %d", port)
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatal(err)
