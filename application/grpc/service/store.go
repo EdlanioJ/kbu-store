@@ -250,3 +250,46 @@ func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty
 
 	return &empty.Empty{}, nil
 }
+
+func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*empty.Empty, error) {
+	err := validators.ValidateRequired("id", in.GetID())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	err = validators.ValidateUUIDV4("category", in.GetCategoryID())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateLatitude(in.GetLatitude())
+	if err != nil {
+		return nil, err
+	}
+
+	err = validators.ValidateLongitude(in.GetLongitude())
+	if err != nil {
+		return nil, err
+	}
+
+	store := new(domain.Store)
+	category := new(domain.Category)
+	category.ID = in.GetCategoryID()
+	store.ID = in.GetID()
+	store.Name = in.GetName()
+	store.Description = in.GetDescription()
+	store.Tags = in.GetTags()
+	store.Position.Lat = in.GetLatitude()
+	store.Position.Lng = in.GetLongitude()
+	store.Category = category
+
+	err = s.storeUsecase.Update(ctx, store)
+	if err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
