@@ -5,6 +5,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/validators"
 	"github.com/golang/protobuf/ptypes/empty"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -31,7 +32,7 @@ func (s *categotyService) Create(ctx context.Context, in *pb.CreateRequest) (*em
 }
 
 func (s *categotyService) GetById(ctx context.Context, in *pb.Request) (*pb.Category, error) {
-	_, err := uuid.FromString(in.Id)
+	err := validators.ValidateUUIDV4("id", in.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +50,7 @@ func (s *categotyService) GetById(ctx context.Context, in *pb.Request) (*pb.Cate
 }
 
 func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetByIdAndStatusRequest) (*pb.Category, error) {
-	_, err := uuid.FromString(in.Id)
+	err := validators.ValidateUUIDV4("id", in.Id)
 	if err != nil {
 		return nil, err
 	}
