@@ -101,7 +101,7 @@ message UpdateStoreRequest {
   string ID = 1;
   string name = 2;
 	string description = 3;
-	string dategoryID = 4;
+	string categoryID = 4;
 	repeated string tags = 5;
 	double latitude = 6;
 	double longitude = 7;
