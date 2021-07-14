@@ -157,20 +157,22 @@ func (h *storeHandler) getAllByCloseLocation(c *fiber.Ctx) error {
 
 	location := strings.Split(locationPath, ",")
 
-	if !govalidator.IsLatitude(strings.TrimSpace(location[0])) {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Message: "must be a valid latitude",
-		})
-	}
-	if !govalidator.IsLongitude(strings.TrimSpace(location[1])) {
-		return c.Status(fiber.StatusBadRequest).JSON(ErrorResponse{
-			Message: "must be a valid longitude",
-		})
-	}
-
 	lat, _ := strconv.ParseFloat(strings.TrimSpace(location[0]), 64)
 	lng, _ := strconv.ParseFloat(strings.TrimSpace(location[1]), 64)
 
+	err := validators.ValidateLatitude(lat)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
+	}
+
+	err = validators.ValidateLongitude(lng)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
+	}
 	stores, total, err := h.storeUsecase.GetAllByByCloseLocation(ctx, lat, lng, distance, status, limit, page, sort)
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
 	if err != nil {
