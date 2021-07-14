@@ -5,7 +5,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/domain"
-	uuid "github.com/satori/go.uuid"
+	"github.com/EdlanioJ/kbu-store/validators"
 )
 
 type tagService struct {
@@ -41,7 +41,7 @@ func (s *tagService) GetAll(ctx context.Context, in *pb.TagListRequest) (*pb.Tag
 
 func (s *tagService) GetAllByCategory(ctx context.Context, in *pb.TagListByCategoryRequest) (*pb.TagListResponse, error) {
 	var tags []*pb.Tag
-	_, err := uuid.FromString(in.CategoryId)
+	err := validators.ValidateUUIDV4("category", in.CategoryId)
 	if err != nil {
 		return nil, err
 	}
