@@ -22,7 +22,7 @@ func NewCategotyServer(usecase domain.CategoryUsecase) pb.CategoryServiceServer 
 	}
 }
 
-func (s *categotyService) Create(ctx context.Context, in *pb.CreateRequest) (*empty.Empty, error) {
+func (s *categotyService) Create(ctx context.Context, in *pb.CreateCategoryRequest) (*empty.Empty, error) {
 	err := s.categoryUsecase.Create(ctx, in.Name)
 	if err != nil {
 		return nil, err
@@ -31,7 +31,7 @@ func (s *categotyService) Create(ctx context.Context, in *pb.CreateRequest) (*em
 	return &empty.Empty{}, nil
 }
 
-func (s *categotyService) GetById(ctx context.Context, in *pb.Request) (*pb.Category, error) {
+func (s *categotyService) GetById(ctx context.Context, in *pb.CategoryRequest) (*pb.Category, error) {
 	err := validators.ValidateUUIDV4("id", in.Id)
 	if err != nil {
 		return nil, err
@@ -49,7 +49,7 @@ func (s *categotyService) GetById(ctx context.Context, in *pb.Request) (*pb.Cate
 	}, nil
 }
 
-func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetByIdAndStatusRequest) (*pb.Category, error) {
+func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetCategoryByIdAndStatusRequest) (*pb.Category, error) {
 	err := validators.ValidateUUIDV4("id", in.Id)
 	if err != nil {
 		return nil, err
@@ -68,7 +68,7 @@ func (s *categotyService) GetByIdAndStatus(ctx context.Context, in *pb.GetByIdAn
 	}, nil
 }
 
-func (s *categotyService) GetAll(ctx context.Context, in *pb.GetAllRequest) (*pb.ListResponse, error) {
+func (s *categotyService) GetAll(ctx context.Context, in *pb.GetAllCategoryRequest) (*pb.ListCategoryResponse, error) {
 	var categories []*pb.Category
 	res, total, err := s.categoryUsecase.GetAll(ctx, in.Sort, int(in.Page), int(in.Limit))
 	if err != nil {
@@ -83,13 +83,13 @@ func (s *categotyService) GetAll(ctx context.Context, in *pb.GetAllRequest) (*pb
 			CreatedAt: timestamppb.New(item.CreatedAt),
 		})
 	}
-	return &pb.ListResponse{
+	return &pb.ListCategoryResponse{
 		Categories: categories,
 		Total:      total,
 	}, nil
 }
 
-func (s *categotyService) GetAllByStatus(ctx context.Context, in *pb.GetAllByStatusRequest) (*pb.ListResponse, error) {
+func (s *categotyService) GetAllByStatus(ctx context.Context, in *pb.GetAllCategoryByStatusRequest) (*pb.ListCategoryResponse, error) {
 	var categories []*pb.Category
 	res, total, err := s.categoryUsecase.GetAllByStatus(ctx, in.Status.String(), in.Sort, int(in.Page), int(in.Limit))
 	if err != nil {
@@ -104,13 +104,13 @@ func (s *categotyService) GetAllByStatus(ctx context.Context, in *pb.GetAllBySta
 			CreatedAt: timestamppb.New(item.CreatedAt),
 		})
 	}
-	return &pb.ListResponse{
+	return &pb.ListCategoryResponse{
 		Categories: categories,
 		Total:      total,
 	}, nil
 }
 
-func (s *categotyService) Activate(ctx context.Context, in *pb.Request) (*empty.Empty, error) {
+func (s *categotyService) Activate(ctx context.Context, in *pb.CategoryRequest) (*empty.Empty, error) {
 	_, err := uuid.FromString(in.Id)
 	if err != nil {
 		return nil, err
@@ -124,7 +124,7 @@ func (s *categotyService) Activate(ctx context.Context, in *pb.Request) (*empty.
 	return &empty.Empty{}, nil
 }
 
-func (s *categotyService) Disable(ctx context.Context, in *pb.Request) (*empty.Empty, error) {
+func (s *categotyService) Disable(ctx context.Context, in *pb.CategoryRequest) (*empty.Empty, error) {
 	_, err := uuid.FromString(in.Id)
 	if err != nil {
 		return nil, err

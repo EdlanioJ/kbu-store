@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+package github.com.edlanioj.kbu_store;
+
 option go_package = "application/grpc/pb";
 
 message Tag {

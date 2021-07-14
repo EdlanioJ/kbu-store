@@ -21,12 +21,12 @@ func getCategory() *domain.Category {
 	return category
 }
 func Test_CategoryGrpcService_Create(t *testing.T) {
-	a := &pb.CreateRequest{
+	a := &pb.CreateCategoryRequest{
 		Name: "New Category",
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.CreateRequest
+		arg           *pb.CreateCategoryRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
@@ -66,18 +66,18 @@ func Test_CategoryGrpcService_Create(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_GetById(t *testing.T) {
-	a := &pb.Request{
+	a := &pb.CategoryRequest{
 		Id: uuid.NewV4().String(),
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.Request
+		arg           *pb.CategoryRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
 		checkResponse func(t *testing.T, res *pb.Category, err error)
 	}{
 		{
 			name: "fail on id validation",
-			arg: &pb.Request{
+			arg: &pb.CategoryRequest{
 				Id: "invalid_id",
 			},
 			builtSts: func(_ *mocks.CategoryUsecase) {},
@@ -122,21 +122,21 @@ func Test_CategoryGrpcService_GetById(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_GetByIdAndStatus(t *testing.T) {
-	a := &pb.GetByIdAndStatusRequest{
+	a := &pb.GetCategoryByIdAndStatusRequest{
 		Id:     uuid.NewV4().String(),
-		Status: pb.CategoryStatus_active,
+		Status: pb.GetCategoryByIdAndStatusRequest_active,
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.GetByIdAndStatusRequest
+		arg           *pb.GetCategoryByIdAndStatusRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
 		checkResponse func(t *testing.T, res *pb.Category, err error)
 	}{
 		{
 			name: "fail on id validation",
-			arg: &pb.GetByIdAndStatusRequest{
+			arg: &pb.GetCategoryByIdAndStatusRequest{
 				Id:     "invalid_id",
-				Status: pb.CategoryStatus_pending,
+				Status: pb.GetCategoryByIdAndStatusRequest_pending,
 			},
 			builtSts: func(_ *mocks.CategoryUsecase) {},
 			checkResponse: func(t *testing.T, res *pb.Category, err error) {
@@ -180,16 +180,16 @@ func Test_CategoryGrpcService_GetByIdAndStatus(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_GetAll(t *testing.T) {
-	a := &pb.GetAllRequest{
+	a := &pb.GetAllCategoryRequest{
 		Page:  1,
 		Limit: 10,
 		Sort:  "created_at",
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.GetAllRequest
+		arg           *pb.GetAllCategoryRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
-		checkResponse func(t *testing.T, res *pb.ListResponse, err error)
+		checkResponse func(t *testing.T, res *pb.ListCategoryResponse, err error)
 	}{
 		{
 			name: "fail",
@@ -197,7 +197,7 @@ func Test_CategoryGrpcService_GetAll(t *testing.T) {
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
 				categoryUsecase.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
 			},
-			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+			checkResponse: func(t *testing.T, res *pb.ListCategoryResponse, err error) {
 				assert.Nil(t, res)
 				assert.Error(t, err)
 			},
@@ -210,7 +210,7 @@ func Test_CategoryGrpcService_GetAll(t *testing.T) {
 				categories = append(categories, getCategory())
 				categoryUsecase.On("GetAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
 			},
-			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+			checkResponse: func(t *testing.T, res *pb.ListCategoryResponse, err error) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.Total, int64(1))
 				assert.NoError(t, err)
@@ -230,17 +230,17 @@ func Test_CategoryGrpcService_GetAll(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_GetAllByStatus(t *testing.T) {
-	a := &pb.GetAllByStatusRequest{
-		Status: pb.CategoryStatus_active,
+	a := &pb.GetAllCategoryByStatusRequest{
+		Status: pb.GetAllCategoryByStatusRequest_active,
 		Page:   1,
 		Limit:  10,
 		Sort:   "created_at",
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.GetAllByStatusRequest
+		arg           *pb.GetAllCategoryByStatusRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
-		checkResponse func(t *testing.T, res *pb.ListResponse, err error)
+		checkResponse func(t *testing.T, res *pb.ListCategoryResponse, err error)
 	}{
 		{
 			name: "fail",
@@ -248,7 +248,7 @@ func Test_CategoryGrpcService_GetAllByStatus(t *testing.T) {
 			builtSts: func(categoryUsecase *mocks.CategoryUsecase) {
 				categoryUsecase.On("GetAllByStatus", mock.Anything, a.Status.String(), a.Sort, mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
 			},
-			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+			checkResponse: func(t *testing.T, res *pb.ListCategoryResponse, err error) {
 				assert.Nil(t, res)
 				assert.Error(t, err)
 			},
@@ -261,7 +261,7 @@ func Test_CategoryGrpcService_GetAllByStatus(t *testing.T) {
 				categories = append(categories, getCategory())
 				categoryUsecase.On("GetAllByStatus", mock.Anything, a.Status.String(), a.Sort, mock.AnythingOfType("int"), mock.AnythingOfType("int")).Return(categories, int64(1), nil).Once()
 			},
-			checkResponse: func(t *testing.T, res *pb.ListResponse, err error) {
+			checkResponse: func(t *testing.T, res *pb.ListCategoryResponse, err error) {
 				assert.NotNil(t, res)
 				assert.Equal(t, res.Total, int64(1))
 				assert.NoError(t, err)
@@ -281,18 +281,18 @@ func Test_CategoryGrpcService_GetAllByStatus(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_Activate(t *testing.T) {
-	a := &pb.Request{
+	a := &pb.CategoryRequest{
 		Id: uuid.NewV4().String(),
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.Request
+		arg           *pb.CategoryRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
 			name: "fail on id validation",
-			arg: &pb.Request{
+			arg: &pb.CategoryRequest{
 				Id: "invalid_id",
 			},
 			builtSts: func(_ *mocks.CategoryUsecase) {},
@@ -337,18 +337,18 @@ func Test_CategoryGrpcService_Activate(t *testing.T) {
 }
 
 func Test_CategoryGrpcService_Disable(t *testing.T) {
-	a := &pb.Request{
+	a := &pb.CategoryRequest{
 		Id: uuid.NewV4().String(),
 	}
 	testCases := []struct {
 		name          string
-		arg           *pb.Request
+		arg           *pb.CategoryRequest
 		builtSts      func(categoryUsecase *mocks.CategoryUsecase)
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
 			name: "fail on id validation",
-			arg: &pb.Request{
+			arg: &pb.CategoryRequest{
 				Id: "invalid_id",
 			},
 			builtSts: func(_ *mocks.CategoryUsecase) {},

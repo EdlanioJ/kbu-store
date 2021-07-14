@@ -19,13 +19,13 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CategoryServiceClient interface {
-	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetById(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Category, error)
-	GetByIdAndStatus(ctx context.Context, in *GetByIdAndStatusRequest, opts ...grpc.CallOption) (*Category, error)
-	GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	GetAllByStatus(ctx context.Context, in *GetAllByStatusRequest, opts ...grpc.CallOption) (*ListResponse, error)
-	Activate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*empty.Empty, error)
-	Disable(ctx context.Context, in *Request, opts ...grpc.CallOption) (*empty.Empty, error)
+	Create(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	GetById(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*Category, error)
+	GetByIdAndStatus(ctx context.Context, in *GetCategoryByIdAndStatusRequest, opts ...grpc.CallOption) (*Category, error)
+	GetAll(ctx context.Context, in *GetAllCategoryRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error)
+	GetAllByStatus(ctx context.Context, in *GetAllCategoryByStatusRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error)
+	Activate(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	Disable(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 }
 
 type categoryServiceClient struct {
@@ -36,63 +36,63 @@ func NewCategoryServiceClient(cc grpc.ClientConnInterface) CategoryServiceClient
 	return &categoryServiceClient{cc}
 }
 
-func (c *categoryServiceClient) Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *categoryServiceClient) Create(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/CategoryService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) GetById(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Category, error) {
+func (c *categoryServiceClient) GetById(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*Category, error) {
 	out := new(Category)
-	err := c.cc.Invoke(ctx, "/CategoryService/GetById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) GetByIdAndStatus(ctx context.Context, in *GetByIdAndStatusRequest, opts ...grpc.CallOption) (*Category, error) {
+func (c *categoryServiceClient) GetByIdAndStatus(ctx context.Context, in *GetCategoryByIdAndStatusRequest, opts ...grpc.CallOption) (*Category, error) {
 	out := new(Category)
-	err := c.cc.Invoke(ctx, "/CategoryService/GetByIdAndStatus", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetByIdAndStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) GetAll(ctx context.Context, in *GetAllRequest, opts ...grpc.CallOption) (*ListResponse, error) {
-	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/CategoryService/GetAll", in, out, opts...)
+func (c *categoryServiceClient) GetAll(ctx context.Context, in *GetAllCategoryRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error) {
+	out := new(ListCategoryResponse)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) GetAllByStatus(ctx context.Context, in *GetAllByStatusRequest, opts ...grpc.CallOption) (*ListResponse, error) {
-	out := new(ListResponse)
-	err := c.cc.Invoke(ctx, "/CategoryService/GetAllByStatus", in, out, opts...)
+func (c *categoryServiceClient) GetAllByStatus(ctx context.Context, in *GetAllCategoryByStatusRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error) {
+	out := new(ListCategoryResponse)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetAllByStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) Activate(ctx context.Context, in *Request, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *categoryServiceClient) Activate(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/CategoryService/Activate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Activate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *categoryServiceClient) Disable(ctx context.Context, in *Request, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *categoryServiceClient) Disable(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/CategoryService/Disable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Disable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -103,13 +103,13 @@ func (c *categoryServiceClient) Disable(ctx context.Context, in *Request, opts .
 // All implementations must embed UnimplementedCategoryServiceServer
 // for forward compatibility
 type CategoryServiceServer interface {
-	Create(context.Context, *CreateRequest) (*empty.Empty, error)
-	GetById(context.Context, *Request) (*Category, error)
-	GetByIdAndStatus(context.Context, *GetByIdAndStatusRequest) (*Category, error)
-	GetAll(context.Context, *GetAllRequest) (*ListResponse, error)
-	GetAllByStatus(context.Context, *GetAllByStatusRequest) (*ListResponse, error)
-	Activate(context.Context, *Request) (*empty.Empty, error)
-	Disable(context.Context, *Request) (*empty.Empty, error)
+	Create(context.Context, *CreateCategoryRequest) (*empty.Empty, error)
+	GetById(context.Context, *CategoryRequest) (*Category, error)
+	GetByIdAndStatus(context.Context, *GetCategoryByIdAndStatusRequest) (*Category, error)
+	GetAll(context.Context, *GetAllCategoryRequest) (*ListCategoryResponse, error)
+	GetAllByStatus(context.Context, *GetAllCategoryByStatusRequest) (*ListCategoryResponse, error)
+	Activate(context.Context, *CategoryRequest) (*empty.Empty, error)
+	Disable(context.Context, *CategoryRequest) (*empty.Empty, error)
 	mustEmbedUnimplementedCategoryServiceServer()
 }
 
@@ -117,25 +117,25 @@ type CategoryServiceServer interface {
 type UnimplementedCategoryServiceServer struct {
 }
 
-func (UnimplementedCategoryServiceServer) Create(context.Context, *CreateRequest) (*empty.Empty, error) {
+func (UnimplementedCategoryServiceServer) Create(context.Context, *CreateCategoryRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedCategoryServiceServer) GetById(context.Context, *Request) (*Category, error) {
+func (UnimplementedCategoryServiceServer) GetById(context.Context, *CategoryRequest) (*Category, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
 }
-func (UnimplementedCategoryServiceServer) GetByIdAndStatus(context.Context, *GetByIdAndStatusRequest) (*Category, error) {
+func (UnimplementedCategoryServiceServer) GetByIdAndStatus(context.Context, *GetCategoryByIdAndStatusRequest) (*Category, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetByIdAndStatus not implemented")
 }
-func (UnimplementedCategoryServiceServer) GetAll(context.Context, *GetAllRequest) (*ListResponse, error) {
+func (UnimplementedCategoryServiceServer) GetAll(context.Context, *GetAllCategoryRequest) (*ListCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
 }
-func (UnimplementedCategoryServiceServer) GetAllByStatus(context.Context, *GetAllByStatusRequest) (*ListResponse, error) {
+func (UnimplementedCategoryServiceServer) GetAllByStatus(context.Context, *GetAllCategoryByStatusRequest) (*ListCategoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllByStatus not implemented")
 }
-func (UnimplementedCategoryServiceServer) Activate(context.Context, *Request) (*empty.Empty, error) {
+func (UnimplementedCategoryServiceServer) Activate(context.Context, *CategoryRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Activate not implemented")
 }
-func (UnimplementedCategoryServiceServer) Disable(context.Context, *Request) (*empty.Empty, error) {
+func (UnimplementedCategoryServiceServer) Disable(context.Context, *CategoryRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Disable not implemented")
 }
 func (UnimplementedCategoryServiceServer) mustEmbedUnimplementedCategoryServiceServer() {}
@@ -152,7 +152,7 @@ func RegisterCategoryServiceServer(s grpc.ServiceRegistrar, srv CategoryServiceS
 }
 
 func _CategoryService_Create_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(CreateRequest)
+	in := new(CreateCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -161,16 +161,16 @@ func _CategoryService_Create_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/Create",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).Create(ctx, req.(*CreateRequest))
+		return srv.(CategoryServiceServer).Create(ctx, req.(*CreateCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(CategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -179,16 +179,16 @@ func _CategoryService_GetById_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/GetById",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).GetById(ctx, req.(*Request))
+		return srv.(CategoryServiceServer).GetById(ctx, req.(*CategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_GetByIdAndStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetByIdAndStatusRequest)
+	in := new(GetCategoryByIdAndStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -197,16 +197,16 @@ func _CategoryService_GetByIdAndStatus_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/GetByIdAndStatus",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetByIdAndStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).GetByIdAndStatus(ctx, req.(*GetByIdAndStatusRequest))
+		return srv.(CategoryServiceServer).GetByIdAndStatus(ctx, req.(*GetCategoryByIdAndStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllRequest)
+	in := new(GetAllCategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -215,16 +215,16 @@ func _CategoryService_GetAll_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/GetAll",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).GetAll(ctx, req.(*GetAllRequest))
+		return srv.(CategoryServiceServer).GetAll(ctx, req.(*GetAllCategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_GetAllByStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllByStatusRequest)
+	in := new(GetAllCategoryByStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -233,16 +233,16 @@ func _CategoryService_GetAllByStatus_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/GetAllByStatus",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetAllByStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).GetAllByStatus(ctx, req.(*GetAllByStatusRequest))
+		return srv.(CategoryServiceServer).GetAllByStatus(ctx, req.(*GetAllCategoryByStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_Activate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(CategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -251,16 +251,16 @@ func _CategoryService_Activate_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/Activate",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Activate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).Activate(ctx, req.(*Request))
+		return srv.(CategoryServiceServer).Activate(ctx, req.(*CategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CategoryService_Disable_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Request)
+	in := new(CategoryRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -269,10 +269,10 @@ func _CategoryService_Disable_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/CategoryService/Disable",
+		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Disable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CategoryServiceServer).Disable(ctx, req.(*Request))
+		return srv.(CategoryServiceServer).Disable(ctx, req.(*CategoryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -281,7 +281,7 @@ func _CategoryService_Disable_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CategoryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "CategoryService",
+	ServiceName: "github.com.edlanioj.kbu_store.CategoryService",
 	HandlerType: (*CategoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
