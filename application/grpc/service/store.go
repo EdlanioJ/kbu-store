@@ -21,6 +21,30 @@ func NewStoreServer(u domain.StoreUsecase) pb.StoreServiceServer {
 	}
 }
 
+func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
+	t := &pb.Store{
+		ID:          store.ID,
+		Name:        store.Name,
+		Description: store.Description,
+		Status:      store.Status,
+		ExternalID:  store.ExternalID,
+		AccountID:   store.AccountID,
+		Tags:        store.Tags,
+		Location: &pb.Location{
+			Latitude:  store.Position.Lat,
+			Longitude: store.Position.Lng,
+		},
+		Category: &pb.Category{
+			ID:        store.Category.ID,
+			Name:      store.Category.Name,
+			Status:    store.Category.Status,
+			CreatedAt: timestamppb.New(store.Category.CreatedAt),
+		},
+		CreatedAt: timestamppb.New(store.CreatedAt),
+	}
+	return t
+}
+
 func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*empty.Empty, error) {
 	err := s.storeUsecase.Create(
 		ctx,
@@ -49,26 +73,8 @@ func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.St
 		return nil, err
 	}
 
-	return &pb.Store{
-		ID:          res.ID,
-		Name:        res.Name,
-		Description: res.Description,
-		Status:      res.Status,
-		ExternalID:  res.ExternalID,
-		AccountID:   res.AccountID,
-		Tags:        res.Tags,
-		Location: &pb.Location{
-			Latitude:  res.Position.Lat,
-			Longitude: res.Position.Lng,
-		},
-		Category: &pb.Category{
-			ID:        res.Category.ID,
-			Name:      res.Category.Name,
-			Status:    res.Category.Status,
-			CreatedAt: timestamppb.New(res.Category.CreatedAt),
-		},
-		CreatedAt: timestamppb.New(res.CreatedAt),
-	}, nil
+	store := s.newPBStore(res)
+	return store, nil
 }
 
 func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdAndOwnerRequest) (*pb.Store, error) {
@@ -87,26 +93,8 @@ func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdA
 		return nil, err
 	}
 
-	return &pb.Store{
-		ID:          res.ID,
-		Name:        res.Name,
-		Description: res.Description,
-		Status:      res.Status,
-		ExternalID:  res.ExternalID,
-		AccountID:   res.AccountID,
-		Tags:        res.Tags,
-		Location: &pb.Location{
-			Latitude:  res.Position.Lat,
-			Longitude: res.Position.Lng,
-		},
-		Category: &pb.Category{
-			ID:        res.Category.ID,
-			Name:      res.Category.Name,
-			Status:    res.Category.Status,
-			CreatedAt: timestamppb.New(res.Category.CreatedAt),
-		},
-		CreatedAt: timestamppb.New(res.CreatedAt),
-	}, nil
+	store := s.newPBStore(res)
+	return store, nil
 }
 
 func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*pb.ListStoreResponse, error) {
@@ -117,26 +105,29 @@ func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*
 		return nil, err
 	}
 	for _, item := range res {
-		stores = append(stores, &pb.Store{
-			ID:          item.ID,
-			Name:        item.Name,
-			Description: item.Description,
-			Status:      item.Status,
-			ExternalID:  item.ExternalID,
-			AccountID:   item.AccountID,
-			Tags:        item.Tags,
-			Location: &pb.Location{
-				Latitude:  item.Position.Lat,
-				Longitude: item.Position.Lng,
-			},
-			Category: &pb.Category{
-				ID:        item.Category.ID,
-				Name:      item.Category.Name,
-				Status:    item.Category.Status,
-				CreatedAt: timestamppb.New(item.Category.CreatedAt),
-			},
-			CreatedAt: timestamppb.New(item.CreatedAt),
-		})
+		stores = append(stores, s.newPBStore(item))
+	}
+
+	return &pb.ListStoreResponse{
+		Stores: stores,
+		Total:  total,
+	}, nil
+}
+
+func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
+	var stores []*pb.Store
+	err := validators.ValidateUUIDV4("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	res, total, err := s.storeUsecase.GetAllByCategory(ctx, in.GetId(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
+	if err != nil {
+		return nil, err
+	}
+
+	for _, item := range res {
+		stores = append(stores, s.newPBStore(item))
 	}
 
 	return &pb.ListStoreResponse{
