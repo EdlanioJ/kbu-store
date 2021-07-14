@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/validators"
 	"github.com/asaskevich/govalidator"
 	"github.com/gofiber/fiber/v2"
 )
@@ -199,10 +200,11 @@ func (h *storeHandler) getAllByOwner(c *fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit"))
 	externalID := c.Params("owner")
 
-	if !govalidator.IsUUIDv4(externalID) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("owner", externalID)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "owner must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
@@ -297,10 +299,11 @@ func (h *storeHandler) getAllByTags(c *fiber.Ctx) error {
 func (h *storeHandler) getById(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
@@ -330,17 +333,19 @@ func (h *storeHandler) getByIdAndOwner(c *fiber.Ctx) error {
 	id := c.Params("id")
 	owner := c.Params("owner")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
-	if !govalidator.IsUUIDv4(owner) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err = validators.ValidateUUIDV4("owner", owner)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "owner must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
@@ -368,14 +373,15 @@ func (h *storeHandler) active(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
-	err := h.storeUsecase.Active(ctx, id)
+	err = h.storeUsecase.Active(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
@@ -399,14 +405,15 @@ func (h *storeHandler) block(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
-	err := h.storeUsecase.Block(ctx, id)
+	err = h.storeUsecase.Block(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
@@ -430,14 +437,15 @@ func (h *storeHandler) disable(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
-	err := h.storeUsecase.Disable(ctx, id)
+	err = h.storeUsecase.Disable(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
@@ -461,14 +469,15 @@ func (h *storeHandler) delete(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
-	err := h.storeUsecase.Delete(ctx, id)
+	err = h.storeUsecase.Delete(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
@@ -495,10 +504,11 @@ func (h *storeHandler) update(c *fiber.Ctx) error {
 	reqBody := new(UpdateStoreRequest)
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
@@ -511,7 +521,7 @@ func (h *storeHandler) update(c *fiber.Ctx) error {
 	store := reqBody.ToDomainStore()
 	store.ID = id
 
-	err := h.storeUsecase.Update(ctx, store)
+	err = h.storeUsecase.Update(ctx, store)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),

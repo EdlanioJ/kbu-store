@@ -707,7 +707,7 @@ func Test_StoreHandler_Active(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
@@ -762,7 +762,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
@@ -817,7 +817,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
