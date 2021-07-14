@@ -15,4 +15,6 @@ var (
 	ErrInactived = errors.New("Is already inactive")
 	// ErrBadParam invalid param
 	ErrBadParam = errors.New("Param is not valid")
+	// ErrInternal internal server error
+	ErrInternal = errors.New("internal server error")
 )
