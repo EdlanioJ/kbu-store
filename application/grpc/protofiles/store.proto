@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package github.com.edlanioj.kbu_store;
+
+option go_package = "application/grpc/pb";
+
+import "protofiles/category.proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+
+message Location {
+  double latitude = 1;
+  double longitude = 2;
+}
+
+message Store {
+  string ID = 1;
+  string name = 2;
+  string description = 3;
+  string status = 4;
+  string externalID = 5;
+  string accountID = 6;
+  repeated string tags = 7;
+  Location location = 8;
+  Category category = 9;
+  google.protobuf.Timestamp createdAt = 10;
+}
+
+message CreateStoreRequest {
+  string name = 1;
+  string description = 2;
+  string categoryID = 3;
+  string externalID = 4;
+  repeated string tags = 5;
+  double latitude = 6;
+  double longitude = 7;
+}
+
+message StoreRequest {
+  string id = 1;
+}
+
+message GetStoreByIdAndOwnerRequest {
+  string ID = 1;
+  string owner = 2;
+}
+
+message GetAllStoreRequest {
+  int32 page = 1;
+  int32 limit = 2;
+  string sort = 3;
+}
+
+message ListStoreRequest {
+  string id = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string sort = 4;
+}
+
+message ListStoreByTagsRequest {
+  repeated string tags = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string sort = 4;
+}
+
+message ListStoreByStatusRequest {
+  enum StoreStatus {
+    pending = 0;
+    active = 1;
+    desable = 2;
+    block = 3;
+  }
+
+  StoreStatus status = 1;
+  int32 page = 2;
+  int32 limit = 3;
+  string sort = 4;
+}
+
+message ListStoreByLocationRequest {
+  enum StoreStatus {
+    pending = 0;
+    active = 1;
+    desable = 2;
+    block = 3;
+  }
+
+  double latitude = 1;
+  double longitude = 2;
+  int32 distance = 3;
+  StoreStatus status = 4;
+  int32 page = 5;
+  int32 limit = 6;
+  string sort = 7;
+}
+
+message UpdateStoreRequest {
+  string ID = 1;
+  string name = 2;
+	string description = 3;
+	string dategoryID = 4;
+	repeated string tags = 5;
+	double latitude = 6;
+	double longitude = 7;
+}
+
+message ListStoreResponse {
+  repeated Store categories = 1;
+  int64 total = 2;
+}
+
+service StoreService {
+  rpc Create(CreateStoreRequest) returns (google.protobuf.Empty) {};
+  rpc GetById(StoreRequest) returns (Store) {};
+  rpc GetByIdAndOwner (GetStoreByIdAndOwnerRequest) returns (Store) {};
+  rpc GetAll (GetAllStoreRequest) returns (ListStoreResponse) {};
+  rpc GetAllByCategory (ListStoreRequest) returns (ListStoreResponse) {};
+  rpc GetAllByByCloseLocation (ListStoreByLocationRequest) returns (ListStoreResponse) {};
+  rpc GetAllByOwner (ListStoreRequest) returns (ListStoreResponse) {};
+  rpc GetAllByTags (ListStoreByTagsRequest) returns (ListStoreResponse) {};
+  rpc GetAllByStatus (ListStoreByStatusRequest) returns (ListStoreResponse) {};
+  rpc Active (StoreRequest) returns (google.protobuf.Empty) {};
+  rpc Block (StoreRequest) returns (google.protobuf.Empty) {};
+  rpc Disable (StoreRequest) returns (google.protobuf.Empty) {};
+  rpc Update (UpdateStoreRequest) returns (google.protobuf.Empty) {};
+  rpc Delete (StoreRequest) returns (google.protobuf.Empty) {};
+}
