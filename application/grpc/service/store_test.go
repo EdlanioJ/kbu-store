@@ -860,3 +860,61 @@ func Test_StoreGrpcService_Update(t *testing.T) {
 		tc.checkResponse(t, res, err)
 	}
 }
+
+func Test_StoreGrpcService_Delete(t *testing.T) {
+	a := &pb.StoreRequest{
+		Id: uuid.NewV4().String(),
+	}
+	testCases := []struct {
+		name          string
+		arg           *pb.StoreRequest
+		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		checkResponse func(t *testing.T, res *empty.Empty, err error)
+	}{
+		{
+			name: "should fail if invalid id",
+			arg: &pb.StoreRequest{
+				Id: "invaalid_id",
+			},
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should fail if usecase returns error",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("Delete", mock.Anything, a.GetId()).
+					Return(errors.New("Unexpected Error"))
+			},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should succeed",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.
+					On("Delete", mock.Anything, a.GetId()).
+					Return(nil)
+			},
+			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		usecase := new(mocks.StoreUsecase)
+		tc.builtSts(usecase)
+		s := service.NewStoreServer(usecase)
+		res, err := s.Delete(context.TODO(), tc.arg)
+		tc.checkResponse(t, res, err)
+	}
+}

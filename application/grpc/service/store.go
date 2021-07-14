@@ -293,3 +293,17 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 
 	return &empty.Empty{}, nil
 }
+
+func (s *storeService) Delete(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
+	err := validators.ValidateUUIDV4("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storeUsecase.Delete(ctx, in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
