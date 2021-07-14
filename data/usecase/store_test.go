@@ -845,7 +845,7 @@ func Test_StoreUsecase_GetAllByByCloseLocation(t *testing.T) {
 			tc.builtSts(storeRepo, categoryRepo)
 			u := usecase.NewStoreUsecase(storeRepo, nil, categoryRepo, time.Second*2)
 
-			res, count, err := u.GetAllByByCloseLocation(context.TODO(), tc.args.lat, tc.args.lng, tc.args.distance, tc.args.status, tc.args.limit, tc.args.page, tc.args.sort)
+			res, count, err := u.GetAllByCloseLocation(context.TODO(), tc.args.lat, tc.args.lng, tc.args.distance, tc.args.status, tc.args.limit, tc.args.page, tc.args.sort)
 			tc.checkResponse(t, res, count, err)
 
 			categoryRepo.AssertExpectations(t)

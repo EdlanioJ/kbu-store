@@ -270,7 +270,7 @@ func (u *StoreUsecase) GetAllByTags(c context.Context, tags []string, sort strin
 	return
 }
 
-func (u *StoreUsecase) GetAllByByCloseLocation(c context.Context, lat, lng float64, distance int, status string, limit, page int, sort string) (res []*domain.Store, total int64, err error) {
+func (u *StoreUsecase) GetAllByCloseLocation(c context.Context, lat, lng float64, distance int, status string, limit, page int, sort string) (res []*domain.Store, total int64, err error) {
 	if limit <= 0 {
 		limit = 10
 	}
