@@ -136,7 +136,7 @@ func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreReq
 	}, nil
 }
 
-func (s *storeService) GetAllByByCloseLocation(ctx context.Context, in *pb.ListStoreByLocationRequest) (*pb.ListStoreResponse, error) {
+func (s *storeService) GetAllByCloseLocation(ctx context.Context, in *pb.ListStoreByLocationRequest) (*pb.ListStoreResponse, error) {
 	var stores []*pb.Store
 	err := validators.ValidateLatitude(in.GetLatitude())
 	if err != nil {
@@ -148,7 +148,7 @@ func (s *storeService) GetAllByByCloseLocation(ctx context.Context, in *pb.ListS
 		return nil, err
 	}
 
-	res, total, err := s.storeUsecase.GetAllByByCloseLocation(ctx,
+	res, total, err := s.storeUsecase.GetAllByCloseLocation(ctx,
 		in.GetLatitude(),
 		in.GetLongitude(),
 		int(in.GetDistance()),
@@ -161,6 +161,22 @@ func (s *storeService) GetAllByByCloseLocation(ctx context.Context, in *pb.ListS
 		return nil, err
 	}
 
+	for _, item := range res {
+		stores = append(stores, s.newPBStore(item))
+	}
+
+	return &pb.ListStoreResponse{
+		Stores: stores,
+		Total:  total,
+	}, nil
+}
+
+func (s *storeService) GetAllByTags(ctx context.Context, in *pb.ListStoreByTagsRequest) (*pb.ListStoreResponse, error) {
+	var stores []*pb.Store
+	res, total, err := s.storeUsecase.GetAllByTags(ctx, in.GetTags(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
+	if err != nil {
+		return nil, err
+	}
 	for _, item := range res {
 		stores = append(stores, s.newPBStore(item))
 	}

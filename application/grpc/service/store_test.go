@@ -356,7 +356,7 @@ func Test_StoreGrpcService_GetAllByCategory(t *testing.T) {
 	}
 }
 
-func Test_StoreGrpcService_GetAllByByCloseLocation(t *testing.T) {
+func Test_StoreGrpcService_GetAllByCloseLocation(t *testing.T) {
 	a := &pb.ListStoreByLocationRequest{
 		Latitude:  -8.8368200,
 		Longitude: 13.2343200,
@@ -400,7 +400,7 @@ func Test_StoreGrpcService_GetAllByByCloseLocation(t *testing.T) {
 			name: "should fail if usecase returns error",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetAllByByCloseLocation", mock.Anything,
+				storeUsecase.On("GetAllByCloseLocation", mock.Anything,
 					a.GetLatitude(),
 					a.GetLongitude(),
 					int(a.GetDistance()),
@@ -421,7 +421,7 @@ func Test_StoreGrpcService_GetAllByByCloseLocation(t *testing.T) {
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
-				storeUsecase.On("GetAllByByCloseLocation", mock.Anything,
+				storeUsecase.On("GetAllByCloseLocation", mock.Anything,
 					a.GetLatitude(),
 					a.GetLongitude(),
 					int(a.GetDistance()),
@@ -443,7 +443,68 @@ func Test_StoreGrpcService_GetAllByByCloseLocation(t *testing.T) {
 		usecase := new(mocks.StoreUsecase)
 		tc.builtSts(usecase)
 		s := service.NewStoreServer(usecase)
-		res, err := s.GetAllByByCloseLocation(context.TODO(), tc.arg)
+		res, err := s.GetAllByCloseLocation(context.TODO(), tc.arg)
+		tc.checkResponse(t, res, err)
+	}
+}
+
+func Test_StoreGrpcService_GetAllByTags(t *testing.T) {
+	a := &pb.ListStoreByTagsRequest{
+		Tags:  []string{"tag001", "tag002"},
+		Page:  1,
+		Limit: 10,
+		Sort:  "created_at",
+	}
+	store := getStore()
+	testCases := []struct {
+		name          string
+		arg           *pb.ListStoreByTagsRequest
+		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
+	}{
+		{
+			name: "should fail if usecase returns error",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				storeUsecase.On("GetAllByTags", mock.Anything,
+					a.GetTags(),
+					a.GetSort(),
+					int(a.GetLimit()),
+					int(a.GetPage()),
+				).Return(nil, int64(0), errors.New("Unexpected Error"))
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			},
+		},
+		{
+			name: "should succeed",
+			arg:  a,
+			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+				stores := make([]*domain.Store, 0)
+				stores = append(stores, store)
+
+				storeUsecase.On("GetAllByTags", mock.Anything,
+					a.GetTags(),
+					a.GetSort(),
+					int(a.GetLimit()),
+					int(a.GetPage()),
+				).Return(stores, int64(1), nil)
+			},
+			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Total, int64(1))
+				assert.NoError(t, err)
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		usecase := new(mocks.StoreUsecase)
+		tc.builtSts(usecase)
+		s := service.NewStoreServer(usecase)
+		res, err := s.GetAllByTags(context.TODO(), tc.arg)
 		tc.checkResponse(t, res, err)
 	}
 }
