@@ -4,7 +4,7 @@ import "github.com/asaskevich/govalidator"
 
 func ValidateUUIDV4(field, str string) error {
 	var mapTemplate = map[string]interface{}{
-		field: "required,uuidv4",
+		field: "uuidv4,,optional",
 	}
 
 	var inputMap = map[string]interface{}{
