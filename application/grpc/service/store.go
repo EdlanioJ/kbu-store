@@ -236,3 +236,17 @@ func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.E
 
 	return &empty.Empty{}, nil
 }
+
+func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
+	err := validators.ValidateUUIDV4("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	err = s.storeUsecase.Disable(ctx, in.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	return &empty.Empty{}, nil
+}
