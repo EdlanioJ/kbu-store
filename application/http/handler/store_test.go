@@ -303,7 +303,7 @@ func Test_StoreHandler_GetAllBCloseLocation(t *testing.T) {
 			name: "fail on usecase",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetAllByByCloseLocation", mock.Anything, mockArgs.lat, mockArgs.lng, mockArgs.distance, mockArgs.status, mockArgs.limit, mockArgs.page, mockArgs.sort).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
+				storeUsecase.On("GetAllByCloseLocation", mock.Anything, mockArgs.lat, mockArgs.lng, mockArgs.distance, mockArgs.status, mockArgs.limit, mockArgs.page, mockArgs.sort).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int, total string) {
 				assert.NoError(t, err)
@@ -318,7 +318,7 @@ func Test_StoreHandler_GetAllBCloseLocation(t *testing.T) {
 				store := getStore()
 				stores := make([]*domain.Store, 0)
 				stores = append(stores, store)
-				storeUsecase.On("GetAllByByCloseLocation", mock.Anything, mockArgs.lat, mockArgs.lng, mockArgs.distance, mockArgs.status, mockArgs.limit, mockArgs.page, mockArgs.sort).Return(stores, int64(1), nil).Once()
+				storeUsecase.On("GetAllByCloseLocation", mock.Anything, mockArgs.lat, mockArgs.lng, mockArgs.distance, mockArgs.status, mockArgs.limit, mockArgs.page, mockArgs.sort).Return(stores, int64(1), nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int, total string) {
 				assert.NoError(t, err)

@@ -24,7 +24,7 @@ type StoreServiceClient interface {
 	GetByIdAndOwner(ctx context.Context, in *GetStoreByIdAndOwnerRequest, opts ...grpc.CallOption) (*Store, error)
 	GetAll(ctx context.Context, in *GetAllStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
 	GetAllByCategory(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
+	GetAllByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
 	GetAllByOwner(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
 	GetAllByTags(ctx context.Context, in *ListStoreByTagsRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
 	GetAllByStatus(ctx context.Context, in *ListStoreByStatusRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
@@ -88,9 +88,9 @@ func (c *storeServiceClient) GetAllByCategory(ctx context.Context, in *ListStore
 	return out, nil
 }
 
-func (c *storeServiceClient) GetAllByByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
+func (c *storeServiceClient) GetAllByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
 	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByByCloseLocation", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByCloseLocation", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +178,7 @@ type StoreServiceServer interface {
 	GetByIdAndOwner(context.Context, *GetStoreByIdAndOwnerRequest) (*Store, error)
 	GetAll(context.Context, *GetAllStoreRequest) (*ListStoreResponse, error)
 	GetAllByCategory(context.Context, *ListStoreRequest) (*ListStoreResponse, error)
-	GetAllByByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error)
+	GetAllByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error)
 	GetAllByOwner(context.Context, *ListStoreRequest) (*ListStoreResponse, error)
 	GetAllByTags(context.Context, *ListStoreByTagsRequest) (*ListStoreResponse, error)
 	GetAllByStatus(context.Context, *ListStoreByStatusRequest) (*ListStoreResponse, error)
@@ -209,8 +209,8 @@ func (UnimplementedStoreServiceServer) GetAll(context.Context, *GetAllStoreReque
 func (UnimplementedStoreServiceServer) GetAllByCategory(context.Context, *ListStoreRequest) (*ListStoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllByCategory not implemented")
 }
-func (UnimplementedStoreServiceServer) GetAllByByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByByCloseLocation not implemented")
+func (UnimplementedStoreServiceServer) GetAllByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAllByCloseLocation not implemented")
 }
 func (UnimplementedStoreServiceServer) GetAllByOwner(context.Context, *ListStoreRequest) (*ListStoreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllByOwner not implemented")
@@ -339,20 +339,20 @@ func _StoreService_GetAllByCategory_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
-func _StoreService_GetAllByByCloseLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _StoreService_GetAllByCloseLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListStoreByLocationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByByCloseLocation(ctx, in)
+		return srv.(StoreServiceServer).GetAllByCloseLocation(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByByCloseLocation",
+		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByCloseLocation",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByByCloseLocation(ctx, req.(*ListStoreByLocationRequest))
+		return srv.(StoreServiceServer).GetAllByCloseLocation(ctx, req.(*ListStoreByLocationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -529,8 +529,8 @@ var StoreService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _StoreService_GetAllByCategory_Handler,
 		},
 		{
-			MethodName: "GetAllByByCloseLocation",
-			Handler:    _StoreService_GetAllByByCloseLocation_Handler,
+			MethodName: "GetAllByCloseLocation",
+			Handler:    _StoreService_GetAllByCloseLocation_Handler,
 		},
 		{
 			MethodName: "GetAllByOwner",

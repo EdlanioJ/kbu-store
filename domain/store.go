@@ -57,7 +57,7 @@ type (
 		GetAllByOwner(ctx context.Context, owner, sort string, limit, page int) ([]*Store, int64, error)
 		GetAllByStatus(ctx context.Context, status, sort string, limit, page int) ([]*Store, int64, error)
 		GetAllByTags(ctx context.Context, tags []string, sort string, limit, page int) ([]*Store, int64, error)
-		GetAllByByCloseLocation(ctx context.Context, lat, lng float64, distance int, status string, limit, page int, sort string) ([]*Store, int64, error)
+		GetAllByCloseLocation(ctx context.Context, lat, lng float64, distance int, status string, limit, page int, sort string) ([]*Store, int64, error)
 		Block(ctx context.Context, id string) error
 		Active(ctx context.Context, id string) error
 		Disable(ctx context.Context, id string) error

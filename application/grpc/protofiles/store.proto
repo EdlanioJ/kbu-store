@@ -118,7 +118,7 @@ service StoreService {
   rpc GetByIdAndOwner (GetStoreByIdAndOwnerRequest) returns (Store) {};
   rpc GetAll (GetAllStoreRequest) returns (ListStoreResponse) {};
   rpc GetAllByCategory (ListStoreRequest) returns (ListStoreResponse) {};
-  rpc GetAllByByCloseLocation (ListStoreByLocationRequest) returns (ListStoreResponse) {};
+  rpc GetAllByCloseLocation (ListStoreByLocationRequest) returns (ListStoreResponse) {};
   rpc GetAllByOwner (ListStoreRequest) returns (ListStoreResponse) {};
   rpc GetAllByTags (ListStoreByTagsRequest) returns (ListStoreResponse) {};
   rpc GetAllByStatus (ListStoreByStatusRequest) returns (ListStoreResponse) {};

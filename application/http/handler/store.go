@@ -173,7 +173,7 @@ func (h *storeHandler) getAllByCloseLocation(c *fiber.Ctx) error {
 			Message: err.Error(),
 		})
 	}
-	stores, total, err := h.storeUsecase.GetAllByByCloseLocation(ctx, lat, lng, distance, status, limit, page, sort)
+	stores, total, err := h.storeUsecase.GetAllByCloseLocation(ctx, lat, lng, distance, status, limit, page, sort)
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
