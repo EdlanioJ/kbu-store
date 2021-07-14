@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/EdlanioJ/kbu-store/domain"
-	"github.com/asaskevich/govalidator"
+	"github.com/EdlanioJ/kbu-store/validators"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -74,10 +74,11 @@ func (h *categoryHandler) getById(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 	res, err := h.categoryUsecase.GetById(ctx, id)
@@ -106,10 +107,11 @@ func (h *categoryHandler) getByIdAndStatus(c *fiber.Ctx) error {
 	id := c.Params("id")
 	status := c.Params("status")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
 
@@ -200,13 +202,15 @@ func (h *categoryHandler) activate(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
-	err := h.categoryUsecase.Activate(ctx, id)
+
+	err = h.categoryUsecase.Activate(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
@@ -230,13 +234,14 @@ func (h *categoryHandler) disable(c *fiber.Ctx) error {
 	ctx := c.Context()
 	id := c.Params("id")
 
-	if !govalidator.IsUUIDv4(id) {
-		return c.Status(fiber.StatusBadRequest).JSON(
+	err := validators.ValidateUUIDV4("id", id)
+	if err != nil {
+		return c.Status(getStatusCode(err)).JSON(
 			ErrorResponse{
-				Message: "id must be a valid uuidv4",
+				Message: err.Error(),
 			})
 	}
-	err := h.categoryUsecase.Disable(ctx, id)
+	err = h.categoryUsecase.Disable(ctx, id)
 	if err != nil {
 		return c.Status(getStatusCode(err)).JSON(ErrorResponse{
 			Message: err.Error(),
