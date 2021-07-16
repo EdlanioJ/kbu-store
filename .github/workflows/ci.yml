@@ -23,9 +23,6 @@ jobs:
     - name: Test
       run: make test
 
-    - name: Create env
-      run: make env
-
     - name: Docker meta
       id: meta
       uses: docker/metadata-action@v3.3.0
