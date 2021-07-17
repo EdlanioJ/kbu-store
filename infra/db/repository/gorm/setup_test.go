@@ -56,7 +56,7 @@ func getStore() *domain.Store {
 		Name:        "Store 001",
 		Description: "Store description 001",
 		Status:      domain.StoreStatusActive,
-		ExternalID:  uuid.NewV4().String(),
+		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
 		Category:    c,
 		Tags:        []string{"tag 001", "tag 002"},
