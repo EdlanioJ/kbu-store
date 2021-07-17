@@ -9,19 +9,17 @@ import (
 )
 
 func TestNewStore(t *testing.T) {
-	t.Run("should fail", func(t *testing.T) {
-		is := assert.New(t)
+	t.Run("should fail if validation fails", func(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
 		store, err := domain.NewStore("", "", "", category, account.ID, tags, 0, 0)
 
-		is.Nil(store)
-		is.Error(err)
+		assert.Nil(t, store)
+		assert.Error(t, err)
 	})
 
-	t.Run("success", func(t *testing.T) {
-		is := assert.New(t)
+	t.Run("should succeed", func(t *testing.T) {
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -31,15 +29,13 @@ func TestNewStore(t *testing.T) {
 		tags := []string{"tag 001", "tag 002"}
 		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
-		is.NotNil(store)
-		is.Nil(err)
+		assert.NotNil(t, store)
+		assert.Nil(t, err)
 	})
 }
 
 func TestBock(t *testing.T) {
-	t.Run("should fail", func(t *testing.T) {
-		is := assert.New(t)
-
+	t.Run("should fail if status already bocked", func(t *testing.T) {
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -47,17 +43,49 @@ func TestBock(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
-
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
+		store.Status = domain.StoreStatusBlock
 		store.ID = "001"
-		err := store.Block()
+		err = store.Block()
 
-		is.Error(err)
+		assert.Error(t, err)
+	})
+
+	t.Run("should fail if status is still pending", func(t *testing.T) {
+		name := "store 001"
+		description := "store description 001"
+		externalID := uuid.NewV4().String()
+		category, _ := domain.NewCategory("Type 001")
+
+		account, _ := domain.NewAccount(200)
+		tags := []string{"tag 001", "tag 002"}
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
+		store.ID = "001"
+		err = store.Block()
+
+		assert.Error(t, err)
+	})
+
+	t.Run("should fail if validation fails", func(t *testing.T) {
+		name := "store 001"
+		description := "store description 001"
+		externalID := uuid.NewV4().String()
+		category, _ := domain.NewCategory("Type 001")
+
+		account, _ := domain.NewAccount(200)
+		tags := []string{"tag 001", "tag 002"}
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
+		store.ID = "001"
+		store.Status = domain.StoreStatusActive
+		err = store.Block()
+
+		assert.Error(t, err)
 	})
 
 	t.Run("should succeed", func(t *testing.T) {
-		is := assert.New(t)
-
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -65,17 +93,15 @@ func TestBock(t *testing.T) {
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
 		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
-
+		store.Status = domain.StoreStatusActive
 		err := store.Block()
 
-		is.Nil(err)
+		assert.Nil(t, err)
 	})
 }
 
 func TestActivate(t *testing.T) {
-	t.Run("should fail", func(t *testing.T) {
-		is := assert.New(t)
-
+	t.Run("should fail if status is already active", func(t *testing.T) {
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -83,35 +109,78 @@ func TestActivate(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
+		store.Status = domain.StoreStatusActive
+		err = store.Activate()
+
+		assert.Error(t, err)
+	})
+
+	t.Run("should fail if validation fails", func(t *testing.T) {
+		name := "store 001"
+		description := "store description 001"
+		externalID := uuid.NewV4().String()
+		category, _ := domain.NewCategory("Type 001")
+
+		account, _ := domain.NewAccount(200)
+		tags := []string{"tag 001", "tag 002"}
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
 
 		store.ID = "001"
-		err := store.Activate()
+		err = store.Activate()
 
-		is.Error(err)
+		assert.Error(t, err)
 	})
 
 	t.Run("should succeed", func(t *testing.T) {
-		is := assert.New(t)
-
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		assert.NoError(t, err)
+		err = store.Activate()
 
-		err := store.Activate()
-
-		is.Nil(err)
+		assert.Nil(t, err)
 	})
 }
 
-func TestInactivate(t *testing.T) {
-	t.Run("should fail", func(t *testing.T) {
-		is := assert.New(t)
+func TestDisable(t *testing.T) {
+	t.Run("should fail if store status already disable", func(t *testing.T) {
+		name := "store 001"
+		description := "store description 001"
+		externalID := uuid.NewV4().String()
+		category, _ := domain.NewCategory("Type 001")
 
+		account, _ := domain.NewAccount(200)
+		tags := []string{"tag 001", "tag 002"}
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store.Status = domain.StoreStatusDisable
+		err := store.Disable()
+
+		assert.Error(t, err)
+	})
+
+	t.Run("should fail if store status is blocked", func(t *testing.T) {
+		name := "store 001"
+		description := "store description 001"
+		externalID := uuid.NewV4().String()
+		category, _ := domain.NewCategory("Type 001")
+
+		account, _ := domain.NewAccount(200)
+		tags := []string{"tag 001", "tag 002"}
+		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store.Status = domain.StoreStatusBlock
+		err := store.Disable()
+
+		assert.Error(t, err)
+	})
+
+	t.Run("should fail if validation fails", func(t *testing.T) {
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -122,14 +191,12 @@ func TestInactivate(t *testing.T) {
 		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
 		store.ID = "001"
-		err := store.Inactivate()
+		err := store.Disable()
 
-		is.Error(err)
+		assert.Error(t, err)
 	})
 
 	t.Run("should succeed", func(t *testing.T) {
-		is := assert.New(t)
-
 		name := "store 001"
 		description := "store description 001"
 		externalID := uuid.NewV4().String()
@@ -138,8 +205,8 @@ func TestInactivate(t *testing.T) {
 		tags := []string{"tag 001", "tag 002"}
 		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
 
-		err := store.Inactivate()
+		err := store.Disable()
 
-		is.Nil(err)
+		assert.Nil(t, err)
 	})
 }
