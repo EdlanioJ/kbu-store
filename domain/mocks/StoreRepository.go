@@ -42,16 +42,16 @@ func (_m *StoreRepository) Delete(ctx context.Context, id string) error {
 	return r0
 }
 
-// GetAll provides a mock function with given fields: ctx, sort, limit, page
-func (_m *StoreRepository) GetAll(ctx context.Context, sort string, limit int, page int) ([]*domain.Store, int64, error) {
+// FindAll provides a mock function with given fields: ctx, sort, limit, page
+func (_m *StoreRepository) FindAll(ctx context.Context, sort string, limit int, page int) (domain.Stores, int64, error) {
 	ret := _m.Called(ctx, sort, limit, page)
 
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Store); ok {
+	var r0 domain.Stores
+	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) domain.Stores); ok {
 		r0 = rf(ctx, sort, limit, page)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
+			r0 = ret.Get(0).(domain.Stores)
 		}
 	}
 
@@ -72,158 +72,8 @@ func (_m *StoreRepository) GetAll(ctx context.Context, sort string, limit int, p
 	return r0, r1, r2
 }
 
-// GetAllByCategory provides a mock function with given fields: ctx, categoryID, sort, limit, page
-func (_m *StoreRepository) GetAllByCategory(ctx context.Context, categoryID string, sort string, limit int, page int) ([]*domain.Store, int64, error) {
-	ret := _m.Called(ctx, categoryID, sort, limit, page)
-
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int) []*domain.Store); ok {
-		r0 = rf(ctx, categoryID, sort, limit, page)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, int, int) int64); ok {
-		r1 = rf(ctx, categoryID, sort, limit, page)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, string, string, int, int) error); ok {
-		r2 = rf(ctx, categoryID, sort, limit, page)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetAllByLocation provides a mock function with given fields: ctx, lat, lng, distance, limit, page, status, sort
-func (_m *StoreRepository) GetAllByLocation(ctx context.Context, lat float64, lng float64, distance int, limit int, page int, status string, sort string) ([]*domain.Store, int64, error) {
-	ret := _m.Called(ctx, lat, lng, distance, limit, page, status, sort)
-
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, float64, float64, int, int, int, string, string) []*domain.Store); ok {
-		r0 = rf(ctx, lat, lng, distance, limit, page, status, sort)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, float64, float64, int, int, int, string, string) int64); ok {
-		r1 = rf(ctx, lat, lng, distance, limit, page, status, sort)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, float64, float64, int, int, int, string, string) error); ok {
-		r2 = rf(ctx, lat, lng, distance, limit, page, status, sort)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetAllByOwner provides a mock function with given fields: ctx, externalID, sort, limit, page
-func (_m *StoreRepository) GetAllByOwner(ctx context.Context, externalID string, sort string, limit int, page int) ([]*domain.Store, int64, error) {
-	ret := _m.Called(ctx, externalID, sort, limit, page)
-
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int) []*domain.Store); ok {
-		r0 = rf(ctx, externalID, sort, limit, page)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, int, int) int64); ok {
-		r1 = rf(ctx, externalID, sort, limit, page)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, string, string, int, int) error); ok {
-		r2 = rf(ctx, externalID, sort, limit, page)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetAllByStatus provides a mock function with given fields: ctx, status, sort, limit, page
-func (_m *StoreRepository) GetAllByStatus(ctx context.Context, status string, sort string, limit int, page int) ([]*domain.Store, int64, error) {
-	ret := _m.Called(ctx, status, sort, limit, page)
-
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int) []*domain.Store); ok {
-		r0 = rf(ctx, status, sort, limit, page)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, int, int) int64); ok {
-		r1 = rf(ctx, status, sort, limit, page)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, string, string, int, int) error); ok {
-		r2 = rf(ctx, status, sort, limit, page)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetAllByTags provides a mock function with given fields: ctx, tags, sort, limit, page
-func (_m *StoreRepository) GetAllByTags(ctx context.Context, tags []string, sort string, limit int, page int) ([]*domain.Store, int64, error) {
-	ret := _m.Called(ctx, tags, sort, limit, page)
-
-	var r0 []*domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, []string, string, int, int) []*domain.Store); ok {
-		r0 = rf(ctx, tags, sort, limit, page)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Store)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, []string, string, int, int) int64); ok {
-		r1 = rf(ctx, tags, sort, limit, page)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, []string, string, int, int) error); ok {
-		r2 = rf(ctx, tags, sort, limit, page)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetById provides a mock function with given fields: ctx, id
-func (_m *StoreRepository) GetById(ctx context.Context, id string) (*domain.Store, error) {
+// FindByID provides a mock function with given fields: ctx, id
+func (_m *StoreRepository) FindByID(ctx context.Context, id string) (*domain.Store, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *domain.Store
@@ -245,13 +95,13 @@ func (_m *StoreRepository) GetById(ctx context.Context, id string) (*domain.Stor
 	return r0, r1
 }
 
-// GetByIdAndOwner provides a mock function with given fields: ctx, id, externalID
-func (_m *StoreRepository) GetByIdAndOwner(ctx context.Context, id string, externalID string) (*domain.Store, error) {
-	ret := _m.Called(ctx, id, externalID)
+// FindByName provides a mock function with given fields: ctx, name
+func (_m *StoreRepository) FindByName(ctx context.Context, name string) (*domain.Store, error) {
+	ret := _m.Called(ctx, name)
 
 	var r0 *domain.Store
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *domain.Store); ok {
-		r0 = rf(ctx, id, externalID)
+	if rf, ok := ret.Get(0).(func(context.Context, string) *domain.Store); ok {
+		r0 = rf(ctx, name)
 	} else {
 		if ret.Get(0) != nil {
 			r0 = ret.Get(0).(*domain.Store)
@@ -259,8 +109,8 @@ func (_m *StoreRepository) GetByIdAndOwner(ctx context.Context, id string, exter
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, id, externalID)
+	if rf, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = rf(ctx, name)
 	} else {
 		r1 = ret.Error(1)
 	}
