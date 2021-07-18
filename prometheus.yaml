@@ -1,0 +1,20 @@
+global:
+  scrape_interval:     15s
+  evaluation_interval: 15s
+
+
+rule_files:
+  # - "first.rules"
+  # - "second.rules"
+
+scrape_configs:
+  - job_name: KbuStoreHttp
+    static_configs:
+      - targets: ['kbu-store:3333']
+        labels:
+          group: 'KbuStoreHttp'
+  - job_name: KbuStoreGrpc
+    static_configs:
+      - targets: ['kbu-store:3330']
+        labels:
+          group: 'KbuStoreGrpc'

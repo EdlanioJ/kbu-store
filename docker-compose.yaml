@@ -5,7 +5,9 @@ services:
     container_name: kbu-store
     build: .
     ports:
+      - '3330:3330'
       - '3333:3333'
+      - '50051:50051'
     volumes:
       - .:/go/src/
     extra_hosts:
@@ -24,3 +26,15 @@ services:
       - POSTGRES_DB=kbu_store
     ports:
       - '25432:5432'
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - '9090:9090'
+    volumes: 
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - '3000:3000'
+    depends_on:
+      - prometheus
