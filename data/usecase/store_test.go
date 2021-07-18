@@ -113,7 +113,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			ts.builtSts(storeRepo, accountRepo, categoryRepo)
 			u := usecase.NewStoreUsecase(storeRepo, accountRepo, categoryRepo, time.Second*2)
 
-			err := u.Create(context.TODO(), ts.args.name, ts.args.description, ts.args.categoryID, ts.args.externalID, ts.args.tags, 0, 0)
+			err := u.Store(context.TODO(), ts.args.name, ts.args.description, ts.args.categoryID, ts.args.externalID, ts.args.tags, 0, 0)
 			ts.checkResponse(t, err)
 			accountRepo.AssertExpectations(t)
 			categoryRepo.AssertExpectations(t)

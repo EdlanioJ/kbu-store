@@ -73,7 +73,7 @@ func (u *StoreUsecase) fillCategoryDetails(c context.Context, data domain.Stores
 	return data, nil
 }
 
-func (u *StoreUsecase) Create(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
+func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
