@@ -51,7 +51,8 @@ func (r *storeRepository) FindByName(ctx context.Context, name string) (res *dom
 	res = store.ToStoreDomain()
 	return
 }
-func (r *storeRepository) FindAll(ctx context.Context, sort string, limit, page int) (res []*domain.Store, total int64, err error) {
+
+func (r *storeRepository) FindAll(ctx context.Context, sort string, limit, page int) (res domain.Stores, total int64, err error) {
 	var stores []*model.Store
 
 	err = r.db.WithContext(ctx).
