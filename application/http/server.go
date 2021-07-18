@@ -31,6 +31,9 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	app.Use(cors.New())
 	app.Use(helmet.New())
 	app.Use(requestid.New())
+
+	app.Use(middleware.NotFound())
+
 	v1 := app.Group("/api/v1")
 
 	v1.Get("/docs/*", swagger.Handler)
