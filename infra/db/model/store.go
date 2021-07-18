@@ -10,7 +10,7 @@ type Store struct {
 	Name        string         `gorm:"column:name;type:varchar;not null"`
 	Description string         `gorm:"type:varchar(255)"`
 	Status      string         `gorm:"type:varchar(20)"`
-	ExternalID  string         `gorm:"column:external_id;type:uuid"`
+	UserID      string         `gorm:"column:user_id;type:uuid"`
 	AccountID   string         `gorm:"column:account_id;type:uuid"`
 	CategoryID  string         `gorm:"column:category_id;type:uuid"`
 	Tags        pq.StringArray `gorm:"type:text[]"`
@@ -26,7 +26,7 @@ func (s *Store) FromStoreDomain(d *domain.Store) {
 	s.ID = d.ID
 	s.Name = d.Name
 	s.Description = d.Description
-	s.ExternalID = d.ExternalID
+	s.UserID = d.UserID
 	s.Status = d.Status
 	s.AccountID = d.AccountID
 	s.CategoryID = d.Category.ID
@@ -48,7 +48,7 @@ func (s *Store) ToStoreDomain() (res *domain.Store) {
 	res.ID = s.ID
 	res.Name = s.Name
 	res.Description = s.Description
-	res.ExternalID = s.ExternalID
+	res.UserID = s.UserID
 	res.Status = s.Status
 	res.Tags = s.Tags
 	res.Position.Lat = s.Lat
