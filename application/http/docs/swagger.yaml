@@ -28,9 +28,9 @@ definitions:
         type: string
       description:
         type: string
-      external_id:
-        type: string
       id:
+        type: string
+      image_url:
         type: string
       location:
         $ref: '#/definitions/domain.Position'
@@ -42,12 +42,7 @@ definitions:
         items:
           type: string
         type: array
-    type: object
-  domain.Tag:
-    properties:
-      count:
-        type: integer
-      tag:
+      user_id:
         type: string
     type: object
   handler.CreateCategoryRequest:
@@ -61,8 +56,6 @@ definitions:
         type: string
       description:
         type: string
-      external_id:
-        type: string
       latitude:
         type: number
       longitude:
@@ -73,6 +66,8 @@ definitions:
         items:
           type: string
         type: array
+      user_id:
+        type: string
     type: object
   handler.ErrorResponse:
     properties:
@@ -583,44 +578,6 @@ paths:
       summary: Disable stores
       tags:
       - stores
-  /stores/{id}/owner/{owner}:
-    get:
-      consumes:
-      - application/json
-      description: Get one stores by id and owner
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      - description: user ID
-        in: path
-        name: owner
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.Store'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get stores by id and owner
-      tags:
-      - stores
   /stores/active/{id}:
     patch:
       consumes:
@@ -659,317 +616,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Activate stores
+      summary: update store
       tags:
       - stores
-  /stores/category/{category}:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of stores by category
-      parameters:
-      - description: category ID
-        in: path
-        name: category
-        required: true
-        type: string
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: created_at DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Store'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores by category
-      tags:
-      - stores
-  /stores/location/{location}/status/{status}:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of stores location and status
-      parameters:
-      - description: '@lat,lng'
-        in: path
-        name: location
-        required: true
-        type: string
-      - description: Status
-        enum:
-        - active
-        - pending
-        - block
-        - disable
-        in: path
-        name: status
-        required: true
-        type: string
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: created_at DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Store'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores location and status
-      tags:
-      - stores
-  /stores/owner/{owner}:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of stores owner
-      parameters:
-      - description: user ID
-        in: path
-        name: owner
-        required: true
-        type: string
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: created_at DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Store'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores by owner
-      tags:
-      - stores
-  /stores/status/{status}:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of stores by status
-      parameters:
-      - description: Status
-        enum:
-        - active
-        - pending
-        - block
-        - disable
-        in: path
-        name: status
-        required: true
-        type: string
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: created_at DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Store'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores by status
-      tags:
-      - stores
-  /stores/tags/:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of stores
-      parameters:
-      - description: Tags
-        in: query
-        items:
-          type: string
-        name: tags
-        required: true
-        type: array
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: created_at DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Store'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores
-      tags:
-      - stores
-  /tags:
-    get:
-      consumes:
-      - application/json
-      description: Get all tags
-      parameters:
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: count DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Tag'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all tags
-      tags:
-      - tags
-  /tags/category/{category}:
-    get:
-      consumes:
-      - application/json
-      description: Get all tags by category
-      parameters:
-      - description: category ID
-        in: path
-        name: category
-        required: true
-        type: string
-      - default: 1
-        description: Page
-        in: query
-        name: page
-        type: integer
-      - default: 10
-        description: Limit
-        in: query
-        name: limit
-        type: integer
-      - default: count DESC
-        description: Sort
-        in: query
-        name: sort
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/domain.Tag'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all tags by category
-      tags:
-      - tags
 swagger: "2.0"

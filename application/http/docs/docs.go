@@ -523,7 +523,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Activate stores",
+                "summary": "update store",
                 "parameters": [
                     {
                         "type": "string",
@@ -562,338 +562,6 @@ var doc = `{
                         "description": "Unprocessable Entity",
                         "schema": {
                             "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/category/{category}": {
-            "get": {
-                "description": "Get a list of stores by category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get all stores by category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "category ID",
-                        "name": "category",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "created_at DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Store"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/location/{location}/status/{status}": {
-            "get": {
-                "description": "Get a list of stores location and status",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get all stores location and status",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "@lat,lng",
-                        "name": "location",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "enum": [
-                            "active",
-                            "pending",
-                            "block",
-                            "disable"
-                        ],
-                        "type": "string",
-                        "description": "Status",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "created_at DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Store"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/owner/{owner}": {
-            "get": {
-                "description": "Get a list of stores owner",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get all stores by owner",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "user ID",
-                        "name": "owner",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "created_at DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Store"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/status/{status}": {
-            "get": {
-                "description": "Get a list of stores by status",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get all stores by status",
-                "parameters": [
-                    {
-                        "enum": [
-                            "active",
-                            "pending",
-                            "block",
-                            "disable"
-                        ],
-                        "type": "string",
-                        "description": "Status",
-                        "name": "status",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "created_at DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Store"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/stores/tags/": {
-            "get": {
-                "description": "Get a list of stores",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get all stores",
-                "parameters": [
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "Tags",
-                        "name": "tags",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "created_at DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Store"
-                            }
                         }
                     },
                     "500": {
@@ -1140,186 +808,6 @@ var doc = `{
                     }
                 }
             }
-        },
-        "/stores/{id}/owner/{owner}": {
-            "get": {
-                "description": "Get one stores by id and owner",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "Get stores by id and owner",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "user ID",
-                        "name": "owner",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Store"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tags": {
-            "get": {
-                "description": "Get all tags",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tags"
-                ],
-                "summary": "Get all tags",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "count DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Tag"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/tags/category/{category}": {
-            "get": {
-                "description": "Get all tags by category",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "tags"
-                ],
-                "summary": "Get all tags by category",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "category ID",
-                        "name": "category",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "default": 1,
-                        "description": "Page",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "default": "count DESC",
-                        "description": "Sort",
-                        "name": "sort",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/domain.Tag"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
@@ -1366,10 +854,10 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
-                "external_id": {
+                "id": {
                     "type": "string"
                 },
-                "id": {
+                "image_url": {
                     "type": "string"
                 },
                 "location": {
@@ -1386,16 +874,8 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
-                }
-            }
-        },
-        "domain.Tag": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
                 },
-                "tag": {
+                "user_id": {
                     "type": "string"
                 }
             }
@@ -1417,9 +897,6 @@ var doc = `{
                 "description": {
                     "type": "string"
                 },
-                "external_id": {
-                    "type": "string"
-                },
                 "latitude": {
                     "type": "number"
                 },
@@ -1434,6 +911,9 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
+                },
+                "user_id": {
+                    "type": "string"
                 }
             }
         },
