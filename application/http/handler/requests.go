@@ -10,7 +10,7 @@ type CreateStoreRequest struct {
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	CategoryID  string   `json:"category_id"`
-	ExternalID  string   `json:"external_id"`
+	UserID      string   `json:"user_id"`
 	Tags        []string `json:"tags"`
 	Lat         float64  `json:"latitude"`
 	Lng         float64  `json:"longitude"`
