@@ -20,15 +20,9 @@ const _ = grpc.SupportPackageIsVersion7
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type StoreServiceClient interface {
 	Create(ctx context.Context, in *CreateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
-	GetById(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*Store, error)
-	GetByIdAndOwner(ctx context.Context, in *GetStoreByIdAndOwnerRequest, opts ...grpc.CallOption) (*Store, error)
-	GetAll(ctx context.Context, in *GetAllStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByCategory(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByOwner(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByTags(ctx context.Context, in *ListStoreByTagsRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	GetAllByStatus(ctx context.Context, in *ListStoreByStatusRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
-	Active(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
+	Get(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*Store, error)
+	List(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error)
+	Activate(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Block(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Disable(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
 	Update(ctx context.Context, in *UpdateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error)
@@ -45,88 +39,34 @@ func NewStoreServiceClient(cc grpc.ClientConnInterface) StoreServiceClient {
 
 func (c *storeServiceClient) Create(ctx context.Context, in *CreateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *storeServiceClient) GetById(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*Store, error) {
+func (c *storeServiceClient) Get(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*Store, error) {
 	out := new(Store)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *storeServiceClient) GetByIdAndOwner(ctx context.Context, in *GetStoreByIdAndOwnerRequest, opts ...grpc.CallOption) (*Store, error) {
-	out := new(Store)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetByIdAndOwner", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) GetAll(ctx context.Context, in *GetAllStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
+func (c *storeServiceClient) List(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
 	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *storeServiceClient) GetAllByCategory(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
-	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByCategory", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) GetAllByCloseLocation(ctx context.Context, in *ListStoreByLocationRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
-	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByCloseLocation", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) GetAllByOwner(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
-	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByOwner", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) GetAllByTags(ctx context.Context, in *ListStoreByTagsRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
-	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByTags", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) GetAllByStatus(ctx context.Context, in *ListStoreByStatusRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
-	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/GetAllByStatus", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *storeServiceClient) Active(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
+func (c *storeServiceClient) Activate(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Active", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Activate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +75,7 @@ func (c *storeServiceClient) Active(ctx context.Context, in *StoreRequest, opts 
 
 func (c *storeServiceClient) Block(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Block", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Block", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +84,7 @@ func (c *storeServiceClient) Block(ctx context.Context, in *StoreRequest, opts .
 
 func (c *storeServiceClient) Disable(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Disable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Disable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -153,7 +93,7 @@ func (c *storeServiceClient) Disable(ctx context.Context, in *StoreRequest, opts
 
 func (c *storeServiceClient) Update(ctx context.Context, in *UpdateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -162,7 +102,7 @@ func (c *storeServiceClient) Update(ctx context.Context, in *UpdateStoreRequest,
 
 func (c *storeServiceClient) Delete(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.StoreService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -174,15 +114,9 @@ func (c *storeServiceClient) Delete(ctx context.Context, in *StoreRequest, opts 
 // for forward compatibility
 type StoreServiceServer interface {
 	Create(context.Context, *CreateStoreRequest) (*empty.Empty, error)
-	GetById(context.Context, *StoreRequest) (*Store, error)
-	GetByIdAndOwner(context.Context, *GetStoreByIdAndOwnerRequest) (*Store, error)
-	GetAll(context.Context, *GetAllStoreRequest) (*ListStoreResponse, error)
-	GetAllByCategory(context.Context, *ListStoreRequest) (*ListStoreResponse, error)
-	GetAllByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error)
-	GetAllByOwner(context.Context, *ListStoreRequest) (*ListStoreResponse, error)
-	GetAllByTags(context.Context, *ListStoreByTagsRequest) (*ListStoreResponse, error)
-	GetAllByStatus(context.Context, *ListStoreByStatusRequest) (*ListStoreResponse, error)
-	Active(context.Context, *StoreRequest) (*empty.Empty, error)
+	Get(context.Context, *StoreRequest) (*Store, error)
+	List(context.Context, *ListStoreRequest) (*ListStoreResponse, error)
+	Activate(context.Context, *StoreRequest) (*empty.Empty, error)
 	Block(context.Context, *StoreRequest) (*empty.Empty, error)
 	Disable(context.Context, *StoreRequest) (*empty.Empty, error)
 	Update(context.Context, *UpdateStoreRequest) (*empty.Empty, error)
@@ -197,32 +131,14 @@ type UnimplementedStoreServiceServer struct {
 func (UnimplementedStoreServiceServer) Create(context.Context, *CreateStoreRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
 }
-func (UnimplementedStoreServiceServer) GetById(context.Context, *StoreRequest) (*Store, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetById not implemented")
+func (UnimplementedStoreServiceServer) Get(context.Context, *StoreRequest) (*Store, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
-func (UnimplementedStoreServiceServer) GetByIdAndOwner(context.Context, *GetStoreByIdAndOwnerRequest) (*Store, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetByIdAndOwner not implemented")
+func (UnimplementedStoreServiceServer) List(context.Context, *ListStoreRequest) (*ListStoreResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedStoreServiceServer) GetAll(context.Context, *GetAllStoreRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAll not implemented")
-}
-func (UnimplementedStoreServiceServer) GetAllByCategory(context.Context, *ListStoreRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByCategory not implemented")
-}
-func (UnimplementedStoreServiceServer) GetAllByCloseLocation(context.Context, *ListStoreByLocationRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByCloseLocation not implemented")
-}
-func (UnimplementedStoreServiceServer) GetAllByOwner(context.Context, *ListStoreRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByOwner not implemented")
-}
-func (UnimplementedStoreServiceServer) GetAllByTags(context.Context, *ListStoreByTagsRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByTags not implemented")
-}
-func (UnimplementedStoreServiceServer) GetAllByStatus(context.Context, *ListStoreByStatusRequest) (*ListStoreResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllByStatus not implemented")
-}
-func (UnimplementedStoreServiceServer) Active(context.Context, *StoreRequest) (*empty.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Active not implemented")
+func (UnimplementedStoreServiceServer) Activate(context.Context, *StoreRequest) (*empty.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Activate not implemented")
 }
 func (UnimplementedStoreServiceServer) Block(context.Context, *StoreRequest) (*empty.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Block not implemented")
@@ -259,7 +175,7 @@ func _StoreService_Create_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Create",
+		FullMethod: "/kbu_store.StoreService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Create(ctx, req.(*CreateStoreRequest))
@@ -267,164 +183,56 @@ func _StoreService_Create_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
-func _StoreService_GetById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _StoreService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StoreRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServiceServer).GetById(ctx, in)
+		return srv.(StoreServiceServer).Get(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetById",
+		FullMethod: "/kbu_store.StoreService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetById(ctx, req.(*StoreRequest))
+		return srv.(StoreServiceServer).Get(ctx, req.(*StoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _StoreService_GetByIdAndOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetStoreByIdAndOwnerRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetByIdAndOwner(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetByIdAndOwner",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetByIdAndOwner(ctx, req.(*GetStoreByIdAndOwnerRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetAllStoreRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAll(ctx, req.(*GetAllStoreRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_GetAllByCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _StoreService_List_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListStoreRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByCategory(ctx, in)
+		return srv.(StoreServiceServer).List(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByCategory",
+		FullMethod: "/kbu_store.StoreService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByCategory(ctx, req.(*ListStoreRequest))
+		return srv.(StoreServiceServer).List(ctx, req.(*ListStoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _StoreService_GetAllByCloseLocation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListStoreByLocationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByCloseLocation(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByCloseLocation",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByCloseLocation(ctx, req.(*ListStoreByLocationRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_GetAllByOwner_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListStoreRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByOwner(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByOwner",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByOwner(ctx, req.(*ListStoreRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_GetAllByTags_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListStoreByTagsRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByTags(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByTags",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByTags(ctx, req.(*ListStoreByTagsRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_GetAllByStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListStoreByStatusRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(StoreServiceServer).GetAllByStatus(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/GetAllByStatus",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).GetAllByStatus(ctx, req.(*ListStoreByStatusRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _StoreService_Active_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _StoreService_Activate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(StoreRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(StoreServiceServer).Active(ctx, in)
+		return srv.(StoreServiceServer).Activate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Active",
+		FullMethod: "/kbu_store.StoreService/Activate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(StoreServiceServer).Active(ctx, req.(*StoreRequest))
+		return srv.(StoreServiceServer).Activate(ctx, req.(*StoreRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -439,7 +247,7 @@ func _StoreService_Block_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Block",
+		FullMethod: "/kbu_store.StoreService/Block",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Block(ctx, req.(*StoreRequest))
@@ -457,7 +265,7 @@ func _StoreService_Disable_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Disable",
+		FullMethod: "/kbu_store.StoreService/Disable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Disable(ctx, req.(*StoreRequest))
@@ -475,7 +283,7 @@ func _StoreService_Update_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Update",
+		FullMethod: "/kbu_store.StoreService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Update(ctx, req.(*UpdateStoreRequest))
@@ -493,7 +301,7 @@ func _StoreService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.StoreService/Delete",
+		FullMethod: "/kbu_store.StoreService/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Delete(ctx, req.(*StoreRequest))
@@ -505,7 +313,7 @@ func _StoreService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StoreService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "github.com.edlanioj.kbu_store.StoreService",
+	ServiceName: "kbu_store.StoreService",
 	HandlerType: (*StoreServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -513,40 +321,16 @@ var StoreService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _StoreService_Create_Handler,
 		},
 		{
-			MethodName: "GetById",
-			Handler:    _StoreService_GetById_Handler,
+			MethodName: "Get",
+			Handler:    _StoreService_Get_Handler,
 		},
 		{
-			MethodName: "GetByIdAndOwner",
-			Handler:    _StoreService_GetByIdAndOwner_Handler,
+			MethodName: "List",
+			Handler:    _StoreService_List_Handler,
 		},
 		{
-			MethodName: "GetAll",
-			Handler:    _StoreService_GetAll_Handler,
-		},
-		{
-			MethodName: "GetAllByCategory",
-			Handler:    _StoreService_GetAllByCategory_Handler,
-		},
-		{
-			MethodName: "GetAllByCloseLocation",
-			Handler:    _StoreService_GetAllByCloseLocation_Handler,
-		},
-		{
-			MethodName: "GetAllByOwner",
-			Handler:    _StoreService_GetAllByOwner_Handler,
-		},
-		{
-			MethodName: "GetAllByTags",
-			Handler:    _StoreService_GetAllByTags_Handler,
-		},
-		{
-			MethodName: "GetAllByStatus",
-			Handler:    _StoreService_GetAllByStatus_Handler,
-		},
-		{
-			MethodName: "Active",
-			Handler:    _StoreService_Active_Handler,
+			MethodName: "Activate",
+			Handler:    _StoreService_Activate_Handler,
 		},
 		{
 			MethodName: "Block",

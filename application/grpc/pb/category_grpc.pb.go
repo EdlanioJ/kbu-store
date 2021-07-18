@@ -38,7 +38,7 @@ func NewCategoryServiceClient(cc grpc.ClientConnInterface) CategoryServiceClient
 
 func (c *categoryServiceClient) Create(ctx context.Context, in *CreateCategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,7 @@ func (c *categoryServiceClient) Create(ctx context.Context, in *CreateCategoryRe
 
 func (c *categoryServiceClient) GetById(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*Category, error) {
 	out := new(Category)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetById", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/GetById", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (c *categoryServiceClient) GetById(ctx context.Context, in *CategoryRequest
 
 func (c *categoryServiceClient) GetByIdAndStatus(ctx context.Context, in *GetCategoryByIdAndStatusRequest, opts ...grpc.CallOption) (*Category, error) {
 	out := new(Category)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetByIdAndStatus", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/GetByIdAndStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (c *categoryServiceClient) GetByIdAndStatus(ctx context.Context, in *GetCat
 
 func (c *categoryServiceClient) GetAll(ctx context.Context, in *GetAllCategoryRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error) {
 	out := new(ListCategoryResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -74,7 +74,7 @@ func (c *categoryServiceClient) GetAll(ctx context.Context, in *GetAllCategoryRe
 
 func (c *categoryServiceClient) GetAllByStatus(ctx context.Context, in *GetAllCategoryByStatusRequest, opts ...grpc.CallOption) (*ListCategoryResponse, error) {
 	out := new(ListCategoryResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/GetAllByStatus", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/GetAllByStatus", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +83,7 @@ func (c *categoryServiceClient) GetAllByStatus(ctx context.Context, in *GetAllCa
 
 func (c *categoryServiceClient) Activate(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Activate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/Activate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -92,7 +92,7 @@ func (c *categoryServiceClient) Activate(ctx context.Context, in *CategoryReques
 
 func (c *categoryServiceClient) Disable(ctx context.Context, in *CategoryRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.CategoryService/Disable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.CategoryService/Disable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -161,7 +161,7 @@ func _CategoryService_Create_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Create",
+		FullMethod: "/kbu_store.CategoryService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).Create(ctx, req.(*CreateCategoryRequest))
@@ -179,7 +179,7 @@ func _CategoryService_GetById_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetById",
+		FullMethod: "/kbu_store.CategoryService/GetById",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).GetById(ctx, req.(*CategoryRequest))
@@ -197,7 +197,7 @@ func _CategoryService_GetByIdAndStatus_Handler(srv interface{}, ctx context.Cont
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetByIdAndStatus",
+		FullMethod: "/kbu_store.CategoryService/GetByIdAndStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).GetByIdAndStatus(ctx, req.(*GetCategoryByIdAndStatusRequest))
@@ -215,7 +215,7 @@ func _CategoryService_GetAll_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetAll",
+		FullMethod: "/kbu_store.CategoryService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).GetAll(ctx, req.(*GetAllCategoryRequest))
@@ -233,7 +233,7 @@ func _CategoryService_GetAllByStatus_Handler(srv interface{}, ctx context.Contex
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/GetAllByStatus",
+		FullMethod: "/kbu_store.CategoryService/GetAllByStatus",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).GetAllByStatus(ctx, req.(*GetAllCategoryByStatusRequest))
@@ -251,7 +251,7 @@ func _CategoryService_Activate_Handler(srv interface{}, ctx context.Context, dec
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Activate",
+		FullMethod: "/kbu_store.CategoryService/Activate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).Activate(ctx, req.(*CategoryRequest))
@@ -269,7 +269,7 @@ func _CategoryService_Disable_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.CategoryService/Disable",
+		FullMethod: "/kbu_store.CategoryService/Disable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CategoryServiceServer).Disable(ctx, req.(*CategoryRequest))
@@ -281,7 +281,7 @@ func _CategoryService_Disable_Handler(srv interface{}, ctx context.Context, dec 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var CategoryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "github.com.edlanioj.kbu_store.CategoryService",
+	ServiceName: "kbu_store.CategoryService",
 	HandlerType: (*CategoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

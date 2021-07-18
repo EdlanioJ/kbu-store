@@ -32,7 +32,7 @@ func NewTagServiceClient(cc grpc.ClientConnInterface) TagServiceClient {
 
 func (c *tagServiceClient) GetAll(ctx context.Context, in *TagListRequest, opts ...grpc.CallOption) (*TagListResponse, error) {
 	out := new(TagListResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.TagService/GetAll", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.TagService/GetAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (c *tagServiceClient) GetAll(ctx context.Context, in *TagListRequest, opts 
 
 func (c *tagServiceClient) GetAllByCategory(ctx context.Context, in *TagListByCategoryRequest, opts ...grpc.CallOption) (*TagListResponse, error) {
 	out := new(TagListResponse)
-	err := c.cc.Invoke(ctx, "/github.com.edlanioj.kbu_store.TagService/GetAllByCategory", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/kbu_store.TagService/GetAllByCategory", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +90,7 @@ func _TagService_GetAll_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.TagService/GetAll",
+		FullMethod: "/kbu_store.TagService/GetAll",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TagServiceServer).GetAll(ctx, req.(*TagListRequest))
@@ -108,7 +108,7 @@ func _TagService_GetAllByCategory_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/github.com.edlanioj.kbu_store.TagService/GetAllByCategory",
+		FullMethod: "/kbu_store.TagService/GetAllByCategory",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(TagServiceServer).GetAllByCategory(ctx, req.(*TagListByCategoryRequest))
@@ -120,7 +120,7 @@ func _TagService_GetAllByCategory_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TagService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "github.com.edlanioj.kbu_store.TagService",
+	ServiceName: "kbu_store.TagService",
 	HandlerType: (*TagServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
