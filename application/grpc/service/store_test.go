@@ -31,7 +31,7 @@ func getStore() *domain.Store {
 		Name:        "Store 001",
 		Description: "store description 001",
 		Status:      domain.StoreStatusPending,
-		ExternalID:  uuid.NewV4().String(),
+		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
 		Category:    c,
 		Position: domain.Position{
@@ -63,7 +63,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			name: "should fail if usecase returns error",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Create",
+				storeUsecase.On("Store",
 					mock.Anything,
 					mock.AnythingOfType("string"),
 					mock.AnythingOfType("string"),
@@ -83,7 +83,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			name: "should succeed",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Create",
+				storeUsecase.On("Store",
 					mock.Anything,
 					a.Name,
 					a.Description,
@@ -110,7 +110,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 	}
 }
 
-func Test_StoreGrpcService_GetById(t *testing.T) {
+func Test_StoreGrpcService_Get(t *testing.T) {
 	a := &pb.StoreRequest{
 		Id: uuid.NewV4().String(),
 	}
@@ -148,7 +148,7 @@ func Test_StoreGrpcService_GetById(t *testing.T) {
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("GetById", mock.Anything, a.Id).
+					On("Get", mock.Anything, a.Id).
 					Return(nil, errors.New("Unexpected Error"))
 			},
 			checkResponse: func(t *testing.T, res *pb.Store, err error) {
@@ -161,7 +161,7 @@ func Test_StoreGrpcService_GetById(t *testing.T) {
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("GetById", mock.Anything, a.Id).
+					On("Get", mock.Anything, a.Id).
 					Return(store, nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.Store, err error) {
@@ -175,108 +175,13 @@ func Test_StoreGrpcService_GetById(t *testing.T) {
 		usecase := new(mocks.StoreUsecase)
 		tc.builtSts(usecase)
 		s := service.NewStoreServer(usecase)
-		res, err := s.GetById(context.TODO(), tc.arg)
+		res, err := s.Get(context.TODO(), tc.arg)
 		tc.checkResponse(t, res, err)
 	}
 }
 
-func Test_StoreGrpcService_GetByIdAndOwner(t *testing.T) {
-	a := &pb.GetStoreByIdAndOwnerRequest{
-		ID:    uuid.NewV4().String(),
-		Owner: uuid.NewV4().String(),
-	}
-	store := getStore()
-	testCases := []struct {
-		name          string
-		arg           *pb.GetStoreByIdAndOwnerRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.Store, err error)
-	}{
-		{
-			name: "should fail if id is empty",
-			arg: &pb.GetStoreByIdAndOwnerRequest{
-				ID: "",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
-		},
-		{
-			name: "should fail if id is not a valid uuidv4",
-			arg: &pb.GetStoreByIdAndOwnerRequest{
-				ID: "invalid_id",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
-		},
-		{
-			name: "should fail if owner is empty",
-			arg: &pb.GetStoreByIdAndOwnerRequest{
-				ID:    uuid.NewV4().String(),
-				Owner: "",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
-		},
-		{
-			name: "should fail if owner is not a valid uuidv4",
-			arg: &pb.GetStoreByIdAndOwnerRequest{
-				ID:    uuid.NewV4().String(),
-				Owner: "invalid_id",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
-		},
-		{
-			name: "should fail if usecase fails",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.
-					On("GetByIdAndOwner", mock.Anything, a.ID, a.Owner).
-					Return(nil, errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
-		},
-		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.
-					On("GetByIdAndOwner", mock.Anything, a.ID, a.Owner).
-					Return(store, nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.NoError(t, err)
-				assert.NotNil(t, res)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.GetByIdAndOwner(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
-	}
-}
-
-func Test_StoreGrpcService_GetAll(t *testing.T) {
-	a := &pb.GetAllStoreRequest{
+func Test_StoreGrpcService_List(t *testing.T) {
+	a := &pb.ListStoreRequest{
 		Page:  1,
 		Limit: 10,
 		Sort:  "created_at",
@@ -284,7 +189,7 @@ func Test_StoreGrpcService_GetAll(t *testing.T) {
 	store := getStore()
 	testCases := []struct {
 		name          string
-		arg           *pb.GetAllStoreRequest
+		arg           *pb.ListStoreRequest
 		builtSts      func(storeUsecase *mocks.StoreUsecase)
 		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
 	}{
@@ -293,7 +198,7 @@ func Test_StoreGrpcService_GetAll(t *testing.T) {
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("GetAll", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					On("Index", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
 					Return(nil, int64(0), errors.New("Unexpected Error"))
 			},
 			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
@@ -305,11 +210,11 @@ func Test_StoreGrpcService_GetAll(t *testing.T) {
 			name: "should succeed",
 			arg:  a,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				stores := make([]*domain.Store, 0)
+				stores := make(domain.Stores, 0)
 
 				stores = append(stores, store)
 				storeUsecase.
-					On("GetAll", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					On("Index", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
 					Return(stores, int64(1), nil)
 			},
 			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
@@ -324,313 +229,7 @@ func Test_StoreGrpcService_GetAll(t *testing.T) {
 		usecase := new(mocks.StoreUsecase)
 		tc.builtSts(usecase)
 		s := service.NewStoreServer(usecase)
-		res, err := s.GetAll(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
-	}
-}
-
-func Test_StoreGrpcService_GetAllByCategory(t *testing.T) {
-	a := &pb.ListStoreRequest{
-		Id:    uuid.NewV4().String(),
-		Page:  1,
-		Limit: 10,
-		Sort:  "created_at",
-	}
-	store := getStore()
-	testCases := []struct {
-		name          string
-		arg           *pb.ListStoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
-	}{
-		{
-			name: "should fail if category id is empty",
-			arg: &pb.ListStoreRequest{
-				Id: "",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if category id is not a valid uuidv4",
-			arg: &pb.ListStoreRequest{
-				Id: "invalid_id",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.
-					On("GetAllByCategory", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
-					Return(nil, int64(0), errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				stores := make([]*domain.Store, 0)
-				stores = append(stores, store)
-				storeUsecase.
-					On("GetAllByCategory", mock.Anything, a.Id, a.Sort, int(a.Limit), int(a.Page)).
-					Return(stores, int64(1), nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.NotNil(t, res)
-				assert.Equal(t, res.Total, int64(1))
-				assert.NoError(t, err)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.GetAllByCategory(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
-	}
-}
-
-func Test_StoreGrpcService_GetAllByCloseLocation(t *testing.T) {
-	a := &pb.ListStoreByLocationRequest{
-		Latitude:  -8.8368200,
-		Longitude: 13.2343200,
-		Distance:  10,
-		Status:    pb.ListStoreByLocationRequest_active,
-		Page:      1,
-		Limit:     10,
-		Sort:      "created_at",
-	}
-	store := getStore()
-	testCases := []struct {
-		name          string
-		arg           *pb.ListStoreByLocationRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
-	}{
-		{
-			name: "should fail if latitude is not valid",
-			arg: &pb.ListStoreByLocationRequest{
-				Latitude: 12334,
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if longitude is not valid",
-			arg: &pb.ListStoreByLocationRequest{
-				Latitude:  -8.8368200,
-				Longitude: 12345,
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetAllByCloseLocation", mock.Anything,
-					a.GetLatitude(),
-					a.GetLongitude(),
-					int(a.GetDistance()),
-					a.GetStatus().String(),
-					int(a.GetLimit()),
-					int(a.GetPage()),
-					a.GetSort(),
-				).Return(nil, int64(0), errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				stores := make([]*domain.Store, 0)
-				stores = append(stores, store)
-				storeUsecase.On("GetAllByCloseLocation", mock.Anything,
-					a.GetLatitude(),
-					a.GetLongitude(),
-					int(a.GetDistance()),
-					a.GetStatus().String(),
-					int(a.GetLimit()),
-					int(a.GetPage()),
-					a.GetSort(),
-				).Return(stores, int64(1), nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.NotNil(t, res)
-				assert.Equal(t, res.Total, int64(1))
-				assert.NoError(t, err)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.GetAllByCloseLocation(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
-	}
-}
-
-func Test_StoreGrpcService_GetAllByTags(t *testing.T) {
-	a := &pb.ListStoreByTagsRequest{
-		Tags:  []string{"tag001", "tag002"},
-		Page:  1,
-		Limit: 10,
-		Sort:  "created_at",
-	}
-	store := getStore()
-	testCases := []struct {
-		name          string
-		arg           *pb.ListStoreByTagsRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
-	}{
-		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("GetAllByTags", mock.Anything,
-					a.GetTags(),
-					a.GetSort(),
-					int(a.GetLimit()),
-					int(a.GetPage()),
-				).Return(nil, int64(0), errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				stores := make([]*domain.Store, 0)
-				stores = append(stores, store)
-
-				storeUsecase.On("GetAllByTags", mock.Anything,
-					a.GetTags(),
-					a.GetSort(),
-					int(a.GetLimit()),
-					int(a.GetPage()),
-				).Return(stores, int64(1), nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.NotNil(t, res)
-				assert.Equal(t, res.Total, int64(1))
-				assert.NoError(t, err)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.GetAllByTags(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
-	}
-}
-
-func Test_StoreGrpcService_GetAllByOwner(t *testing.T) {
-	a := &pb.ListStoreRequest{
-		Id:    uuid.NewV4().String(),
-		Page:  1,
-		Limit: 10,
-		Sort:  "created_at",
-	}
-
-	store := getStore()
-	testCases := []struct {
-		name          string
-		arg           *pb.ListStoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
-	}{
-		{
-			name: "should fail if owner id is empty",
-			arg: &pb.ListStoreRequest{
-				Id: "",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if owner id is invalid",
-			arg: &pb.ListStoreRequest{
-				Id: "invalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.
-					On("GetAllByOwner", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
-					Return(nil, int64(0), errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				stores := make([]*domain.Store, 0)
-				stores = append(stores, store)
-				storeUsecase.
-					On("GetAllByOwner", mock.Anything, a.GetId(), a.GetSort(), int(a.GetLimit()), int(a.GetPage())).
-					Return(stores, int64(1), nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.NotNil(t, res)
-				assert.Equal(t, res.Total, int64(1))
-				assert.NoError(t, err)
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.GetAllByOwner(context.TODO(), tc.arg)
+		res, err := s.List(context.TODO(), tc.arg)
 		tc.checkResponse(t, res, err)
 	}
 }
@@ -699,7 +298,7 @@ func Test_StoreGrpcService_Activate(t *testing.T) {
 		usecase := new(mocks.StoreUsecase)
 		tc.builtSts(usecase)
 		s := service.NewStoreServer(usecase)
-		res, err := s.Active(context.TODO(), tc.arg)
+		res, err := s.Activate(context.TODO(), tc.arg)
 		tc.checkResponse(t, res, err)
 	}
 }

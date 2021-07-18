@@ -27,7 +27,7 @@ func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
 		Name:        store.Name,
 		Description: store.Description,
 		Status:      store.Status,
-		ExternalID:  store.ExternalID,
+		ExternalID:  store.UserID,
 		AccountID:   store.AccountID,
 		Tags:        store.Tags,
 		Location: &pb.Location{
@@ -46,7 +46,7 @@ func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
 }
 
 func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*empty.Empty, error) {
-	err := s.storeUsecase.Create(
+	err := s.storeUsecase.Store(
 		ctx,
 		in.GetName(),
 		in.GetDescription(),
@@ -63,7 +63,7 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 	return &empty.Empty{}, nil
 }
 
-func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.Store, error) {
+func (s *storeService) Get(ctx context.Context, in *pb.StoreRequest) (*pb.Store, error) {
 	err := validators.ValidateRequired("id", in.GetId())
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.St
 	if err != nil {
 		return nil, err
 	}
-	res, err := s.storeUsecase.GetById(ctx, in.GetId())
+	res, err := s.storeUsecase.Get(ctx, in.GetId())
 	if err != nil {
 		return nil, err
 	}
@@ -81,38 +81,10 @@ func (s *storeService) GetById(ctx context.Context, in *pb.StoreRequest) (*pb.St
 	return store, nil
 }
 
-func (s *storeService) GetByIdAndOwner(ctx context.Context, in *pb.GetStoreByIdAndOwnerRequest) (*pb.Store, error) {
-	err := validators.ValidateRequired("id", in.GetID())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetID())
-	if err != nil {
-		return nil, err
-	}
-
-	err = validators.ValidateRequired("owner", in.GetOwner())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("owner", in.GetOwner())
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := s.storeUsecase.GetByIdAndOwner(ctx, in.GetID(), in.GetOwner())
-	if err != nil {
-		return nil, err
-	}
-
-	store := s.newPBStore(res)
-	return store, nil
-}
-
-func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*pb.ListStoreResponse, error) {
+func (s *storeService) List(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
 	var stores []*pb.Store
 
-	res, total, err := s.storeUsecase.GetAll(ctx, in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
+	res, total, err := s.storeUsecase.Index(ctx, in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
 	if err != nil {
 		return nil, err
 	}
@@ -126,110 +98,7 @@ func (s *storeService) GetAll(ctx context.Context, in *pb.GetAllStoreRequest) (*
 	}, nil
 }
 
-func (s *storeService) GetAllByCategory(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
-	var stores []*pb.Store
-	err := validators.ValidateRequired("category", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("category", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-
-	res, total, err := s.storeUsecase.GetAllByCategory(ctx, in.GetId(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range res {
-		stores = append(stores, s.newPBStore(item))
-	}
-
-	return &pb.ListStoreResponse{
-		Stores: stores,
-		Total:  total,
-	}, nil
-}
-
-func (s *storeService) GetAllByCloseLocation(ctx context.Context, in *pb.ListStoreByLocationRequest) (*pb.ListStoreResponse, error) {
-	var stores []*pb.Store
-	err := validators.ValidateLatitude(in.GetLatitude())
-	if err != nil {
-		return nil, err
-	}
-
-	err = validators.ValidateLongitude(in.GetLongitude())
-	if err != nil {
-		return nil, err
-	}
-
-	res, total, err := s.storeUsecase.GetAllByCloseLocation(ctx,
-		in.GetLatitude(),
-		in.GetLongitude(),
-		int(in.GetDistance()),
-		in.GetStatus().String(),
-		int(in.GetLimit()),
-		int(in.GetPage()),
-		in.GetSort(),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range res {
-		stores = append(stores, s.newPBStore(item))
-	}
-
-	return &pb.ListStoreResponse{
-		Stores: stores,
-		Total:  total,
-	}, nil
-}
-
-func (s *storeService) GetAllByTags(ctx context.Context, in *pb.ListStoreByTagsRequest) (*pb.ListStoreResponse, error) {
-	var stores []*pb.Store
-	res, total, err := s.storeUsecase.GetAllByTags(ctx, in.GetTags(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
-	if err != nil {
-		return nil, err
-	}
-	for _, item := range res {
-		stores = append(stores, s.newPBStore(item))
-	}
-
-	return &pb.ListStoreResponse{
-		Stores: stores,
-		Total:  total,
-	}, nil
-}
-
-func (s *storeService) GetAllByOwner(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
-	var stores []*pb.Store
-	err := validators.ValidateRequired("owner", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("owner", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-
-	res, total, err := s.storeUsecase.GetAllByOwner(ctx, in.GetId(), in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
-	if err != nil {
-		return nil, err
-	}
-
-	for _, item := range res {
-		stores = append(stores, s.newPBStore(item))
-	}
-
-	return &pb.ListStoreResponse{
-		Stores: stores,
-		Total:  total,
-	}, nil
-}
-
-func (s *storeService) Active(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
+func (s *storeService) Activate(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
 	err := validators.ValidateRequired("id", in.GetId())
 	if err != nil {
 		return nil, err
