@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package github.com.edlanioj.kbu_store;
+package kbu_store;
 
 option go_package = "application/grpc/pb";
 
@@ -41,60 +41,10 @@ message StoreRequest {
   string id = 1;
 }
 
-message GetStoreByIdAndOwnerRequest {
-  string ID = 1;
-  string owner = 2;
-}
-
-message GetAllStoreRequest {
+message ListStoreRequest {
   int32 page = 1;
   int32 limit = 2;
   string sort = 3;
-}
-
-message ListStoreRequest {
-  string id = 1;
-  int32 page = 2;
-  int32 limit = 3;
-  string sort = 4;
-}
-
-message ListStoreByTagsRequest {
-  repeated string tags = 1;
-  int32 page = 2;
-  int32 limit = 3;
-  string sort = 4;
-}
-
-message ListStoreByStatusRequest {
-  enum StoreStatus {
-    pending = 0;
-    active = 1;
-    desable = 2;
-    block = 3;
-  }
-
-  StoreStatus status = 1;
-  int32 page = 2;
-  int32 limit = 3;
-  string sort = 4;
-}
-
-message ListStoreByLocationRequest {
-  enum StoreStatus {
-    pending = 0;
-    active = 1;
-    desable = 2;
-    block = 3;
-  }
-
-  double latitude = 1;
-  double longitude = 2;
-  int32 distance = 3;
-  StoreStatus status = 4;
-  int32 page = 5;
-  int32 limit = 6;
-  string sort = 7;
 }
 
 message UpdateStoreRequest {
@@ -113,16 +63,10 @@ message ListStoreResponse {
 }
 
 service StoreService {
-  rpc Create(CreateStoreRequest) returns (google.protobuf.Empty) {};
-  rpc GetById(StoreRequest) returns (Store) {};
-  rpc GetByIdAndOwner (GetStoreByIdAndOwnerRequest) returns (Store) {};
-  rpc GetAll (GetAllStoreRequest) returns (ListStoreResponse) {};
-  rpc GetAllByCategory (ListStoreRequest) returns (ListStoreResponse) {};
-  rpc GetAllByCloseLocation (ListStoreByLocationRequest) returns (ListStoreResponse) {};
-  rpc GetAllByOwner (ListStoreRequest) returns (ListStoreResponse) {};
-  rpc GetAllByTags (ListStoreByTagsRequest) returns (ListStoreResponse) {};
-  rpc GetAllByStatus (ListStoreByStatusRequest) returns (ListStoreResponse) {};
-  rpc Active (StoreRequest) returns (google.protobuf.Empty) {};
+  rpc Create (CreateStoreRequest) returns (google.protobuf.Empty) {};
+  rpc Get (StoreRequest) returns (Store) {};
+  rpc List (ListStoreRequest) returns (ListStoreResponse) {};
+  rpc Activate (StoreRequest) returns (google.protobuf.Empty) {};
   rpc Block (StoreRequest) returns (google.protobuf.Empty) {};
   rpc Disable (StoreRequest) returns (google.protobuf.Empty) {};
   rpc Update (UpdateStoreRequest) returns (google.protobuf.Empty) {};
