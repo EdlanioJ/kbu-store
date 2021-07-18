@@ -35,7 +35,6 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 
 	v1.Get("/docs/*", swagger.Handler)
 	storeUsecase := factory.StoreUsecase(database, tc)
-	tu := factory.TagUsecase(database, tc)
 	cu := factory.CategoryUsecase(database, tc)
 
 	storeRoutes := v1.Group("/stores")
@@ -50,7 +49,6 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	storeRoutes.Patch("/:id/disable", storeHandler.Disable)
 	storeRoutes.Delete("/:id", storeHandler.Delete)
 
-	handler.NewTagRoutes(v1, tu)
 	handler.NewCategoryRoutes(v1, cu)
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))

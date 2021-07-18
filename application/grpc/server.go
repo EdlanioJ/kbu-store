@@ -21,15 +21,12 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	reflection.Register(grpcServer)
 
 	categoryUsecase := factory.CategoryUsecase(database, tc)
-	tagUsecase := factory.TagUsecase(database, tc)
 	storeUsecase := factory.StoreUsecase(database, tc)
 
 	categoryGrpcServce := service.NewCategotyServer(categoryUsecase)
-	tagGrpcService := service.NewTagServer(tagUsecase)
 	storeService := service.NewStoreServer(storeUsecase)
 
 	pb.RegisterCategoryServiceServer(grpcServer, categoryGrpcServce)
-	pb.RegisterTagServiceServer(grpcServer, tagGrpcService)
 	pb.RegisterStoreServiceServer(grpcServer, storeService)
 
 	address := fmt.Sprintf("0.0.0.0:%d", port)
