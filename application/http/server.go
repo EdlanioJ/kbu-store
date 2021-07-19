@@ -8,6 +8,8 @@ import (
 	"github.com/EdlanioJ/kbu-store/application/factory"
 	_ "github.com/EdlanioJ/kbu-store/application/http/docs"
 	"github.com/EdlanioJ/kbu-store/application/http/handler"
+	"github.com/EdlanioJ/kbu-store/application/http/middleware"
+	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	swagger "github.com/arsmn/fiber-swagger/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -27,6 +29,10 @@ import (
 // @BasePath /api/v1
 func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	app := fiber.New()
+
+	prometheus := fiberprometheus.New("kbu-store")
+	prometheus.RegisterAt(app, "/metrics")
+	app.Use(prometheus.Middleware)
 
 	app.Use(cors.New())
 	app.Use(helmet.New())
