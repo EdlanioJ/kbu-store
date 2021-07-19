@@ -16,7 +16,7 @@ var httpCmd = &cobra.Command{
 	Short: "start http server",
 	Run: func(*cobra.Command, []string) {
 		var database *gorm.DB
-		config, err := config.LoadConfig(".")
+		config, err := config.LoadConfig()
 		if err != nil {
 			panic(err)
 		}

@@ -12,8 +12,14 @@ type Config struct {
 	DnsTest        string `mapstructure:"PG_DNS_TEST"`
 }
 
-func LoadConfig(path string) (config Config, err error) {
-	viper.AddConfigPath(path)
+func LoadConfig(path ...string) (config Config, err error) {
+	defaultPath := "."
+
+	if len(path) > 0 {
+		defaultPath = path[0]
+	}
+
+	viper.AddConfigPath(defaultPath)
 	viper.SetConfigName("app")
 	viper.SetConfigType("env")
 
