@@ -119,8 +119,8 @@ func (s *Store) Disable() (err error) {
 }
 
 // ToJson returns the JSON encoding of Store
-func (s *Store) ToJson() (res []byte, err error) {
-	res, err = json.Marshal(s)
+func (s *Store) ToJson() (res []byte) {
+	res, _ = json.Marshal(s)
 
 	return
 }
