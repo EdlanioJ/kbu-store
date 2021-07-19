@@ -28,7 +28,9 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func StartServer(database *gorm.DB, tc time.Duration, port int) {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: middleware.ErrorHandler(),
+	})
 
 	prometheus := fiberprometheus.New("kbu-store")
 	prometheus.RegisterAt(app, "/metrics")
@@ -38,16 +40,14 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	app.Use(helmet.New())
 	app.Use(requestid.New())
 
-	app.Use(middleware.NotFound())
-
 	v1 := app.Group("/api/v1")
 
 	v1.Get("/docs/*", swagger.Handler)
-	storeUsecase := factory.StoreUsecase(database, tc)
 	cu := factory.CategoryUsecase(database, tc)
 
-	storeRoutes := v1.Group("/stores")
+	storeUsecase := factory.StoreUsecase(database, tc)
 	storeHandler := handler.NewStoreHandler(storeUsecase)
+	storeRoutes := v1.Group("/stores")
 
 	storeRoutes.Post("/", storeHandler.Store)
 	storeRoutes.Get("/", storeHandler.Index)
@@ -59,6 +59,8 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	storeRoutes.Delete("/:id", storeHandler.Delete)
 
 	handler.NewCategoryRoutes(v1, cu)
+
+	app.Use(middleware.NotFound())
 
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", port)))
 }

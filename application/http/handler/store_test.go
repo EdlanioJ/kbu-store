@@ -55,16 +55,16 @@ func Test_StoreHandler_Store(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on parser body",
+			name:     "should fail if parser body returns an err",
 			arg:      "{error: this is wrong}",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusUnprocessableEntity)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  string(c),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return(errors.New("failed")).Once()
@@ -75,7 +75,7 @@ func Test_StoreHandler_Store(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  string(c),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return(nil).Once()
@@ -121,7 +121,7 @@ func Test_StoreHandler_Index(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int, total string)
 	}{
 		{
-			name: "fail",
+			name: "should fail if usecase returns an error",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Index", mock.Anything, mockArgs.sort, mockArgs.limit, mockArgs.page).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
@@ -133,7 +133,7 @@ func Test_StoreHandler_Index(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			args: mockArgs,
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				store := getStore()
@@ -172,27 +172,27 @@ func Test_StoreHandler_Get(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on id validation",
+			name:     "should fail if id validation returns an error",
 			arg:      "invalid_id",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Get", mock.Anything, mock.AnythingOfType("string")).Return(nil, domain.ErrNotFound).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusNotFound)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Get", mock.Anything, mock.AnythingOfType("string")).Return(getStore(), nil).Once()
@@ -228,27 +228,27 @@ func Test_StoreHandler_Activate(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on id validation",
+			name:     "should fail if id validation returns an error",
 			arg:      "invalid_id",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Active", mock.Anything, mock.AnythingOfType("string")).Return(domain.ErrActived).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusConflict)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Active", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
@@ -284,27 +284,27 @@ func Test_StoreHandler_Block(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on id validation",
+			name:     "should fail if id validation returns an error",
 			arg:      "invalid_id",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Block", mock.Anything, mock.AnythingOfType("string")).Return(domain.ErrBlocked).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusConflict)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Block", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
@@ -340,27 +340,27 @@ func Test_StoreHandler_Disable(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on id validation",
+			name:     "should fail if id validation returns an error",
 			arg:      "invalid_id",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Disable", mock.Anything, mock.AnythingOfType("string")).Return(domain.ErrBlocked).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusConflict)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Disable", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
@@ -396,16 +396,16 @@ func Test_StoreHandler_Delete(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name:     "fail on id validation",
+			name:     "should fail if id validation returns an error",
 			arg:      "invalid_id",
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unextpected Error")).Once()
@@ -416,7 +416,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
@@ -467,7 +467,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 		checkResponse func(t *testing.T, err error, statusCode int)
 	}{
 		{
-			name: "fail on id validation",
+			name: "should fail if id validation returns an error",
 			args: args{
 				id:      "invalid_id",
 				request: "",
@@ -475,11 +475,11 @@ func Test_StoreHandler_Update(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusBadRequest)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on body parser",
+			name: "should fail if body parser returns an error",
 			args: args{
 				id:      uuid.NewV4().String(),
 				request: "{error: this is wrong}",
@@ -487,11 +487,11 @@ func Test_StoreHandler_Update(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusUnprocessableEntity)
+				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should fail if usecase returns an error",
 			args: args{
 				id:      uuid.NewV4().String(),
 				request: string(c),
