@@ -2,6 +2,7 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"mime/multipart"
 	"time"
 
@@ -114,6 +115,13 @@ func (s *Store) Disable() (err error) {
 	s.Status = StoreStatusDisable
 
 	err = s.isValid()
+	return
+}
+
+// ToJson returns the JSON encoding of Store
+func (s *Store) ToJson() (res []byte, err error) {
+	res, err = json.Marshal(s)
+
 	return
 }
 
