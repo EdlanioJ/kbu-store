@@ -16,6 +16,7 @@ require (
 	github.com/lib/pq v1.10.2
 	github.com/prometheus/client_golang v1.9.0
 	github.com/satori/go.uuid v1.2.0
+	github.com/segmentio/kafka-go v0.4.17
 	github.com/shopspring/decimal v1.2.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/cobra v1.2.1
