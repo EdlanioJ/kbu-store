@@ -1,14 +1,14 @@
-.PHONY: test start-http start-grpc build swag mock create-migration migrate-up migrate-down grpc-gen env
+.PHONY: test http.start grpc.start build swag mock migrate.create migrate.up migrate.down grpc.gen env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
 	go test ./... -cover
 
-start-http:
+http.start:
 	go run ./main.go http
 
-start-grpc:
+grpc.start:
 	go run ./main.go grpc
 
 build:
@@ -20,16 +20,16 @@ swag:
 mock:
 	mockery --output "./domain/mocks" --dir "./domain/" --all
 
-create-migration:
+migrate.create:
 	migrate create -ext sql -dir infra/db/migration -seq init_schema
 
-migrate-up:
+migrate.up:
 	migrate -path infra/db/migration -database ${DATABASE} -verbose up
 
-migrate-down:
+migrate.down:
 	migrate -path infra/db/migration -database ${DATABASE} -verbose down
 
-grpc-gen:
+grpc.gen:
 	protoc --proto_path=application/grpc application/grpc/protofiles/*.proto --go_out=. --go-grpc_out=.
 
 env:
