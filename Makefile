@@ -18,7 +18,7 @@ swag:
 	swag init -g "./application/http/server.go" -d "./" -o "./application/http/docs"
 
 mock:
-	mockery --output "./domain/mocks" --dir "./domain/" --all
+	mockery --output "./domain/mocks" --dir "./domain/" --dir "./interfaces/" --all
 
 migrate.create:
 	migrate create -ext sql -dir infra/db/migration -seq init_schema
