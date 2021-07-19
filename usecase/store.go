@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/domain"
+	"github.com/EdlanioJ/kbu-store/interfaces"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/sync/errgroup"
 )
@@ -12,6 +13,7 @@ import (
 type StoreUsecase struct {
 	storeRepo      domain.StoreRepository
 	accountRepo    domain.AccountRepository
+	msgProducer    interfaces.MessengerProducer
 	categoryRepo   domain.CategoryRepository
 	contextTimeout time.Duration
 }
@@ -75,7 +77,10 @@ func (u *StoreUsecase) fillCategoryDetails(c context.Context, data domain.Stores
 
 func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 
 	account, err := domain.NewAccount(0)
 	if err != nil {
@@ -96,7 +101,13 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 		return err
 	}
 
-	return u.storeRepo.Create(ctx, store)
+	err = u.storeRepo.Create(ctx, store)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.create")
 }
 
 func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err error) {
@@ -146,7 +157,10 @@ func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (r
 
 func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -158,12 +172,21 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 		return err
 	}
 
-	return u.storeRepo.Update(ctx, store)
+	err = u.storeRepo.Update(ctx, store)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.update")
 }
 
 func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -174,12 +197,22 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	if err != nil {
 		return err
 	}
-	return u.storeRepo.Update(ctx, store)
+
+	err = u.storeRepo.Update(ctx, store)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.update")
 }
 
 func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -191,13 +224,21 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 		return err
 	}
 
-	return u.storeRepo.Update(ctx, store)
+	err = u.storeRepo.Update(ctx, store)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.update")
 }
 
 func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
 	if err != nil {
 		return err
@@ -205,12 +246,26 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 
 	store.UpdatedAt = time.Now()
 
-	return u.storeRepo.Update(ctx, store)
+	err = store.Disable()
+	if err != nil {
+		return err
+	}
+
+	err = u.storeRepo.Update(ctx, store)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.update")
 }
 
 func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
+	defer func() {
+		cancel()
+		u.msgProducer.Close()
+	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -222,5 +277,11 @@ func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 		return
 	}
 
-	return u.storeRepo.Delete(ctx, id)
+	err = u.storeRepo.Delete(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	storeJson := store.ToJson()
+	return u.msgProducer.Publish(ctx, string(storeJson), "stores.delete")
 }
