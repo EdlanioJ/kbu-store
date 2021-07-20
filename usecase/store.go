@@ -80,7 +80,6 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 
 	account, err := domain.NewAccount(0)
@@ -160,7 +159,6 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -186,7 +184,6 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -212,7 +209,6 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -260,15 +256,9 @@ func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
-	if err != nil {
-		return
-	}
-
-	err = u.accountRepo.Delete(ctx, store.AccountID)
 	if err != nil {
 		return
 	}
@@ -277,7 +267,11 @@ func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	if err != nil {
 		return err
 	}
+	err = u.accountRepo.Delete(ctx, store.AccountID)
+	if err != nil {
+		return
+	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "stores.delete")
+	return u.msgProducer.Publish(ctx, string(storeJson), "store.delete")
 }
