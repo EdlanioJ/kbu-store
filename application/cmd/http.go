@@ -47,5 +47,5 @@ var httpCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(httpCmd)
-	grpcCmd.Flags().IntVarP(&httpPort, "port", "p", 0, "http server port")
+	httpCmd.Flags().IntVarP(&httpPort, "port", "p", 0, "http server port")
 }
