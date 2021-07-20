@@ -30,7 +30,7 @@ func init() {
 	reg.MustRegister(grpcMetrics)
 }
 
-func StartServer(database *gorm.DB, tc time.Duration, port int) {
+func StartServer(database *gorm.DB, tc time.Duration, port int, kafkaBrokes []string) {
 	errorInterceptor := middleware.NewErrorInterceptor()
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(
@@ -42,7 +42,7 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	reflection.Register(grpcServer)
 
 	categoryUsecase := factory.CategoryUsecase(database, tc)
-	storeUsecase := factory.StoreUsecase(database, tc)
+	storeUsecase := factory.StoreUsecase(database, tc, kafkaBrokes)
 
 	categoryGrpcServce := service.NewCategotyServer(categoryUsecase)
 	storeService := service.NewStoreServer(storeUsecase)

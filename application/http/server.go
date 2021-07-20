@@ -27,7 +27,7 @@ import (
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
-func StartServer(database *gorm.DB, tc time.Duration, port int) {
+func StartServer(database *gorm.DB, tc time.Duration, port int, kafkaBrokes []string) {
 	app := fiber.New(fiber.Config{
 		ErrorHandler: middleware.ErrorHandler(),
 	})
@@ -45,7 +45,7 @@ func StartServer(database *gorm.DB, tc time.Duration, port int) {
 	v1.Get("/docs/*", swagger.Handler)
 	cu := factory.CategoryUsecase(database, tc)
 
-	storeUsecase := factory.StoreUsecase(database, tc)
+	storeUsecase := factory.StoreUsecase(database, tc, kafkaBrokes)
 	storeHandler := handler.NewStoreHandler(storeUsecase)
 	storeRoutes := v1.Group("/stores")
 
