@@ -66,12 +66,13 @@ func (s *grpcServer) Serve() {
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 
 	go func() {
+		log.Infof("metric server started at port \u001b[92m%d\u001b[0m", s.MetricPort)
 		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", s.MetricPort), nil); err != nil {
 			log.Fatal("Unable to start a http server.")
 		}
 	}()
 
-	log.Infof("gRPC server started at port %d", s.Port)
+	log.Infof("gRPC server started at port \u001b[92m%d\u001b[0m", s.Port)
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatal(err)
