@@ -8,7 +8,6 @@ import (
 	"github.com/EdlanioJ/kbu-store/application/grpc"
 	"github.com/EdlanioJ/kbu-store/infra/db"
 	"github.com/spf13/cobra"
-	"gorm.io/gorm"
 )
 
 var port int
@@ -18,16 +17,14 @@ var grpcCmd = &cobra.Command{
 	Use:   "grpc",
 	Short: "start grpc server",
 	Run: func(*cobra.Command, []string) {
-		var database *gorm.DB
 		config, err := config.LoadConfig(".")
 		if err != nil {
 			panic(err)
 		}
 
+		database := db.GORMConnection(config.Dns, config.Env)
 		if config.Env == "test" {
 			database = db.GORMConnection(config.DnsTest, config.Env)
-		} else {
-			database = db.GORMConnection(config.Dns, config.Env)
 		}
 
 		tc := time.Duration(config.Timeout) * time.Second
