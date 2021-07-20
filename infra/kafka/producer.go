@@ -10,9 +10,9 @@ type KafkaProducer struct {
 	Writer *kafka.Writer
 }
 
-func NewKafkaProducer(kafkaURL string) *KafkaProducer {
+func NewKafkaProducer(kafkaURLs []string) *KafkaProducer {
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  []string{kafkaURL},
+		Brokers:  kafkaURLs,
 		Balancer: &kafka.LeastBytes{},
 	})
 
