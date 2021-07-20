@@ -11,6 +11,8 @@ import (
 	"gorm.io/gorm"
 )
 
+var httpPort int
+
 // httpCmd represents the http command
 var httpCmd = &cobra.Command{
 	Use:   "http",
@@ -31,10 +33,13 @@ var httpCmd = &cobra.Command{
 		tc := time.Duration(config.Timeout) * time.Second
 
 		httpServer := http.NewHttpServer()
+		httpServer.Port = config.Port
 
+		if httpPort != 0 {
+			httpServer.Port = httpPort
+		}
 		httpServer.StoreUsecase = factory.StoreUsecase(database, tc, config.KafkaBrokers)
 		httpServer.CategoryUsecase = factory.CategoryUsecase(database, tc)
-		httpServer.Port = config.Port
 
 		httpServer.Serve()
 	},
@@ -42,4 +47,5 @@ var httpCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(httpCmd)
+	grpcCmd.Flags().IntVarP(&httpPort, "port", "p", 0, "http server port")
 }
