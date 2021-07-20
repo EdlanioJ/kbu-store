@@ -4,12 +4,11 @@ import (
 	"fmt"
 	"net"
 	"net/http"
-	"time"
 
-	"github.com/EdlanioJ/kbu-store/application/factory"
 	"github.com/EdlanioJ/kbu-store/application/grpc/middleware"
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/application/grpc/service"
+	"github.com/EdlanioJ/kbu-store/domain"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
@@ -17,7 +16,6 @@ import (
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
-	"gorm.io/gorm"
 )
 
 var (
@@ -30,7 +28,18 @@ func init() {
 	reg.MustRegister(grpcMetrics)
 }
 
-func StartServer(database *gorm.DB, tc time.Duration, port int, kafkaBrokes []string) {
+type grpcServer struct {
+	Port            int
+	MetricPort      int
+	StoreUsecase    domain.StoreUsecase
+	CategoryUsecase domain.CategoryUsecase
+}
+
+func NewGrpcServer() *grpcServer {
+	return &grpcServer{}
+}
+
+func (s *grpcServer) Serve() {
 	errorInterceptor := middleware.NewErrorInterceptor()
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(
@@ -41,16 +50,13 @@ func StartServer(database *gorm.DB, tc time.Duration, port int, kafkaBrokes []st
 	))
 	reflection.Register(grpcServer)
 
-	categoryUsecase := factory.CategoryUsecase(database, tc)
-	storeUsecase := factory.StoreUsecase(database, tc, kafkaBrokes)
-
-	categoryGrpcServce := service.NewCategotyServer(categoryUsecase)
-	storeService := service.NewStoreServer(storeUsecase)
+	categoryGrpcServce := service.NewCategotyServer(s.CategoryUsecase)
+	storeService := service.NewStoreServer(s.StoreUsecase)
 
 	pb.RegisterCategoryServiceServer(grpcServer, categoryGrpcServce)
 	pb.RegisterStoreServiceServer(grpcServer, storeService)
 
-	address := fmt.Sprintf("0.0.0.0:%d", port)
+	address := fmt.Sprintf("0.0.0.0:%d", s.Port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		log.Error(err)
@@ -60,12 +66,12 @@ func StartServer(database *gorm.DB, tc time.Duration, port int, kafkaBrokes []st
 	http.Handle("/metrics", promhttp.HandlerFor(reg, promhttp.HandlerOpts{}))
 
 	go func() {
-		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", 3330), nil); err != nil {
+		if err := http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", s.MetricPort), nil); err != nil {
 			log.Fatal("Unable to start a http server.")
 		}
 	}()
 
-	log.Infof("gRPC server started at port %d", port)
+	log.Infof("gRPC server started at port %d", s.Port)
 	err = grpcServer.Serve(listener)
 	if err != nil {
 		log.Fatal(err)

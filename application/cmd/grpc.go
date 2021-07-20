@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/application/config"
+	"github.com/EdlanioJ/kbu-store/application/factory"
 	"github.com/EdlanioJ/kbu-store/application/grpc"
 	"github.com/EdlanioJ/kbu-store/infra/db"
 	"github.com/spf13/cobra"
@@ -29,12 +30,23 @@ var grpcCmd = &cobra.Command{
 			database = db.GORMConnection(config.Dns, config.Env)
 		}
 
-		tc := time.Duration(config.TimeoutContext) * time.Second
-		grpc.StartServer(database, tc, port)
+		tc := time.Duration(config.Timeout) * time.Second
+		grpcServer := grpc.NewGrpcServer()
+
+		grpcServer.Port = config.GrpcPort
+		if port != 0 {
+			grpcServer.Port = port
+		}
+
+		grpcServer.MetricPort = config.MetricPort
+		grpcServer.CategoryUsecase = factory.CategoryUsecase(database, tc)
+		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, config.KafkaBrokers)
+
+		grpcServer.Serve()
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(grpcCmd)
-	grpcCmd.Flags().IntVarP(&port, "port", "p", 50051, "grpc server port")
+	grpcCmd.Flags().IntVarP(&port, "port", "p", 0, "grpc server port")
 }
