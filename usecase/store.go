@@ -234,7 +234,6 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer func() {
 		cancel()
-		u.msgProducer.Close()
 	}()
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
 	if err != nil {
