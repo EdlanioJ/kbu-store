@@ -3,7 +3,6 @@ package domain
 import (
 	"context"
 	"encoding/json"
-	"mime/multipart"
 	"time"
 
 	"github.com/asaskevich/govalidator"
@@ -27,16 +26,15 @@ type Stores []*Store
 // A Store belong to the domain layer.
 type Store struct {
 	Base        `valid:"required"`
-	Name        string                `json:"name" valid:"notnull"`
-	Description string                `json:"description" valid:"-"`
-	Status      string                `json:"status" valid:"notnull,status"`
-	UserID      string                `json:"user_id" valid:"notnull,uuidv4"`
-	AccountID   string                `json:"account_id" valid:"notnull,uuidv4"`
-	Category    *Category             `valid:"-"`
-	Image       *multipart.FileHeader `json:"-" valid:"-"`
-	Image_Url   string                `json:"image_url" valid:"-"`
-	Tags        []string              `json:"tags" valid:"-"`
-	Position    Position              `json:"location" valid:"-"`
+	Name        string   `json:"name" valid:"notnull"`
+	Description string   `json:"description" valid:"-"`
+	Status      string   `json:"status" valid:"notnull,status"`
+	UserID      string   `json:"user_id" valid:"notnull,uuidv4"`
+	AccountID   string   `json:"account_id" valid:"notnull,uuidv4"`
+	CategoryID  string   `json:"category_id" valid:"notnull,uuidv4"`
+	Image       string   `json:"image" valid:"-"`
+	Tags        []string `json:"tags" valid:"-"`
+	Position    Position `json:"location" valid:"-"`
 }
 
 type (
@@ -126,13 +124,13 @@ func (s *Store) ToJson() (res []byte) {
 }
 
 // NewStore creates a store entity
-func NewStore(name, description, userID string, category *Category, accountID string, tags []string, lat, lng float64) (store *Store, err error) {
+func NewStore(name, description, userID string, categoryID string, accountID string, tags []string, lat, lng float64) (store *Store, err error) {
 	store = &Store{
 		Name:        name,
 		Description: description,
 		UserID:      userID,
 		AccountID:   accountID,
-		Category:    category,
+		CategoryID:  categoryID,
 		Tags:        tags,
 	}
 

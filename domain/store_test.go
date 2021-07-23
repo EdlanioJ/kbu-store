@@ -13,7 +13,8 @@ func TestNewStore(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore("", "", "", category, account.ID, tags, 0, 0)
+
+		store, err := domain.NewStore("", "", "", category.ID, account.ID, tags, 0, 0)
 
 		assert.Nil(t, store)
 		assert.Error(t, err)
@@ -27,7 +28,7 @@ func TestNewStore(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 
 		assert.NotNil(t, store)
 		assert.Nil(t, err)
@@ -43,7 +44,7 @@ func TestBock(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 		store.Status = domain.StoreStatusBlock
 		store.ID = "001"
@@ -60,7 +61,7 @@ func TestBock(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 		store.ID = "001"
 		err = store.Block()
@@ -76,7 +77,7 @@ func TestBock(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 		store.ID = "001"
 		store.Status = domain.StoreStatusActive
@@ -92,7 +93,7 @@ func TestBock(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		store.Status = domain.StoreStatusActive
 		err := store.Block()
 
@@ -109,7 +110,7 @@ func TestActivate(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 		store.Status = domain.StoreStatusActive
 		err = store.Activate()
@@ -125,7 +126,7 @@ func TestActivate(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 
 		store.ID = "001"
@@ -141,7 +142,7 @@ func TestActivate(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		assert.NoError(t, err)
 		err = store.Activate()
 
@@ -158,7 +159,7 @@ func TestDisable(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		store.Status = domain.StoreStatusDisable
 		err := store.Disable()
 
@@ -173,7 +174,7 @@ func TestDisable(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 		store.Status = domain.StoreStatusBlock
 		err := store.Disable()
 
@@ -188,7 +189,7 @@ func TestDisable(t *testing.T) {
 
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 
 		store.ID = "001"
 		err := store.Disable()
@@ -203,7 +204,7 @@ func TestDisable(t *testing.T) {
 		category, _ := domain.NewCategory("Type 001")
 		account, _ := domain.NewAccount(200)
 		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, category, account.ID, tags, 0, 0)
+		store, _ := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, 0, 0)
 
 		err := store.Disable()
 
