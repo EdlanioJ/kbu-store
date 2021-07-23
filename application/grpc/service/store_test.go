@@ -17,11 +17,6 @@ import (
 )
 
 func getStore() *domain.Store {
-	c := new(domain.Category)
-	c.ID = uuid.NewV4().String()
-	c.Name = "store 001"
-	c.Status = domain.CategoryStatusActive
-
 	store := &domain.Store{
 		Base: domain.Base{
 			ID:        uuid.NewV4().String(),
@@ -33,7 +28,7 @@ func getStore() *domain.Store {
 		Status:      domain.StoreStatusPending,
 		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
-		Category:    c,
+		CategoryID:  uuid.NewV4().String(),
 		Position: domain.Position{
 			Lat: -8.8368200,
 			Lng: 13.2343200,
