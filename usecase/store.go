@@ -6,8 +6,6 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/domain"
 	"github.com/EdlanioJ/kbu-store/interfaces"
-	"github.com/sirupsen/logrus"
-	"golang.org/x/sync/errgroup"
 )
 
 type StoreUsecase struct {
@@ -28,59 +26,18 @@ func NewStoreUsecase(s domain.StoreRepository, a domain.AccountRepository, c dom
 	}
 }
 
-func (u *StoreUsecase) fillCategoryDetails(c context.Context, data domain.Stores) (domain.Stores, error) {
-	g, ctx := errgroup.WithContext(c)
-
-	mapCategories := map[string]*domain.Category{}
-	for _, store := range data {
-		mapCategories[store.Category.ID] = &domain.Category{}
-	}
-
-	chanCategory := make(chan *domain.Category)
-	for categoryID := range mapCategories {
-		categoryID := categoryID
-		g.Go(func() error {
-			res, err := u.categoryRepo.GetById(ctx, categoryID)
-			if err != nil {
-				return err
-			}
-			chanCategory <- res
-			return nil
-		})
-	}
-
-	go func() {
-		err := g.Wait()
-		if err != nil {
-			logrus.Error(err)
-		}
-
-		close(chanCategory)
-	}()
-
-	for category := range chanCategory {
-		if category != (&domain.Category{}) {
-			mapCategories[category.ID] = category
-		}
-	}
-
-	if err := g.Wait(); err != nil {
-		return nil, err
-	}
-
-	for index, item := range data {
-		if a, ok := mapCategories[item.Category.ID]; ok {
-			data[index].Category = a
-		}
-	}
-	return data, nil
-}
-
 func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
+
+	category, err := u.categoryRepo.GetById(ctx, categoryID)
+	if err != nil {
+		return err
+	}
+
+	if category.Status != domain.CategoryStatusActive {
+		return domain.ErrNotFound
+	}
 
 	account, err := domain.NewAccount(0)
 	if err != nil {
@@ -91,12 +48,8 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 	if err != nil {
 		return err
 	}
-	category, err := u.categoryRepo.GetByIdAndStatus(ctx, categoryID, domain.CategoryStatusActive)
-	if err != nil {
-		return err
-	}
 
-	store, err := domain.NewStore(name, description, externalID, category, account.ID, tags, lat, lng)
+	store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, lat, lng)
 	if err != nil {
 		return err
 	}
@@ -119,16 +72,13 @@ func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err
 		return
 	}
 
-	category, err := u.categoryRepo.GetById(ctx, res.Category.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	res.Category = category
 	return
 }
 
 func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (res domain.Stores, total int64, err error) {
+	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	defer cancel()
+
 	if limit <= 0 {
 		limit = 10
 	}
@@ -139,27 +89,18 @@ func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (r
 		page = 1
 	}
 
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
 	res, total, err = u.storeRepo.FindAll(ctx, sort, limit, page)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	res, err = u.fillCategoryDetails(ctx, res)
 	if err != nil {
 		total = 0
 		return
 	}
+
 	return
 }
 
 func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -182,9 +123,7 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 
 func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -232,9 +171,8 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 
 func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
+
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
 	if err != nil {
 		return err
@@ -253,9 +191,7 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 
 func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
