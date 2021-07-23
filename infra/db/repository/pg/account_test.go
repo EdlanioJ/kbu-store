@@ -19,7 +19,7 @@ func getAccount() *domain.Account {
 	return account
 }
 
-func Test_AccountRepo_Create(t *testing.T) {
+func Test_AccountRepo_Store(t *testing.T) {
 	a := getAccount()
 	testCases := []struct {
 		name          string
@@ -79,13 +79,13 @@ func Test_AccountRepo_Create(t *testing.T) {
 			assert.NoError(t, err)
 			repo := pg.NewAccountRepository(db)
 			tc.builtSts(mock)
-			err = repo.Create(context.TODO(), tc.arg)
+			err = repo.Store(context.TODO(), tc.arg)
 			tc.checkResponse(t, err)
 		})
 	}
 }
 
-func Test_AccountRepo_GetById(t *testing.T) {
+func Test_AccountRepo_FindByID(t *testing.T) {
 	id := uuid.NewV4().String()
 	a := getAccount()
 	testCases := []struct {
@@ -95,7 +95,7 @@ func Test_AccountRepo_GetById(t *testing.T) {
 		checkResponse func(t *testing.T, res *domain.Account, err error)
 	}{
 		{
-			name: "fail on exec query",
+			name: "should fail if exec query returns error",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `SELECT * FROM accounts WHERE id = $1`
@@ -107,7 +107,7 @@ func Test_AccountRepo_GetById(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `SELECT * FROM accounts WHERE id = $1`
@@ -130,7 +130,7 @@ func Test_AccountRepo_GetById(t *testing.T) {
 			assert.NoError(t, err)
 			repo := pg.NewAccountRepository(db)
 			tc.builtSts(mock)
-			res, err := repo.GetById(context.TODO(), tc.arg)
+			res, err := repo.FindByID(context.TODO(), tc.arg)
 			tc.checkResponse(t, res, err)
 		})
 	}
@@ -145,7 +145,7 @@ func Test_AccountRepo_Update(t *testing.T) {
 		checkResponse func(t *testing.T, err error)
 	}{
 		{
-			name: "fail on exec query",
+			name: "should fail if exec query returns error",
 			arg:  a,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE accounts SET created_at=$1,updated_at=$2,balance=$3 WHERE id = $4`
@@ -156,7 +156,7 @@ func Test_AccountRepo_Update(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on get affected row",
+			name: "should fail if get affected row returns error",
 			arg:  a,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE accounts SET created_at=$1,updated_at=$2,balance=$3 WHERE id = $4`
@@ -167,7 +167,7 @@ func Test_AccountRepo_Update(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on invalid number of affected row",
+			name: "should fail if returns invalid number of affected row",
 			arg:  a,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE accounts SET created_at=$1,updated_at=$2,balance=$3 WHERE id = $4`
@@ -178,7 +178,7 @@ func Test_AccountRepo_Update(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  a,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE accounts SET created_at=$1,updated_at=$2,balance=$3 WHERE id = $4`
@@ -211,7 +211,7 @@ func Test_AccountRepo_Delete(t *testing.T) {
 		checkResponse func(t *testing.T, err error)
 	}{
 		{
-			name: "fail on exec query",
+			name: "should fail if exec query returns error",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `DELETE FROM accounts WHERE id = $1`
@@ -222,7 +222,7 @@ func Test_AccountRepo_Delete(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on get affected row",
+			name: "should fail if get affected row returns error",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `DELETE FROM accounts WHERE id = $1`
@@ -233,7 +233,7 @@ func Test_AccountRepo_Delete(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on invalid number of affected row",
+			name: "should fail if returns invalid number of affected row",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `DELETE FROM accounts WHERE id = $1`
@@ -244,7 +244,7 @@ func Test_AccountRepo_Delete(t *testing.T) {
 			},
 		},
 		{
-			name: "success",
+			name: "should succeed",
 			arg:  id,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `DELETE FROM accounts WHERE id = $1`

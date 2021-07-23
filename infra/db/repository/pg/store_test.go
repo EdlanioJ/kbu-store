@@ -38,7 +38,7 @@ func getStore() *domain.Store {
 	return store
 }
 
-func Test_StoreRepo_Create(t *testing.T) {
+func Test_StoreRepo_Store(t *testing.T) {
 	s := getStore()
 	testCases := []struct {
 		name          string
@@ -98,7 +98,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 			assert.NoError(t, err)
 			repo := pg.NewStoreRepository(db)
 			tc.builtSts(mock)
-			err = repo.Create(context.TODO(), tc.arg)
+			err = repo.Store(context.TODO(), tc.arg)
 			tc.checkResponse(t, err)
 		})
 	}

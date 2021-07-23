@@ -18,7 +18,7 @@ func NewAccountRepository(db *sql.DB) *accountRepository {
 	}
 }
 
-func (r *accountRepository) Create(ctx context.Context, a *domain.Account) (err error) {
+func (r *accountRepository) Store(ctx context.Context, a *domain.Account) (err error) {
 	query := `INSERT INTO accounts (id,created_at,updated_at,balance) VALUES ($1,$2,$3,$4)`
 	res, err := r.db.ExecContext(ctx, query, a.ID, a.CreatedAt, a.UpdatedAt, a.Balance)
 	if err != nil {
@@ -37,7 +37,7 @@ func (r *accountRepository) Create(ctx context.Context, a *domain.Account) (err 
 	return
 }
 
-func (r *accountRepository) GetById(ctx context.Context, id string) (res *domain.Account, err error) {
+func (r *accountRepository) FindByID(ctx context.Context, id string) (res *domain.Account, err error) {
 	query := `SELECT * FROM accounts WHERE id = $1`
 	row := r.db.QueryRowContext(ctx, query, id)
 

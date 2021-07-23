@@ -59,7 +59,7 @@ func (r *storeRepository) getAll(ctx context.Context, query string, args ...inte
 	return
 }
 
-func (r *storeRepository) Create(ctx context.Context, s *domain.Store) (err error) {
+func (r *storeRepository) Store(ctx context.Context, s *domain.Store) (err error) {
 	query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
 	res, err := r.db.ExecContext(ctx, query, s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
 	if err != nil {
