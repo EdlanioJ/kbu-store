@@ -17,9 +17,8 @@ import (
 )
 
 type httpServer struct {
-	Port            int
-	StoreUsecase    domain.StoreUsecase
-	CategoryUsecase domain.CategoryUsecase
+	Port         int
+	StoreUsecase domain.StoreUsecase
 }
 
 func NewHttpServer() *httpServer {
@@ -37,7 +36,7 @@ func NewHttpServer() *httpServer {
 // @BasePath /api/v1
 func (s *httpServer) Serve() {
 	app := fiber.New(fiber.Config{
-		ErrorHandler: middleware.ErrorHandler(),
+		ErrorHandler: handler.ErrorHandler(),
 	})
 
 	prometheus := fiberprometheus.New("kbu-store")
@@ -63,8 +62,6 @@ func (s *httpServer) Serve() {
 	storeRoutes.Patch("/:id/block", storeHandler.Block)
 	storeRoutes.Patch("/:id/disable", storeHandler.Disable)
 	storeRoutes.Delete("/:id", storeHandler.Delete)
-
-	handler.NewCategoryRoutes(v1, s.CategoryUsecase)
 
 	app.Use(middleware.NotFound())
 

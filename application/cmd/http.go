@@ -36,7 +36,6 @@ var httpCmd = &cobra.Command{
 			httpServer.Port = httpPort
 		}
 		httpServer.StoreUsecase = factory.StoreUsecase(database, tc, config.KafkaBrokers)
-		httpServer.CategoryUsecase = factory.CategoryUsecase(database, tc)
 
 		httpServer.Serve()
 	},
