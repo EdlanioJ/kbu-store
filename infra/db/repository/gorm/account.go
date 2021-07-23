@@ -18,7 +18,7 @@ func NewAccountRepository(db *gorm.DB) *accountRepository {
 	}
 }
 
-func (r *accountRepository) Create(ctx context.Context, account *domain.Account) (err error) {
+func (r *accountRepository) Store(ctx context.Context, account *domain.Account) (err error) {
 	accountEntity := &model.Account{}
 	accountEntity.FromAccountDomain(account)
 
@@ -29,7 +29,7 @@ func (r *accountRepository) Create(ctx context.Context, account *domain.Account)
 	return
 }
 
-func (r *accountRepository) GetById(ctx context.Context, id string) (res *domain.Account, err error) {
+func (r *accountRepository) FindByID(ctx context.Context, id string) (res *domain.Account, err error) {
 	account := &model.Account{}
 
 	err = r.db.WithContext(ctx).

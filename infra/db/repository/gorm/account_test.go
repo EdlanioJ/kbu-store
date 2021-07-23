@@ -25,7 +25,7 @@ func Test_GormAccountRepository(t *testing.T) {
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
-		err := repo.Create(context.TODO(), account)
+		err := repo.Store(context.TODO(), account)
 		is.NoError(err)
 	})
 	t.Run("account repo -> get by id", func(t *testing.T) {
@@ -44,7 +44,7 @@ func Test_GormAccountRepository(t *testing.T) {
 			WithArgs(account.ID).
 			WillReturnRows(row)
 
-		res, err := repo.GetById(context.TODO(), account.ID)
+		res, err := repo.FindByID(context.TODO(), account.ID)
 
 		is.NoError(err)
 		is.NotNil(res)
@@ -66,24 +66,6 @@ func Test_GormAccountRepository(t *testing.T) {
 		mock.ExpectCommit()
 
 		err := repo.Update(context.TODO(), account)
-		is.NoError(err)
-	})
-
-	t.Run("account repo -> delete", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		account := getAccount()
-		repo := gorm.NewAccountRepository(db)
-
-		query := `DELETE FROM "accounts" WHERE id = $1`
-
-		mock.ExpectBegin()
-		mock.ExpectExec(regexp.QuoteMeta(query)).
-			WithArgs(account.ID).
-			WillReturnResult(sqlmock.NewResult(1, 1))
-		mock.ExpectCommit()
-
-		err := repo.Delete(context.TODO(), account.ID)
 		is.NoError(err)
 	})
 }

@@ -44,7 +44,7 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 		return err
 	}
 
-	err = u.accountRepo.Create(ctx, account)
+	err = u.accountRepo.Store(ctx, account)
 	if err != nil {
 		return err
 	}

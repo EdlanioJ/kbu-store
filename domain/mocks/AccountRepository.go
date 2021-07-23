@@ -14,20 +14,6 @@ type AccountRepository struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: ctx, account
-func (_m *AccountRepository) Create(ctx context.Context, account *domain.Account) error {
-	ret := _m.Called(ctx, account)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Account) error); ok {
-		r0 = rf(ctx, account)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
 // Delete provides a mock function with given fields: ctx, id
 func (_m *AccountRepository) Delete(ctx context.Context, id string) error {
 	ret := _m.Called(ctx, id)
@@ -42,8 +28,8 @@ func (_m *AccountRepository) Delete(ctx context.Context, id string) error {
 	return r0
 }
 
-// GetById provides a mock function with given fields: ctx, id
-func (_m *AccountRepository) GetById(ctx context.Context, id string) (*domain.Account, error) {
+// FindByID provides a mock function with given fields: ctx, id
+func (_m *AccountRepository) FindByID(ctx context.Context, id string) (*domain.Account, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *domain.Account
@@ -63,6 +49,20 @@ func (_m *AccountRepository) GetById(ctx context.Context, id string) (*domain.Ac
 	}
 
 	return r0, r1
+}
+
+// Store provides a mock function with given fields: ctx, account
+func (_m *AccountRepository) Store(ctx context.Context, account *domain.Account) error {
+	ret := _m.Called(ctx, account)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Account) error); ok {
+		r0 = rf(ctx, account)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
 }
 
 // Update provides a mock function with given fields: ctx, account

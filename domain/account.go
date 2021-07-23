@@ -18,8 +18,8 @@ type Account struct {
 
 type (
 	AccountRepository interface {
-		Create(ctx context.Context, account *Account) error
-		GetById(ctx context.Context, id string) (*Account, error)
+		Store(ctx context.Context, account *Account) error
+		FindByID(ctx context.Context, id string) (*Account, error)
 		Update(ctx context.Context, account *Account) error
 		Delete(ctx context.Context, id string) error
 	}
