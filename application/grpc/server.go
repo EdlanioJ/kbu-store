@@ -5,7 +5,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/EdlanioJ/kbu-store/application/grpc/middleware"
+	"github.com/EdlanioJ/kbu-store/application/grpc/interceptors"
 	"github.com/EdlanioJ/kbu-store/application/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/application/grpc/service"
 	"github.com/EdlanioJ/kbu-store/domain"
@@ -40,7 +40,7 @@ func NewGrpcServer() *grpcServer {
 }
 
 func (s *grpcServer) Serve() {
-	errorInterceptor := middleware.NewErrorInterceptor()
+	errorInterceptor := interceptors.NewErrorInterceptor()
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(
 		grpc_middleware.ChainUnaryServer(
