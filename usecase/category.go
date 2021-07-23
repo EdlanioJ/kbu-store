@@ -28,131 +28,17 @@ func (u *CategoryUsecase) Create(c context.Context, name string) (err error) {
 		return
 	}
 
-	err = u.categoryRepo.Create(ctx, category)
+	err = u.categoryRepo.Store(ctx, category)
 	return
-}
-
-func (u *CategoryUsecase) GetById(c context.Context, id string) (res *domain.Category, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, err = u.categoryRepo.GetById(ctx, id)
-	return
-}
-
-func (u *CategoryUsecase) GetByIdAndStatus(c context.Context, id, status string) (res *domain.Category, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, err = u.categoryRepo.GetByIdAndStatus(ctx, id, status)
-	return
-}
-
-func (u *CategoryUsecase) GetAll(c context.Context, sort string, page, limit int) (res []*domain.Category, total int64, err error) {
-	if limit <= 0 {
-		limit = 10
-	}
-	if sort == "" {
-		sort = "created_at"
-	}
-	if page <= 0 {
-		page = 1
-	}
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, total, err = u.categoryRepo.GetAll(ctx, sort, page, limit)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	return
-}
-
-func (u *CategoryUsecase) GetAllByStatus(c context.Context, status, sort string, page, limit int) (res []*domain.Category, total int64, err error) {
-	if limit <= 0 {
-		limit = 10
-	}
-	if sort == "" {
-		sort = "created_at"
-	}
-	if page <= 0 {
-		page = 1
-	}
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	res, total, err = u.categoryRepo.GetAllByStatus(ctx, status, sort, page, limit)
-	if err != nil {
-		return nil, 0, err
-	}
-	return
-}
-func (u *CategoryUsecase) Activate(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	category, err := u.categoryRepo.GetById(ctx, id)
-	if err != nil {
-		return
-	}
-
-	if category.ID == "" {
-		return domain.ErrNotFound
-	}
-
-	if category.Status == domain.CategoryStatusActive {
-		return domain.ErrActived
-	}
-
-	err = category.Activate()
-	if err != nil {
-		return
-	}
-
-	return u.categoryRepo.Update(ctx, category)
-}
-
-func (u *CategoryUsecase) Disable(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
-	defer cancel()
-
-	category, err := u.categoryRepo.GetById(ctx, id)
-	if err != nil {
-		return
-	}
-
-	if category.ID == "" {
-		return domain.ErrNotFound
-	}
-
-	if category.Status == domain.CategoryStatusInactive {
-		return domain.ErrBlocked
-	}
-
-	if category.Status == domain.CategoryStatusPending {
-		return domain.ErrIsPending
-	}
-
-	err = category.Disable()
-	if err != nil {
-		return
-	}
-
-	return u.categoryRepo.Update(ctx, category)
 }
 
 func (u *CategoryUsecase) Update(c context.Context, Category *domain.Category) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	existedCategory, err := u.categoryRepo.GetById(ctx, Category.ID)
+	existedCategory, err := u.categoryRepo.FindByID(ctx, Category.ID)
 	if err != nil {
 		return
-	}
-
-	if existedCategory.ID == "" {
-		return domain.ErrNotFound
 	}
 
 	Category.Status = existedCategory.Status

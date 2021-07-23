@@ -30,7 +30,7 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	category, err := u.categoryRepo.GetById(ctx, categoryID)
+	category, err := u.categoryRepo.FindByID(ctx, categoryID)
 	if err != nil {
 		return err
 	}

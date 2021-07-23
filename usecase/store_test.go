@@ -43,7 +43,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			name: "should fail if get category by id returns error",
 			args: a,
 			builtSts: func(_ *mocks.StoreRepository, _ *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(nil, errors.New("Unexpexted Error")).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -53,7 +53,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			name: "should fail if get category by id returns with invalid status",
 			args: a,
 			builtSts: func(_ *mocks.StoreRepository, _ *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -64,7 +64,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			args: a,
 			builtSts: func(_ *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
 				c.Status = domain.StoreStatusActive
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 				accountRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 
 			},
@@ -82,7 +82,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 				tags:        s.Tags,
 			},
 			builtSts: func(_ *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 				accountRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 
 			},
@@ -95,7 +95,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			args: a,
 			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
 				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 				accountRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 
@@ -109,7 +109,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			args: a,
 			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, msgProducer *mocks.MessengerProducer) {
 				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 				accountRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
@@ -124,7 +124,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			args: a,
 			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, msgProducer *mocks.MessengerProducer) {
 				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("GetById", mock.Anything, s.CategoryID).Return(c, nil).Once()
+				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
 				accountRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
