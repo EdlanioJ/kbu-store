@@ -39,7 +39,7 @@ func NewStoreServiceClient(cc grpc.ClientConnInterface) StoreServiceClient {
 
 func (c *storeServiceClient) Create(ctx context.Context, in *CreateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Create", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Create", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +48,7 @@ func (c *storeServiceClient) Create(ctx context.Context, in *CreateStoreRequest,
 
 func (c *storeServiceClient) Get(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*Store, error) {
 	out := new(Store)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Get", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Get", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +57,7 @@ func (c *storeServiceClient) Get(ctx context.Context, in *StoreRequest, opts ...
 
 func (c *storeServiceClient) List(ctx context.Context, in *ListStoreRequest, opts ...grpc.CallOption) (*ListStoreResponse, error) {
 	out := new(ListStoreResponse)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/List", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/List", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -66,7 +66,7 @@ func (c *storeServiceClient) List(ctx context.Context, in *ListStoreRequest, opt
 
 func (c *storeServiceClient) Activate(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Activate", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Activate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -75,7 +75,7 @@ func (c *storeServiceClient) Activate(ctx context.Context, in *StoreRequest, opt
 
 func (c *storeServiceClient) Block(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Block", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Block", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -84,7 +84,7 @@ func (c *storeServiceClient) Block(ctx context.Context, in *StoreRequest, opts .
 
 func (c *storeServiceClient) Disable(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Disable", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Disable", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -93,7 +93,7 @@ func (c *storeServiceClient) Disable(ctx context.Context, in *StoreRequest, opts
 
 func (c *storeServiceClient) Update(ctx context.Context, in *UpdateStoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Update", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Update", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +102,7 @@ func (c *storeServiceClient) Update(ctx context.Context, in *UpdateStoreRequest,
 
 func (c *storeServiceClient) Delete(ctx context.Context, in *StoreRequest, opts ...grpc.CallOption) (*empty.Empty, error) {
 	out := new(empty.Empty)
-	err := c.cc.Invoke(ctx, "/kbu_store.StoreService/Delete", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/edlanioj.kbu.store.StoreService/Delete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +175,7 @@ func _StoreService_Create_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Create",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Create",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Create(ctx, req.(*CreateStoreRequest))
@@ -193,7 +193,7 @@ func _StoreService_Get_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Get",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Get",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Get(ctx, req.(*StoreRequest))
@@ -211,7 +211,7 @@ func _StoreService_List_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/List",
+		FullMethod: "/edlanioj.kbu.store.StoreService/List",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).List(ctx, req.(*ListStoreRequest))
@@ -229,7 +229,7 @@ func _StoreService_Activate_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Activate",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Activate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Activate(ctx, req.(*StoreRequest))
@@ -247,7 +247,7 @@ func _StoreService_Block_Handler(srv interface{}, ctx context.Context, dec func(
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Block",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Block",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Block(ctx, req.(*StoreRequest))
@@ -265,7 +265,7 @@ func _StoreService_Disable_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Disable",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Disable",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Disable(ctx, req.(*StoreRequest))
@@ -283,7 +283,7 @@ func _StoreService_Update_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Update",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Update",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Update(ctx, req.(*UpdateStoreRequest))
@@ -301,7 +301,7 @@ func _StoreService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/kbu_store.StoreService/Delete",
+		FullMethod: "/edlanioj.kbu.store.StoreService/Delete",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(StoreServiceServer).Delete(ctx, req.(*StoreRequest))
@@ -313,7 +313,7 @@ func _StoreService_Delete_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var StoreService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "kbu_store.StoreService",
+	ServiceName: "edlanioj.kbu.store.StoreService",
 	HandlerType: (*StoreServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

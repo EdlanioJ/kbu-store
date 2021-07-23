@@ -1,10 +1,8 @@
 syntax = "proto3";
 
-package kbu_store;
+package edlanioj.kbu.store;
 
 option go_package = "application/grpc/pb";
-
-import "protofiles/category.proto";
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/empty.proto";
@@ -21,10 +19,11 @@ message Store {
   string status = 4;
   string externalID = 5;
   string accountID = 6;
-  repeated string tags = 7;
-  Location location = 8;
-  Category category = 9;
-  google.protobuf.Timestamp createdAt = 10;
+  string image = 7;
+  repeated string tags = 8;
+  Location location = 9;
+  string category = 10;
+  google.protobuf.Timestamp createdAt = 11;
 }
 
 message CreateStoreRequest {
@@ -55,6 +54,7 @@ message UpdateStoreRequest {
 	repeated string tags = 5;
 	double latitude = 6;
 	double longitude = 7;
+  string image = 8;
 }
 
 message ListStoreResponse {

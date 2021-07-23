@@ -36,7 +36,6 @@ var grpcCmd = &cobra.Command{
 		}
 
 		grpcServer.MetricPort = config.MetricPort
-		grpcServer.CategoryUsecase = factory.CategoryUsecase(database, tc)
 		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, config.KafkaBrokers)
 
 		grpcServer.Serve()

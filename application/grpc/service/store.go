@@ -34,12 +34,7 @@ func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
 			Latitude:  store.Position.Lat,
 			Longitude: store.Position.Lng,
 		},
-		Category: &pb.Category{
-			ID:        store.Category.ID,
-			Name:      store.Category.Name,
-			Status:    store.Category.Status,
-			CreatedAt: timestamppb.New(store.Category.CreatedAt),
-		},
+		Category:  store.Category.ID,
 		CreatedAt: timestamppb.New(store.CreatedAt),
 	}
 	return t

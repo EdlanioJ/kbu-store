@@ -29,10 +29,9 @@ func init() {
 }
 
 type grpcServer struct {
-	Port            int
-	MetricPort      int
-	StoreUsecase    domain.StoreUsecase
-	CategoryUsecase domain.CategoryUsecase
+	Port         int
+	MetricPort   int
+	StoreUsecase domain.StoreUsecase
 }
 
 func NewGrpcServer() *grpcServer {
@@ -50,10 +49,8 @@ func (s *grpcServer) Serve() {
 	))
 	reflection.Register(grpcServer)
 
-	categoryGrpcServce := service.NewCategotyServer(s.CategoryUsecase)
 	storeService := service.NewStoreServer(s.StoreUsecase)
 
-	pb.RegisterCategoryServiceServer(grpcServer, categoryGrpcServce)
 	pb.RegisterStoreServiceServer(grpcServer, storeService)
 
 	address := fmt.Sprintf("0.0.0.0:%d", s.Port)
