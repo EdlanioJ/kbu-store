@@ -24,22 +24,13 @@ type Category struct {
 type (
 	// CategoryRepository
 	CategoryRepository interface {
-		Create(ctx context.Context, Category *Category) error
-		GetById(ctx context.Context, id string) (*Category, error)
-		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
-		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
-		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
+		Store(ctx context.Context, Category *Category) error
+		FindByID(ctx context.Context, id string) (*Category, error)
 		Update(ctx context.Context, Category *Category) error
 	}
 	// CategoryUsecase
 	CategoryUsecase interface {
-		Create(ctx context.Context, name string) error
-		GetById(ctx context.Context, id string) (*Category, error)
-		GetByIdAndStatus(ctx context.Context, id, status string) (*Category, error)
-		GetAll(ctx context.Context, sort string, page, limit int) ([]*Category, int64, error)
-		GetAllByStatus(ctx context.Context, status, sort string, page, limit int) ([]*Category, int64, error)
-		Activate(ctx context.Context, id string) error
-		Disable(ctx context.Context, id string) error
+		Create(ctx context.Context, Category *Category) error
 		Update(ctx context.Context, Category *Category) error
 	}
 )

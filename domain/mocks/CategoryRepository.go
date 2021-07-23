@@ -14,82 +14,8 @@ type CategoryRepository struct {
 	mock.Mock
 }
 
-// Create provides a mock function with given fields: ctx, Category
-func (_m *CategoryRepository) Create(ctx context.Context, Category *domain.Category) error {
-	ret := _m.Called(ctx, Category)
-
-	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Category) error); ok {
-		r0 = rf(ctx, Category)
-	} else {
-		r0 = ret.Error(0)
-	}
-
-	return r0
-}
-
-// GetAll provides a mock function with given fields: ctx, sort, page, limit
-func (_m *CategoryRepository) GetAll(ctx context.Context, sort string, page int, limit int) ([]*domain.Category, int64, error) {
-	ret := _m.Called(ctx, sort, page, limit)
-
-	var r0 []*domain.Category
-	if rf, ok := ret.Get(0).(func(context.Context, string, int, int) []*domain.Category); ok {
-		r0 = rf(ctx, sort, page, limit)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Category)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, string, int, int) int64); ok {
-		r1 = rf(ctx, sort, page, limit)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, string, int, int) error); ok {
-		r2 = rf(ctx, sort, page, limit)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetAllByStatus provides a mock function with given fields: ctx, status, sort, page, limit
-func (_m *CategoryRepository) GetAllByStatus(ctx context.Context, status string, sort string, page int, limit int) ([]*domain.Category, int64, error) {
-	ret := _m.Called(ctx, status, sort, page, limit)
-
-	var r0 []*domain.Category
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, int, int) []*domain.Category); ok {
-		r0 = rf(ctx, status, sort, page, limit)
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]*domain.Category)
-		}
-	}
-
-	var r1 int64
-	if rf, ok := ret.Get(1).(func(context.Context, string, string, int, int) int64); ok {
-		r1 = rf(ctx, status, sort, page, limit)
-	} else {
-		r1 = ret.Get(1).(int64)
-	}
-
-	var r2 error
-	if rf, ok := ret.Get(2).(func(context.Context, string, string, int, int) error); ok {
-		r2 = rf(ctx, status, sort, page, limit)
-	} else {
-		r2 = ret.Error(2)
-	}
-
-	return r0, r1, r2
-}
-
-// GetById provides a mock function with given fields: ctx, id
-func (_m *CategoryRepository) GetById(ctx context.Context, id string) (*domain.Category, error) {
+// FindByID provides a mock function with given fields: ctx, id
+func (_m *CategoryRepository) FindByID(ctx context.Context, id string) (*domain.Category, error) {
 	ret := _m.Called(ctx, id)
 
 	var r0 *domain.Category
@@ -111,27 +37,18 @@ func (_m *CategoryRepository) GetById(ctx context.Context, id string) (*domain.C
 	return r0, r1
 }
 
-// GetByIdAndStatus provides a mock function with given fields: ctx, id, status
-func (_m *CategoryRepository) GetByIdAndStatus(ctx context.Context, id string, status string) (*domain.Category, error) {
-	ret := _m.Called(ctx, id, status)
+// Store provides a mock function with given fields: ctx, Category
+func (_m *CategoryRepository) Store(ctx context.Context, Category *domain.Category) error {
+	ret := _m.Called(ctx, Category)
 
-	var r0 *domain.Category
-	if rf, ok := ret.Get(0).(func(context.Context, string, string) *domain.Category); ok {
-		r0 = rf(ctx, id, status)
+	var r0 error
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.Category) error); ok {
+		r0 = rf(ctx, Category)
 	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).(*domain.Category)
-		}
+		r0 = ret.Error(0)
 	}
 
-	var r1 error
-	if rf, ok := ret.Get(1).(func(context.Context, string, string) error); ok {
-		r1 = rf(ctx, id, status)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
+	return r0
 }
 
 // Update provides a mock function with given fields: ctx, Category
