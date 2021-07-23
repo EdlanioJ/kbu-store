@@ -19,9 +19,7 @@ import (
 )
 
 func getStore() *domain.Store {
-	mockStorType, _ := domain.NewCategory("Store type 001")
-
-	storeMock := &domain.Store{
+	store := &domain.Store{
 		Base: domain.Base{
 			ID:        uuid.NewV4().String(),
 			CreatedAt: time.Now(),
@@ -32,10 +30,10 @@ func getStore() *domain.Store {
 		Status:      domain.StoreStatusPending,
 		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
-		Category:    mockStorType,
+		CategoryID:  uuid.NewV4().String(),
 	}
 
-	return storeMock
+	return store
 }
 func Test_StoreHandler_Store(t *testing.T) {
 	cr := handler.CreateStoreRequest{

@@ -27,15 +27,13 @@ type UpdateStoreRequest struct {
 
 func (r *UpdateStoreRequest) ToDomainStore() (res *domain.Store) {
 	res = new(domain.Store)
-	category := new(domain.Category)
-	category.ID = r.CategoryID
 
 	res.Name = r.Name
 	res.Description = r.Description
 	res.Tags = r.Tags
 	res.Position.Lat = r.Lat
 	res.Position.Lng = r.Lng
-	res.Category = category
+	res.CategoryID = r.CategoryID
 
 	return
 }

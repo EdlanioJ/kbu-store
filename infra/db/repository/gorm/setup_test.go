@@ -44,9 +44,6 @@ func getCategory() *domain.Category {
 }
 
 func getStore() *domain.Store {
-	c := new(domain.Category)
-	c.ID = uuid.NewV4().String()
-
 	store := &domain.Store{
 		Base: domain.Base{
 			ID:        uuid.NewV4().String(),
@@ -58,7 +55,7 @@ func getStore() *domain.Store {
 		Status:      domain.StoreStatusActive,
 		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
-		Category:    c,
+		CategoryID:  uuid.NewV4().String(),
 		Tags:        []string{"tag 001", "tag 002"},
 		Position: domain.Position{
 			Lat: -8.8867698,

@@ -34,7 +34,7 @@ func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
 			Latitude:  store.Position.Lat,
 			Longitude: store.Position.Lng,
 		},
-		Category:  store.Category.ID,
+		Category:  store.CategoryID,
 		CreatedAt: timestamppb.New(store.CreatedAt),
 	}
 	return t
@@ -172,15 +172,13 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 	}
 
 	store := new(domain.Store)
-	category := new(domain.Category)
-	category.ID = in.GetCategoryID()
 	store.ID = in.GetID()
 	store.Name = in.GetName()
 	store.Description = in.GetDescription()
 	store.Tags = in.GetTags()
 	store.Position.Lat = in.GetLatitude()
 	store.Position.Lng = in.GetLongitude()
-	store.Category = category
+	store.CategoryID = in.GetCategoryID()
 
 	err = s.storeUsecase.Update(ctx, store)
 	if err != nil {

@@ -17,9 +17,6 @@ import (
 )
 
 func getStore() *domain.Store {
-	c := new(domain.Category)
-	c.ID = uuid.NewV4().String()
-
 	store := &domain.Store{
 		Base: domain.Base{
 			ID:        uuid.NewV4().String(),
@@ -31,7 +28,7 @@ func getStore() *domain.Store {
 		Status:      domain.StoreStatusActive,
 		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
-		Category:    c,
+		CategoryID:  uuid.NewV4().String(),
 		Tags:        []string{"tag 001", "tag 002"},
 		Position: domain.Position{
 			Lat: -8.8867698,
@@ -54,7 +51,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnError(errors.New("unexpected error"))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnError(errors.New("unexpected error"))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -65,7 +62,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewErrorResult(errors.New("unexpected error")))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewErrorResult(errors.New("unexpected error")))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -76,7 +73,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewResult(1, 2))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewResult(1, 2))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -87,7 +84,7 @@ func Test_StoreRepo_Create(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng).WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.NoError(t, err)
@@ -166,7 +163,7 @@ func Test_StoreRepo_FindByID(t *testing.T) {
 			builtSts: func(mock sqlmock.Sqlmock) {
 				row := sqlmock.
 					NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "user_id", "tags", "lat", "lng"}).
-					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.Category.ID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
+					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.CategoryID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
 
 				query := `SELECT * FROM stores WHERE id = $1 ORDER BY id`
 				mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(id).WillReturnRows(row)
@@ -234,7 +231,7 @@ func Test_StoreRepo_FindByName(t *testing.T) {
 			builtSts: func(mock sqlmock.Sqlmock) {
 				row := sqlmock.
 					NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "user_id", "tags", "lat", "lng"}).
-					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.Category.ID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
+					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.CategoryID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
 
 				query := `SELECT * FROM stores WHERE name = $1 ORDER BY id`
 				mock.ExpectQuery(regexp.QuoteMeta(query)).WithArgs(name).WillReturnRows(row)
@@ -301,7 +298,7 @@ func Test_StoreRepo_FindAll(t *testing.T) {
 
 				row := sqlmock.
 					NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "user_id", "tags", "lat", "lng"}).
-					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.Category.ID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
+					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.CategoryID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
 
 				mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(row)
 				mock.ExpectQuery(regexp.QuoteMeta(countQuery)).WillReturnError(errors.New("unexpected error"))
@@ -322,7 +319,7 @@ func Test_StoreRepo_FindAll(t *testing.T) {
 
 				row := sqlmock.
 					NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "user_id", "tags", "lat", "lng"}).
-					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.Category.ID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
+					AddRow(s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Status, s.Description, s.AccountID, s.CategoryID, s.UserID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
 
 				mock.ExpectQuery(regexp.QuoteMeta(query)).WillReturnRows(row)
 				countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
@@ -361,7 +358,7 @@ func Test_StoreRepo_Update(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11 WHERE id = $12`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnError(errors.New("unexpected error"))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnError(errors.New("unexpected error"))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -372,7 +369,7 @@ func Test_StoreRepo_Update(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11 WHERE id = $12`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewErrorResult(errors.New("unexpected error")))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewErrorResult(errors.New("unexpected error")))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -383,7 +380,7 @@ func Test_StoreRepo_Update(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11 WHERE id = $12`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewResult(1, 2))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewResult(1, 2))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -394,7 +391,7 @@ func Test_StoreRepo_Update(t *testing.T) {
 			arg:  s,
 			builtSts: func(mock sqlmock.Sqlmock) {
 				query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11 WHERE id = $12`
-				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.Category.ID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewResult(1, 1))
+				mock.ExpectExec(regexp.QuoteMeta(query)).WithArgs(s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID).WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.NoError(t, err)

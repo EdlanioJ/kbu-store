@@ -29,7 +29,7 @@ func (s *Store) FromStoreDomain(d *domain.Store) {
 	s.UserID = d.UserID
 	s.Status = d.Status
 	s.AccountID = d.AccountID
-	s.CategoryID = d.Category.ID
+	s.CategoryID = d.CategoryID
 	s.Tags = pq.StringArray(d.Tags)
 	s.Lat = d.Position.Lat
 	s.Lng = d.Position.Lng
@@ -40,10 +40,8 @@ func (s *Store) FromStoreDomain(d *domain.Store) {
 func (s *Store) ToStoreDomain() (res *domain.Store) {
 	res = new(domain.Store)
 	account := new(domain.Account)
-	Category := new(domain.Category)
 
 	account.ID = s.AccountID
-	Category.ID = s.CategoryID
 
 	res.ID = s.ID
 	res.Name = s.Name
@@ -54,7 +52,7 @@ func (s *Store) ToStoreDomain() (res *domain.Store) {
 	res.Position.Lat = s.Lat
 	res.Position.Lng = s.Lng
 	res.AccountID = s.AccountID
-	res.Category = Category
+	res.CategoryID = s.CategoryID
 	res.CreatedAt = s.CreatedAt
 	res.UpdatedAt = s.UpdatedAt
 

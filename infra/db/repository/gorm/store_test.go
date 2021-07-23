@@ -23,7 +23,7 @@ func Test_GormStoreRepository(t *testing.T) {
 
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(query)).
-			WithArgs(store.ID, store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.Category.ID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng).
+			WithArgs(store.ID, store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -41,7 +41,7 @@ func Test_GormStoreRepository(t *testing.T) {
 
 		row := sqlmock.
 			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng"}).
-			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.Category.ID, store.Name, store.Position.Lat, store.Position.Lng)
+			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.CategoryID, store.Name, store.Position.Lat, store.Position.Lng)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).
 			WithArgs(store.ID).
@@ -62,7 +62,7 @@ func Test_GormStoreRepository(t *testing.T) {
 
 		row := sqlmock.
 			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng"}).
-			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.Category.ID, store.Name, store.Position.Lat, store.Position.Lng)
+			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.CategoryID, store.Name, store.Position.Lat, store.Position.Lng)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).
 			WithArgs(store.Name).
@@ -87,7 +87,7 @@ func Test_GormStoreRepository(t *testing.T) {
 		countRow := sqlmock.NewRows([]string{"count"}).AddRow(1)
 		row := sqlmock.
 			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng"}).
-			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.Category.ID, store.Name, store.Position.Lat, store.Position.Lng)
+			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.CategoryID, store.Name, store.Position.Lat, store.Position.Lng)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).
 			WillReturnRows(row)
@@ -110,7 +110,7 @@ func Test_GormStoreRepository(t *testing.T) {
 
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(query)).
-			WithArgs(store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.Category.ID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng, store.ID).
+			WithArgs(store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng, store.ID).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
