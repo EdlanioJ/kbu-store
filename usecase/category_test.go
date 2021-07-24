@@ -15,16 +15,19 @@ import (
 )
 
 func Test_CategoryUsecase_Create(t *testing.T) {
+	a := getCategory()
 
 	testCases := []struct {
 		name          string
-		arg           string
+		arg           *domain.Category
 		builtSts      func(categoryRepo *mocks.CategoryRepository)
 		checkResponse func(t *testing.T, err error)
 	}{
 		{
 			name: "fail on new category",
-			arg:  "",
+			arg: &domain.Category{
+				Name: "Category",
+			},
 			builtSts: func(_ *mocks.CategoryRepository) {
 			},
 			checkResponse: func(t *testing.T, err error) {
@@ -33,7 +36,7 @@ func Test_CategoryUsecase_Create(t *testing.T) {
 		},
 		{
 			name: "fail on categories's repo",
-			arg:  "New Category",
+			arg:  a,
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
 				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 			},
@@ -43,7 +46,7 @@ func Test_CategoryUsecase_Create(t *testing.T) {
 		},
 		{
 			name: "success",
-			arg:  "New Category",
+			arg:  a,
 			builtSts: func(categoryRepo *mocks.CategoryRepository) {
 				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 			},

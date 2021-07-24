@@ -2,10 +2,10 @@ package domain
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -47,14 +47,14 @@ func (s *Category) isValid() (err error) {
 }
 
 // NewCategory creates an *Category struct
-func NewCategory(name string) (category *Category, err error) {
+func NewCategory(id, name, status string) (category *Category, err error) {
 	category = &Category{
 		Name: name,
 	}
 
-	category.ID = uuid.NewV4().String()
+	category.ID = id
+	category.Status = status
 	category.CreatedAt = time.Now()
-	category.Status = CategoryStatusPending
 
 	err = category.isValid()
 
@@ -62,6 +62,16 @@ func NewCategory(name string) (category *Category, err error) {
 		return nil, err
 	}
 
+	return
+}
+
+func (c *Category) ParseJson(data []byte) (err error) {
+	err = json.Unmarshal(data, c)
+	if err != nil {
+		return
+	}
+
+	err = c.isValid()
 	return
 }
 

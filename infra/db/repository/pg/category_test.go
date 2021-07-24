@@ -14,7 +14,10 @@ import (
 )
 
 func getCategory() *domain.Category {
-	category, _ := domain.NewCategory("store type 001")
+	id := uuid.NewV4().String()
+	name := "Type 001"
+	category, _ := domain.NewCategory(id, name, domain.CategoryStatusInactive)
+
 	return category
 }
 
