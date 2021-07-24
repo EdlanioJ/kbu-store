@@ -1,37 +1,40 @@
-.PHONY: test http.start grpc.start build swag mock migrate.create migrate.up migrate.down grpc.gen env
+.PHONY: test start.http start.grpc start.kafka build swag mock migrate.create migrate.up migrate.down gen env
 
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
 	go test ./... -cover
 
-http.start:
-	go run ./main.go http
+start.http:
+	go run ./app/main.go http
 
-grpc.start:
-	go run ./main.go grpc
+start.grpc:
+	go run ./app/main.go grpc
+
+start.kafka:
+	go run ./app/main.go grpc
 
 build:
-	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./main.go
+	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./app/main.go
 
 swag:
-	swag init -g "./application/http/server.go" -d "./" -o "./application/http/docs"
+	swag init -g "./app/infrastructure/http/server.go" -d "./" -o "./app/infrastructure/http/docs"
 
 mock:
-	mockery --output "./domain/mocks" --dir "./domain/" --all
-	mockery --output "./domain/mocks" --dir "./interfaces/" --all
+	mockery --output "./app/utils/mocks" --dir "./app/domain/" --all
+	mockery --output "./app/utils/mocks" --dir "./app/interfaces/" --all
 
 migrate.create:
-	migrate create -ext sql -dir infra/db/migration -seq init_schema
+	migrate create -ext sql -dir app/db/migration -seq init_schema
 
 migrate.up:
-	migrate -path infra/db/migration -database ${DATABASE} -verbose up
+	migrate -path app/db/migration -database ${DATABASE} -verbose up
 
 migrate.down:
-	migrate -path infra/db/migration -database ${DATABASE} -verbose down
+	migrate -path app/db/migration -database ${DATABASE} -verbose down
 
-grpc.gen:
-	protoc --proto_path=application/grpc application/grpc/protofiles/*.proto --go_out=. --go-grpc_out=.
+gen:
+	protoc --proto_path=app/infrastructure/grpc app/infrastructure/grpc/protofiles/*.proto --go_out=. --go-grpc_out=.
 
 env:
 	cp .env.example app.env
