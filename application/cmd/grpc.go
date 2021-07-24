@@ -30,13 +30,13 @@ var grpcCmd = &cobra.Command{
 		tc := time.Duration(config.Timeout) * time.Second
 		grpcServer := grpc.NewGrpcServer()
 
-		grpcServer.Port = config.GrpcPort
+		grpcServer.Port = config.Grpc.Port
 		if port != 0 {
 			grpcServer.Port = port
 		}
 
-		grpcServer.MetricPort = config.MetricPort
-		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, config.KafkaBrokers)
+		grpcServer.MetricPort = config.Grpc.MetricPort
+		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, config.Kafka.Brokers)
 
 		grpcServer.Serve()
 	},
