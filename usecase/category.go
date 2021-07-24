@@ -19,11 +19,11 @@ func NewCategoryUsecase(c domain.CategoryRepository, t time.Duration) *CategoryU
 	}
 }
 
-func (u *CategoryUsecase) Create(c context.Context, name string) (err error) {
+func (u *CategoryUsecase) Create(c context.Context, param *domain.Category) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	category, err := domain.NewCategory(name)
+	category, err := domain.NewCategory(param.ID, param.Name, param.Status)
 	if err != nil {
 		return
 	}
