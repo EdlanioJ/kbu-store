@@ -18,6 +18,8 @@ func NewKafkaConsumer(kafkaURLs []string, groupID string) *KafkaConsumer {
 		Brokers:     kafkaURLs,
 		GroupID:     groupID,
 		GroupTopics: []string{"store.catetory.create", "store.catetory.update"},
+		MinBytes:    10e3,
+		MaxBytes:    10e6,
 	})
 	return &KafkaConsumer{
 		Reader: reader,
