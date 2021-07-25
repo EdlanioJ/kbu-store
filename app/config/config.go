@@ -20,8 +20,8 @@ type Config struct {
 	Timeout int    `mapstructure:"TIMEOUT"`
 	Port    int    `mapstructure:"PORT"`
 	Env     string `mapstructure:"ENV"`
-	Dns     string `mapstructure:"PG_DNS"`
-	DnsTest string `mapstructure:"PG_DNS_TEST"`
+	Dns     string `mapstructure:"DB_CONNECTION"`
+	DnsTest string `mapstructure:"DB_CONNECTION_TEST"`
 	Kafka   Kafka  `mapstructure:"KAFKA"`
 	Grpc    Grpc   `mapstructure:"GRPC"`
 }
