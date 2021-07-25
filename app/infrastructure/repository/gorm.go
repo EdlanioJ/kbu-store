@@ -1,19 +1,20 @@
 package repository
 
 import (
+	"github.com/EdlanioJ/kbu-store/app/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func GORMConnection(dns string, env string) *gorm.DB {
+func GORMConnection(cfg *config.Config) *gorm.DB {
 	var db *gorm.DB
 	var err error
 
-	if env != "test" {
-		db, err = gorm.Open(postgres.Open(dns), &gorm.Config{})
+	if cfg.Env != "test" {
+		db, err = gorm.Open(postgres.Open(cfg.Dns), &gorm.Config{})
 	} else {
-		db, err = gorm.Open(sqlite.Open(dns), &gorm.Config{
+		db, err = gorm.Open(sqlite.Open(cfg.DnsTest), &gorm.Config{
 			SkipDefaultTransaction: true,
 		})
 	}

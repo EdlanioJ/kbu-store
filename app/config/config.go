@@ -25,7 +25,7 @@ type Config struct {
 	Grpc    Grpc   `mapstructure:"GRPC"`
 }
 
-func LoadConfig(path ...string) (config Config, err error) {
+func LoadConfig(path ...string) (cfg *Config, err error) {
 	defaultPath := "."
 
 	if len(path) > 0 {
@@ -45,6 +45,6 @@ func LoadConfig(path ...string) (config Config, err error) {
 		return
 	}
 
-	err = viper.Unmarshal(&config)
+	err = viper.Unmarshal(&cfg)
 	return
 }

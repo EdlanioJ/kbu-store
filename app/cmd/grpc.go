@@ -17,26 +17,23 @@ var grpcCmd = &cobra.Command{
 	Use:   "grpc",
 	Short: "start grpc server",
 	Run: func(*cobra.Command, []string) {
-		config, err := config.LoadConfig(".")
+		cfg, err := config.LoadConfig(".")
 		if err != nil {
 			panic(err)
 		}
 
-		database := repository.GORMConnection(config.Dns, config.Env)
-		if config.Env == "test" {
-			database = repository.GORMConnection(config.DnsTest, config.Env)
-		}
+		database := repository.GORMConnection(cfg)
 
-		tc := time.Duration(config.Timeout) * time.Second
+		tc := time.Duration(cfg.Timeout) * time.Second
 		grpcServer := grpc.NewGrpcServer()
 
-		grpcServer.Port = config.Grpc.Port
+		grpcServer.Port = cfg.Grpc.Port
 		if port != 0 {
 			grpcServer.Port = port
 		}
 
-		grpcServer.MetricPort = config.Grpc.MetricPort
-		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, config.Kafka.Brokers)
+		grpcServer.MetricPort = cfg.Grpc.MetricPort
+		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, cfg.Kafka.Brokers)
 
 		grpcServer.Serve()
 	},

@@ -22,10 +22,7 @@ var httpCmd = &cobra.Command{
 			panic(err)
 		}
 
-		database := repository.GORMConnection(config.Dns, config.Env)
-		if config.Env == "test" {
-			database = repository.GORMConnection(config.DnsTest, config.Env)
-		}
+		database := repository.GORMConnection(config)
 
 		tc := time.Duration(config.Timeout) * time.Second
 

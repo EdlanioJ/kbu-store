@@ -15,19 +15,16 @@ var kafkaCmd = &cobra.Command{
 	Use:   "kafka",
 	Short: "Start kafka consumer",
 	Run: func(*cobra.Command, []string) {
-		config, err := config.LoadConfig()
+		cfg, err := config.LoadConfig()
 		if err != nil {
 			panic(err)
 		}
 
-		database := repository.GORMConnection(config.Dns, config.Env)
-		if config.Env == "test" {
-			database = repository.GORMConnection(config.DnsTest, config.Env)
-		}
+		database := repository.GORMConnection(cfg)
 
-		tc := time.Duration(config.Timeout) * time.Second
+		tc := time.Duration(cfg.Timeout) * time.Second
 
-		kafkaCosumer := kafka.NewKafkaConsumer(config.Kafka.Brokers, config.Kafka.GroupID)
+		kafkaCosumer := kafka.NewKafkaConsumer(cfg.Kafka.Brokers, cfg.Kafka.GroupID)
 		kafkaCosumer.CategoryUsecase = factory.CategoryUsecase(database, tc)
 
 		kafkaCosumer.Consume()
