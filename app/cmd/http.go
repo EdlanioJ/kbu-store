@@ -17,22 +17,22 @@ var httpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "start http server",
 	Run: func(*cobra.Command, []string) {
-		config, err := config.LoadConfig()
+		cfg, err := config.LoadConfig()
 		if err != nil {
 			panic(err)
 		}
 
-		database := repository.GORMConnection(config)
+		database := repository.GORMConnection(cfg)
 
-		tc := time.Duration(config.Timeout) * time.Second
+		tc := time.Duration(cfg.Timeout) * time.Second
 
 		httpServer := http.NewHttpServer()
-		httpServer.Port = config.Port
+		httpServer.Port = cfg.Port
 
 		if httpPort != 0 {
 			httpServer.Port = httpPort
 		}
-		httpServer.StoreUsecase = factory.StoreUsecase(database, tc, config.Kafka.Brokers)
+		httpServer.StoreUsecase = factory.StoreUsecase(database, tc, cfg)
 
 		httpServer.Serve()
 	},

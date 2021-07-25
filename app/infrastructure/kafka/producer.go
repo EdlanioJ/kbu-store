@@ -3,6 +3,7 @@ package kafka
 import (
 	"context"
 
+	"github.com/EdlanioJ/kbu-store/app/config"
 	kafka "github.com/segmentio/kafka-go"
 )
 
@@ -10,9 +11,9 @@ type KafkaProducer struct {
 	Writer *kafka.Writer
 }
 
-func NewKafkaProducer(kafkaURLs []string) *KafkaProducer {
+func NewKafkaProducer(cfg *config.Config) *KafkaProducer {
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  kafkaURLs,
+		Brokers:  cfg.Kafka.Brokers,
 		Balancer: &kafka.LeastBytes{},
 	})
 
