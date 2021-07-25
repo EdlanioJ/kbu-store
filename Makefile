@@ -12,7 +12,7 @@ start.grpc:
 	go run ./app/main.go grpc
 
 start.kafka:
-	go run ./app/main.go grpc
+	go run ./app/main.go kafka
 
 build:
 	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./app/main.go
