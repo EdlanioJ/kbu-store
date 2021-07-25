@@ -24,7 +24,7 @@ var kafkaCmd = &cobra.Command{
 
 		tc := time.Duration(cfg.Timeout) * time.Second
 
-		kafkaCosumer := kafka.NewKafkaConsumer(cfg.Kafka.Brokers, cfg.Kafka.GroupID)
+		kafkaCosumer := kafka.NewKafkaConsumer(cfg)
 		kafkaCosumer.CategoryUsecase = factory.CategoryUsecase(database, tc)
 
 		kafkaCosumer.Consume()

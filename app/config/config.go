@@ -5,9 +5,10 @@ import (
 )
 
 type Kafka struct {
-	GroupID     string   `mapstructure:"GROUP_ID"`
-	Brokers     []string `mapstructure:"BROKERS"`
-	GroupTopics []string `mapstructure:"GROUP_TOPICS"`
+	GroupID             string   `mapstructure:"GROUP_ID"`
+	Brokers             []string `mapstructure:"BROKERS"`
+	CreateCategoryTopic string   `mapstructure:"CREATE_CATEGORY_TOPIC"`
+	UpdateCategoryTopic string   `mapstructure:"UPDATE_CATEGORY_TOPIC"`
 }
 
 type Grpc struct {

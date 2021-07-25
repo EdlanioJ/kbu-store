@@ -3,26 +3,34 @@ package kafka
 import (
 	"context"
 
+	"github.com/EdlanioJ/kbu-store/app/config"
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	kafka "github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
 )
 
 type KafkaConsumer struct {
-	Reader          *kafka.Reader
-	CategoryUsecase domain.CategoryUsecase
+	Reader              *kafka.Reader
+	createCategoryTopic string
+	updateCategoryTopic string
+	CategoryUsecase     domain.CategoryUsecase
 }
 
-func NewKafkaConsumer(kafkaURLs []string, groupID string) *KafkaConsumer {
+func NewKafkaConsumer(cfg *config.Config) *KafkaConsumer {
+	createCategoryTopic := cfg.Kafka.CreateCategoryTopic
+	updateCategoryTopic := cfg.Kafka.UpdateCategoryTopic
+
 	reader := kafka.NewReader(kafka.ReaderConfig{
-		Brokers:     kafkaURLs,
-		GroupID:     groupID,
-		GroupTopics: []string{"store.catetory.create", "store.catetory.update"},
+		Brokers:     cfg.Kafka.Brokers,
+		GroupID:     cfg.Kafka.GroupID,
+		GroupTopics: []string{createCategoryTopic, updateCategoryTopic},
 		MinBytes:    10e3,
 		MaxBytes:    10e6,
 	})
 	return &KafkaConsumer{
-		Reader: reader,
+		Reader:              reader,
+		createCategoryTopic: createCategoryTopic,
+		updateCategoryTopic: updateCategoryTopic,
 	}
 }
 
@@ -44,7 +52,7 @@ func (k *KafkaConsumer) processMessage(msg kafka.Message) {
 	ctx := context.Background()
 
 	switch topic := msg.Topic; topic {
-	case "store.catetory.create":
+	case k.createCategoryTopic:
 		err := k.createCategory(ctx, msg.Value)
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -52,7 +60,7 @@ func (k *KafkaConsumer) processMessage(msg kafka.Message) {
 				"msg":   string(msg.Value),
 			}).Error(err)
 		}
-	case "store.catetory.update":
+	case k.updateCategoryTopic:
 		err := k.updateCategory(ctx, msg.Value)
 		if err != nil {
 			log.WithFields(log.Fields{
