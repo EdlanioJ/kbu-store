@@ -3,7 +3,11 @@
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
-	go test ./... -cover
+	go test ./...
+
+test.cover:
+	go test ./... -coverprofile cover.out
+	go tool cover -func cover.out | grep total
 
 start.http:
 	go run ./app/main.go http
