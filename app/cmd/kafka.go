@@ -4,9 +4,10 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
-	"github.com/EdlanioJ/kbu-store/app/factory"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/kafka"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/app/usecases"
 	"github.com/spf13/cobra"
 )
 
@@ -24,8 +25,10 @@ var kafkaCmd = &cobra.Command{
 
 		tc := time.Duration(cfg.Timeout) * time.Second
 
+		categoryRepo := gorm.NewCategoryRepository(database)
+
 		kafkaCosumer := kafka.NewKafkaConsumer(cfg)
-		kafkaCosumer.CategoryUsecase = factory.CategoryUsecase(database, tc)
+		kafkaCosumer.CategoryUsecase = usecases.NewCategoryUsecase(categoryRepo, tc)
 
 		kafkaCosumer.Consume()
 	},

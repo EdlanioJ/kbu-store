@@ -4,9 +4,11 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
-	"github.com/EdlanioJ/kbu-store/app/factory"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/http"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/kafka"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/app/usecases"
 	"github.com/spf13/cobra"
 )
 
@@ -24,15 +26,26 @@ var httpCmd = &cobra.Command{
 
 		database := repository.GORMConnection(cfg)
 
-		tc := time.Duration(cfg.Timeout) * time.Second
-
 		httpServer := http.NewHttpServer()
-		httpServer.Port = cfg.Port
 
+		httpServer.Port = cfg.Port
 		if httpPort != 0 {
 			httpServer.Port = httpPort
 		}
-		httpServer.StoreUsecase = factory.StoreUsecase(database, tc, cfg)
+
+		tc := time.Duration(cfg.Timeout) * time.Second
+		kafkaProducer := kafka.NewKafkaProducer(cfg)
+		storeRepo := gorm.NewStoreRepository(database)
+		accountRepo := gorm.NewAccountRepository(database)
+		categoryRepo := gorm.NewCategoryRepository(database)
+
+		httpServer.StoreUsecase = usecases.NewStoreUsecase(
+			storeRepo,
+			accountRepo,
+			categoryRepo,
+			kafkaProducer,
+			tc,
+		)
 
 		httpServer.Serve()
 	},

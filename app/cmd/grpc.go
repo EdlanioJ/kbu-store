@@ -4,9 +4,11 @@ import (
 	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
-	"github.com/EdlanioJ/kbu-store/app/factory"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/kafka"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/app/usecases"
 	"github.com/spf13/cobra"
 )
 
@@ -24,7 +26,6 @@ var grpcCmd = &cobra.Command{
 
 		database := repository.GORMConnection(cfg)
 
-		tc := time.Duration(cfg.Timeout) * time.Second
 		grpcServer := grpc.NewGrpcServer()
 
 		grpcServer.Port = cfg.Grpc.Port
@@ -32,9 +33,20 @@ var grpcCmd = &cobra.Command{
 			grpcServer.Port = port
 		}
 
-		grpcServer.MetricPort = cfg.Grpc.MetricPort
-		grpcServer.StoreUsecase = factory.StoreUsecase(database, tc, cfg)
+		tc := time.Duration(cfg.Timeout) * time.Second
+		kafkaProducer := kafka.NewKafkaProducer(cfg)
+		storeRepo := gorm.NewStoreRepository(database)
+		accountRepo := gorm.NewAccountRepository(database)
+		categoryRepo := gorm.NewCategoryRepository(database)
 
+		grpcServer.MetricPort = cfg.Grpc.MetricPort
+		grpcServer.StoreUsecase = usecases.NewStoreUsecase(
+			storeRepo,
+			accountRepo,
+			categoryRepo,
+			kafkaProducer,
+			tc,
+		)
 		grpcServer.Serve()
 	},
 }
