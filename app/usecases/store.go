@@ -9,11 +9,14 @@ import (
 )
 
 type StoreUsecase struct {
-	storeRepo      domain.StoreRepository
-	accountRepo    domain.AccountRepository
-	categoryRepo   domain.CategoryRepository
-	msgProducer    interfaces.MessengerProducer
-	contextTimeout time.Duration
+	storeRepo        domain.StoreRepository
+	accountRepo      domain.AccountRepository
+	categoryRepo     domain.CategoryRepository
+	msgProducer      interfaces.MessengerProducer
+	contextTimeout   time.Duration
+	NewStoreTopic    string
+	UpdateStoreTopic string
+	DeleteStoreTopic string
 }
 
 func NewStoreUsecase(s domain.StoreRepository, a domain.AccountRepository, c domain.CategoryRepository, m interfaces.MessengerProducer, t time.Duration) *StoreUsecase {
@@ -60,7 +63,7 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.new")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.NewStoreTopic)
 }
 
 func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err error) {
@@ -118,7 +121,7 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.update")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.UpdateStoreTopic)
 }
 
 func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
@@ -141,7 +144,7 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.update")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.UpdateStoreTopic)
 }
 
 func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
@@ -166,7 +169,7 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.update")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.UpdateStoreTopic)
 }
 
 func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error) {
@@ -186,7 +189,7 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.update")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.UpdateStoreTopic)
 }
 
 func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
@@ -208,5 +211,5 @@ func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	}
 
 	storeJson := store.ToJson()
-	return u.msgProducer.Publish(ctx, string(storeJson), "store.delete")
+	return u.msgProducer.Publish(ctx, string(storeJson), u.DeleteStoreTopic)
 }

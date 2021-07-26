@@ -40,13 +40,20 @@ var grpcCmd = &cobra.Command{
 		categoryRepo := gorm.NewCategoryRepository(database)
 
 		grpcServer.MetricPort = cfg.Grpc.MetricPort
-		grpcServer.StoreUsecase = usecases.NewStoreUsecase(
+		storeUsecase := usecases.NewStoreUsecase(
 			storeRepo,
 			accountRepo,
 			categoryRepo,
 			kafkaProducer,
 			tc,
 		)
+
+		storeUsecase.NewStoreTopic = cfg.Kafka.NewStoreTopic
+		storeUsecase.UpdateStoreTopic = cfg.Kafka.UpdateStoreTopic
+		storeUsecase.DeleteStoreTopic = cfg.Kafka.DeleteStoreTopic
+
+		grpcServer.StoreUsecase = storeUsecase
+
 		grpcServer.Serve()
 	},
 }

@@ -39,13 +39,19 @@ var httpCmd = &cobra.Command{
 		accountRepo := gorm.NewAccountRepository(database)
 		categoryRepo := gorm.NewCategoryRepository(database)
 
-		httpServer.StoreUsecase = usecases.NewStoreUsecase(
+		storeUsecase := usecases.NewStoreUsecase(
 			storeRepo,
 			accountRepo,
 			categoryRepo,
 			kafkaProducer,
 			tc,
 		)
+
+		storeUsecase.NewStoreTopic = cfg.Kafka.NewStoreTopic
+		storeUsecase.UpdateStoreTopic = cfg.Kafka.UpdateStoreTopic
+		storeUsecase.DeleteStoreTopic = cfg.Kafka.DeleteStoreTopic
+
+		httpServer.StoreUsecase = storeUsecase
 
 		httpServer.Serve()
 	},

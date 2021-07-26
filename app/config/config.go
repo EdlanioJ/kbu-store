@@ -9,6 +9,9 @@ type Kafka struct {
 	Brokers             []string `mapstructure:"BROKERS"`
 	CreateCategoryTopic string   `mapstructure:"CREATE_CATEGORY_TOPIC"`
 	UpdateCategoryTopic string   `mapstructure:"UPDATE_CATEGORY_TOPIC"`
+	NewStoreTopic       string   `mapstructure:"NEW_STORE_TOPIC"`
+	UpdateStoreTopic    string   `mapstructure:"UPDATE_STORE_TOPIC"`
+	DeleteStoreTopic    string   `mapstructure:"DELETE_STORE_TOPIC"`
 }
 
 type Grpc struct {
