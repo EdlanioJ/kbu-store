@@ -1,6 +1,7 @@
 package domain_test
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
@@ -210,4 +211,21 @@ func TestDisable(t *testing.T) {
 
 		assert.Nil(t, err)
 	})
+}
+
+func Test_StoreDomain_ToJson(t *testing.T) {
+	name := "store 001"
+	description := "store description 001"
+	externalID := uuid.NewV4().String()
+	categoryID := uuid.NewV4().String()
+	account, _ := domain.NewAccount(200)
+	tags := []string{"tag 001", "tag 002"}
+	store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
+
+	data := store.ToJson()
+	assert.NotNil(t, data)
+	newStore := new(domain.Store)
+	err := json.Unmarshal(data, newStore)
+	assert.NoError(t, err)
+	assert.Equal(t, store.ID, newStore.ID)
 }
