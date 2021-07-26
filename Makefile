@@ -6,8 +6,7 @@ test:
 	go test ./...
 
 test.cover:
-	go test ./... -coverprofile cover.out
-	go tool cover -func cover.out | grep total
+	go test ./... -v -covermode=count -coverprofile=coverage.out
 
 start.http:
 	go run ./app/main.go http
