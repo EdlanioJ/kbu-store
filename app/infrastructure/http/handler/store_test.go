@@ -65,11 +65,11 @@ func Test_StoreHandler_Store(t *testing.T) {
 			name: "should fail if usecase returns an error",
 			arg:  string(c),
 			builtSts: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return(errors.New("failed")).Once()
+				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return((domain.ErrBadParam)).Once()
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -88,7 +88,7 @@ func Test_StoreHandler_Store(t *testing.T) {
 	for _, tc := range testCases {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
-		app := fiber.New()
+		app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 		handler := handler.NewStoreHandler(storeUsecase)
 		app.Post("/", handler.Store)
 		req := httptest.NewRequest(fiber.MethodPost, "/", strings.NewReader(tc.arg))
@@ -150,7 +150,7 @@ func Test_StoreHandler_Index(t *testing.T) {
 	for _, tc := range testCases {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
-		app := fiber.New()
+		app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 		handler := handler.NewStoreHandler(storeUsecase)
 		app.Get("/", handler.Index)
 		req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/?sort=%s&page=%d&limit=%d", tc.args.sort, tc.args.page, tc.args.limit), nil)
@@ -175,7 +175,7 @@ func Test_StoreHandler_Get(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -186,7 +186,7 @@ func Test_StoreHandler_Get(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusNotFound)
 			},
 		},
 		{
@@ -206,7 +206,7 @@ func Test_StoreHandler_Get(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
-			app := fiber.New()
+			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Get("/:id", handler.Get)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/%s", tc.arg), nil)
@@ -231,7 +231,7 @@ func Test_StoreHandler_Activate(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -242,7 +242,7 @@ func Test_StoreHandler_Activate(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
@@ -262,7 +262,7 @@ func Test_StoreHandler_Activate(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
-			app := fiber.New()
+			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/activate", handler.Activate)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/activate", tc.arg), nil)
@@ -287,7 +287,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -298,7 +298,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
@@ -318,7 +318,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
-			app := fiber.New()
+			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/block", handler.Block)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/block", tc.arg), nil)
@@ -343,7 +343,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -354,7 +354,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 			},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusConflict)
 			},
 		},
 		{
@@ -374,7 +374,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
-			app := fiber.New()
+			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/disable", handler.Disable)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/disable", tc.arg), nil)
@@ -399,7 +399,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -430,7 +430,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			storeUsecase := new(mocks.StoreUsecase)
 			tc.builtSts(storeUsecase)
-			app := fiber.New()
+			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Delete("/:id", handler.Delete)
 			req := httptest.NewRequest(fiber.MethodDelete, fmt.Sprintf("/%s", tc.arg), nil)
@@ -473,7 +473,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 			builtSts: func(_ *mocks.StoreUsecase) {},
 			checkResponse: func(t *testing.T, err error, statusCode int) {
 				assert.NoError(t, err)
-				assert.Equal(t, statusCode, fiber.StatusInternalServerError)
+				assert.Equal(t, statusCode, fiber.StatusBadRequest)
 			},
 		},
 		{
@@ -503,7 +503,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on usecase",
+			name: "should succeed",
 			args: args{
 				id:      uuid.NewV4().String(),
 				request: string(c),
@@ -521,7 +521,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 	for _, tc := range testCases {
 		storeUsecase := new(mocks.StoreUsecase)
 		tc.builtSts(storeUsecase)
-		app := fiber.New()
+		app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
 		handler := handler.NewStoreHandler(storeUsecase)
 		app.Patch("/:id", handler.Update)
 		req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s", tc.args.id), strings.NewReader(tc.args.request))
