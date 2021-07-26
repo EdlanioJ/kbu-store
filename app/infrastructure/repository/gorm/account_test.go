@@ -11,7 +11,7 @@ import (
 )
 
 func Test_GormAccountRepository(t *testing.T) {
-	t.Run("account repo -> create", func(t *testing.T) {
+	t.Run("Should test Store", func(t *testing.T) {
 		is := assert.New(t)
 		db, mock := dbMock()
 		account := getAccount()
@@ -28,7 +28,7 @@ func Test_GormAccountRepository(t *testing.T) {
 		err := repo.Store(context.TODO(), account)
 		is.NoError(err)
 	})
-	t.Run("account repo -> get by id", func(t *testing.T) {
+	t.Run("FindByID", func(t *testing.T) {
 		is := assert.New(t)
 		db, mock := dbMock()
 		account := getAccount()
@@ -51,7 +51,7 @@ func Test_GormAccountRepository(t *testing.T) {
 		is.Equal(res, account)
 	})
 
-	t.Run("account repo -> update", func(t *testing.T) {
+	t.Run("Update", func(t *testing.T) {
 		is := assert.New(t)
 		db, mock := dbMock()
 		account := getAccount()
@@ -66,6 +66,25 @@ func Test_GormAccountRepository(t *testing.T) {
 		mock.ExpectCommit()
 
 		err := repo.Update(context.TODO(), account)
+		is.NoError(err)
+	})
+
+	t.Run("Delete", func(t *testing.T) {
+		is := assert.New(t)
+		db, mock := dbMock()
+		store := getStore()
+		repo := gorm.NewAccountRepository(db)
+
+		query := `DELETE FROM "accounts" WHERE id = $1`
+
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta(query)).
+			WithArgs(store.ID).
+			WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+
+		err := repo.Delete(context.TODO(), store.ID)
+
 		is.NoError(err)
 	})
 }
