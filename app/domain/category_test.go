@@ -1,6 +1,7 @@
 package domain_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
@@ -65,6 +66,33 @@ func Test_DomainCategory_Disable(t *testing.T) {
 		category, _ := domain.NewCategory(id, name, domain.CategoryStatusInactive)
 
 		err := category.Disable()
+		assert.NoError(t, err)
+	})
+}
+
+func Test_DomainCategory_ParseJson(t *testing.T) {
+	t.Run("should fail if unmarshel returns error", func(t *testing.T) {
+		category := new(domain.Category)
+		str := "{name:Sports}"
+		data := []byte(str)
+		err := category.ParseJson(data)
+		assert.Error(t, err)
+	})
+	t.Run("should fail if validation returns error", func(t *testing.T) {
+		category := new(domain.Category)
+		str := `{"name": "Sports"}`
+		data := []byte(str)
+		err := category.ParseJson(data)
+		assert.Error(t, err)
+	})
+
+	t.Run("should succeed", func(t *testing.T) {
+		category := new(domain.Category)
+		id := uuid.NewV4().String()
+		status := domain.CategoryStatusPending
+		str := fmt.Sprintf(`{"id":"%s","name": "Sports", "status":"%s"}`, id, status)
+		data := []byte(str)
+		err := category.ParseJson(data)
 		assert.NoError(t, err)
 	})
 }
