@@ -189,7 +189,11 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 }
 
 func (s *storeService) Delete(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	err := validators.ValidateUUIDV4("id", in.GetId())
+	err := validators.ValidateRequired("id", in.GetId())
+	if err != nil {
+		return nil, err
+	}
+	err = validators.ValidateUUIDV4("id", in.GetId())
 	if err != nil {
 		return nil, err
 	}

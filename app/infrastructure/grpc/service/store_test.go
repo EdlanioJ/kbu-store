@@ -4,60 +4,31 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/service"
 	"github.com/EdlanioJ/kbu-store/app/utils/mocks"
+	"github.com/EdlanioJ/kbu-store/app/utils/sample"
 	"github.com/golang/protobuf/ptypes/empty"
-	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
-func getStore() *domain.Store {
-	store := &domain.Store{
-		Base: domain.Base{
-			ID:        uuid.NewV4().String(),
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
-		},
-		Name:        "Store 001",
-		Description: "store description 001",
-		Status:      domain.StoreStatusPending,
-		UserID:      uuid.NewV4().String(),
-		AccountID:   uuid.NewV4().String(),
-		CategoryID:  uuid.NewV4().String(),
-		Position: domain.Position{
-			Lat: -8.8368200,
-			Lng: 13.2343200,
-		},
-	}
-
-	return store
-}
-
 func Test_StoreGrpcService_Create(t *testing.T) {
-	a := &pb.CreateStoreRequest{
-		Name:        "store 001",
-		Description: "store description 001",
-		CategoryID:  uuid.NewV4().String(),
-		ExternalID:  uuid.NewV4().String(),
-		Tags:        []string{"tag001", "tag002"},
-		Latitude:    -8.8368200,
-		Longitude:   13.2343200,
-	}
+	t.Parallel()
+	arg := sample.NewPBCreateStoreRequest()
 	testCases := []struct {
-		name          string
-		arg           *pb.CreateStoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *empty.Empty, err error)
+		name        string
+		arg         *pb.CreateStoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store",
 					mock.Anything,
 					mock.AnythingOfType("string"),
@@ -69,535 +40,520 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 					mock.AnythingOfType("float64"),
 				).Return(errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store",
 					mock.Anything,
-					a.Name,
-					a.Description,
-					a.CategoryID,
-					a.ExternalID,
-					a.Tags,
-					a.Latitude,
-					a.Longitude,
+					arg.Name,
+					arg.Description,
+					arg.CategoryID,
+					arg.ExternalID,
+					arg.Tags,
+					arg.Latitude,
+					arg.Longitude,
 				).Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Create(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Create(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Get(t *testing.T) {
-	a := &pb.StoreRequest{
-		Id: uuid.NewV4().String(),
-	}
-	store := getStore()
+	t.Parallel()
+	arg := sample.NewPBStoreRequest()
+	emptyId := sample.NewPBStoreRequest()
+	emptyId.Id = ""
+	invalidId := sample.NewPBStoreRequest()
+	invalidId.Id = "invalid_id"
+	store := sample.NewStore()
 	testCases := []struct {
-		name          string
-		arg           *pb.StoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.Store, err error)
+		name        string
+		arg         *pb.StoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if id is empty",
-			arg: &pb.StoreRequest{
-				Id: "",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
+			name:        "failure_empty_id",
+			arg:         emptyId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if id is not a valid uuidv4",
-			arg: &pb.StoreRequest{
-				Id: "invalid_id",
-			},
-			builtSts: func(_ *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
+			name:        "failure_invalid_id",
+			arg:         invalidId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Get", mock.Anything, a.Id).
+					On("Get", mock.Anything, arg.Id).
 					Return(nil, errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Get", mock.Anything, a.Id).
+					On("Get", mock.Anything, arg.Id).
 					Return(store, nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.Store, err error) {
-				assert.NoError(t, err)
-				assert.NotNil(t, res)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Get(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Get(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, res)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_List(t *testing.T) {
-	a := &pb.ListStoreRequest{
-		Page:  1,
-		Limit: 10,
-		Sort:  "created_at",
-	}
-	store := getStore()
+	t.Parallel()
+	arg := sample.NewPBListStoreRequest()
+	store := sample.NewStore()
 	testCases := []struct {
-		name          string
-		arg           *pb.ListStoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *pb.ListStoreResponse, err error)
+		name        string
+		arg         *pb.ListStoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fails if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Index", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					On("Index", mock.Anything, arg.Sort, int(arg.Limit), int(arg.Page)).
 					Return(nil, int64(0), errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
 			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				stores := make(domain.Stores, 0)
 
 				stores = append(stores, store)
 				storeUsecase.
-					On("Index", mock.Anything, a.Sort, int(a.Limit), int(a.Page)).
+					On("Index", mock.Anything, arg.Sort, int(arg.Limit), int(arg.Page)).
 					Return(stores, int64(1), nil)
-			},
-			checkResponse: func(t *testing.T, res *pb.ListStoreResponse, err error) {
-				assert.NotNil(t, res)
-				assert.Equal(t, res.Total, int64(1))
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.List(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.List(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.Equal(t, res.Total, int64(1))
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Activate(t *testing.T) {
-	a := &pb.StoreRequest{
-		Id: uuid.NewV4().String(),
-	}
+	t.Parallel()
+	arg := sample.NewPBStoreRequest()
+	emptyId := sample.NewPBStoreRequest()
+	emptyId.Id = ""
+	invalidId := sample.NewPBStoreRequest()
+	invalidId.Id = "invalid_id"
+
 	testCases := []struct {
-		name          string
-		arg           *pb.StoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *empty.Empty, err error)
+		name        string
+		arg         *pb.StoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if id is empty",
-			arg: &pb.StoreRequest{
-				Id: "",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_empty_id",
+			arg:         emptyId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if invalid id",
-			arg: &pb.StoreRequest{
-				Id: "invaalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_id",
+			arg:         invalidId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Active", mock.Anything, a.GetId()).
+					On("Active", mock.Anything, arg.GetId()).
 					Return(errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Active", mock.Anything, a.GetId()).
+					On("Active", mock.Anything, arg.GetId()).
 					Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Activate(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Activate(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Block(t *testing.T) {
-	a := &pb.StoreRequest{
-		Id: uuid.NewV4().String(),
-	}
+	t.Parallel()
+	arg := sample.NewPBStoreRequest()
+	emptyId := sample.NewPBStoreRequest()
+	emptyId.Id = ""
+	invalidId := sample.NewPBStoreRequest()
+	invalidId.Id = "invalid_id"
+
 	testCases := []struct {
-		name          string
-		arg           *pb.StoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *empty.Empty, err error)
+		name        string
+		arg         *pb.StoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if id is empty",
-			arg: &pb.StoreRequest{
-				Id: "",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_empty_id",
+			arg:         emptyId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if invalid id",
-			arg: &pb.StoreRequest{
-				Id: "invaalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_id",
+			arg:         invalidId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Block", mock.Anything, a.GetId()).
+					On("Block", mock.Anything, arg.GetId()).
 					Return(errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Block", mock.Anything, a.GetId()).
+					On("Block", mock.Anything, arg.GetId()).
 					Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Block(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Block(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Disable(t *testing.T) {
-	a := &pb.StoreRequest{
-		Id: uuid.NewV4().String(),
-	}
+	t.Parallel()
+	arg := sample.NewPBStoreRequest()
+	emptyId := sample.NewPBStoreRequest()
+	emptyId.Id = ""
+	invalidId := sample.NewPBStoreRequest()
+	invalidId.Id = "invalid_id"
+
 	testCases := []struct {
-		name          string
-		arg           *pb.StoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *empty.Empty, err error)
+		name        string
+		arg         *pb.StoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if id is empty",
-			arg: &pb.StoreRequest{
-				Id: "",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_empty_id",
+			arg:         emptyId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if invalid id",
-			arg: &pb.StoreRequest{
-				Id: "invaalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_id",
+			arg:         invalidId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Disable", mock.Anything, a.GetId()).
+					On("Disable", mock.Anything, arg.GetId()).
 					Return(errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Disable", mock.Anything, a.GetId()).
+					On("Disable", mock.Anything, arg.GetId()).
 					Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Disable(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Disable(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Update(t *testing.T) {
-	a := &pb.UpdateStoreRequest{
-		ID:          uuid.NewV4().String(),
-		Name:        "store 001",
-		Description: "store description 001",
-		CategoryID:  uuid.NewV4().String(),
-		Tags:        []string{"tag001", "tag002"},
-		Latitude:    -8.8368200,
-		Longitude:   13.2343200,
-	}
+	t.Parallel()
+	arg := sample.NewPBUpdateStoreRequest()
+	emptyStoreId := sample.NewPBUpdateStoreRequest()
+	emptyStoreId.ID = ""
+	invalidStoreId := sample.NewPBUpdateStoreRequest()
+	invalidStoreId.ID = "invalid_id"
+	invalidCategoryId := sample.NewPBUpdateStoreRequest()
+	invalidCategoryId.CategoryID = "invalid_id"
+	invalidLatitude := sample.NewPBUpdateStoreRequest()
+	invalidLatitude.Latitude = 12345
+	invalidLongitude := sample.NewPBUpdateStoreRequest()
+	invalidLongitude.Longitude = 12345
+
 	testCases := []struct {
-		name          string
-		arg           *pb.UpdateStoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
-		checkResponse func(t *testing.T, res *empty.Empty, err error)
+		name        string
+		arg         *pb.UpdateStoreRequest
+		prepare     func(storeUsecase *mocks.StoreUsecase)
+		expectedErr bool
 	}{
 		{
-			name: "should fail if store id request param is empty",
-			arg: &pb.UpdateStoreRequest{
-				ID: "",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_empty_store_id",
+			arg:         emptyStoreId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if store id request param is not uuidv4",
-			arg: &pb.UpdateStoreRequest{
-				ID: "invalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_store_id",
+			arg:         invalidStoreId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if category id request param is not uuidv4",
-			arg: &pb.UpdateStoreRequest{
-				ID:         uuid.NewV4().String(),
-				CategoryID: "invaild_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_category_id",
+			arg:         invalidCategoryId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if latitude request param is not valid",
-			arg: &pb.UpdateStoreRequest{
-				ID:       uuid.NewV4().String(),
-				Latitude: 12345,
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_latitude",
+			arg:         invalidLatitude,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if longitude request param is not valid",
-			arg: &pb.UpdateStoreRequest{
-				ID:        uuid.NewV4().String(),
-				Longitude: 12345,
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_invalid_longitude",
+			arg:         invalidLongitude,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error"))
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
 			},
 		},
 
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Update(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Update(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
 
 func Test_StoreGrpcService_Delete(t *testing.T) {
-	a := &pb.StoreRequest{
-		Id: uuid.NewV4().String(),
-	}
+	t.Parallel()
+	arg := sample.NewPBStoreRequest()
+	emptyId := sample.NewPBStoreRequest()
+	emptyId.Id = ""
+	invalidId := sample.NewPBStoreRequest()
+	invalidId.Id = "invalid_id"
 	testCases := []struct {
 		name          string
 		arg           *pb.StoreRequest
-		builtSts      func(storeUsecase *mocks.StoreUsecase)
+		prepare       func(storeUsecase *mocks.StoreUsecase)
+		expectedErr   bool
 		checkResponse func(t *testing.T, res *empty.Empty, err error)
 	}{
 		{
-			name: "should fail if invalid id",
-			arg: &pb.StoreRequest{
-				Id: "invaalid_id",
-			},
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
+			name:        "failure_empty_id",
+			arg:         emptyId,
+			expectedErr: true,
 		},
 		{
-			name: "should fail if usecase returns error",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "failure_invalid_id",
+			arg:         invalidId,
+			expectedErr: true,
+		},
+		{
+			name:        "failure_usecase_returns_error",
+			arg:         arg,
+			expectedErr: true,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Delete", mock.Anything, a.GetId()).
+					On("Delete", mock.Anything, arg.GetId()).
 					Return(errors.New("Unexpected Error"))
 			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.Nil(t, res)
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			arg:  a,
-			builtSts: func(storeUsecase *mocks.StoreUsecase) {
+			name:        "success",
+			arg:         arg,
+			expectedErr: false,
+			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.
-					On("Delete", mock.Anything, a.GetId()).
+					On("Delete", mock.Anything, arg.GetId()).
 					Return(nil)
-			},
-			checkResponse: func(t *testing.T, res *empty.Empty, err error) {
-				assert.NotNil(t, res)
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
-		usecase := new(mocks.StoreUsecase)
-		tc.builtSts(usecase)
-		s := service.NewStoreServer(usecase)
-		res, err := s.Delete(context.TODO(), tc.arg)
-		tc.checkResponse(t, res, err)
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			usecase := new(mocks.StoreUsecase)
+			if tc.prepare != nil {
+				tc.prepare(usecase)
+			}
+			s := service.NewStoreServer(usecase)
+			res, err := s.Delete(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Nil(t, res)
+				assert.Error(t, err)
+			} else {
+				assert.NotNil(t, res)
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
