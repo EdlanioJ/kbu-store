@@ -34,8 +34,11 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 	ctx := c.Context()
 	cr := new(CreateStoreRequest)
 	if err := c.BodyParser(cr); err != nil {
-		return err
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
 	}
+
 	err := h.storeUsecase.Store(ctx, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng)
 	if err != nil {
 		return err
@@ -226,7 +229,9 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 	}
 
 	if err := c.BodyParser(reqBody); err != nil {
-		return err
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(ErrorResponse{
+			Message: err.Error(),
+		})
 	}
 
 	store := reqBody.ToDomainStore()

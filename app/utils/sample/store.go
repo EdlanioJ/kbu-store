@@ -5,6 +5,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/pb"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/http/handler"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -64,5 +65,41 @@ func NewPBUpdateStoreRequest() *pb.UpdateStoreRequest {
 		Tags:        []string{"tag001", "tag002"},
 		Latitude:    -8.8368200,
 		Longitude:   13.2343200,
+	}
+}
+func NewHttpCreateStoreRequest() handler.CreateStoreRequest {
+	return handler.CreateStoreRequest{
+		Name:        "Store 001",
+		Description: "Store description",
+		CategoryID:  uuid.NewV4().String(),
+		UserID:      uuid.NewV4().String(),
+		Tags:        []string{"tag001", "tag002"},
+		Lat:         -8.8867698,
+		Lng:         13.4771186,
+	}
+}
+
+func NewHttpUpdateStoreRequest() handler.UpdateStoreRequest {
+	return handler.UpdateStoreRequest{
+		Name:        "store 002",
+		Description: "description 002",
+		CategoryID:  uuid.NewV4().String(),
+		Tags:        []string{"tag002", "tag003"},
+		Lat:         -8.8867698,
+		Lng:         13.4771186,
+	}
+}
+
+type HttpListRequest struct {
+	Sort  string
+	Page  int
+	Limit int
+}
+
+func NewHttpListReq() HttpListRequest {
+	return HttpListRequest{
+		Sort:  "created_at",
+		Page:  1,
+		Limit: 5,
 	}
 }
