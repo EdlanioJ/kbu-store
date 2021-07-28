@@ -16,7 +16,6 @@ import (
 )
 
 func Test_CategoryUsecase_Create(t *testing.T) {
-
 	testCases := []struct {
 		name        string
 		arg         *domain.Category
@@ -60,22 +59,18 @@ func Test_CategoryUsecase_Create(t *testing.T) {
 }
 
 func Test_CategoryUsecase_Update(t *testing.T) {
-	category := sample.NewCategory()
-	type args struct {
-		category *domain.Category
-	}
 	testCases := []struct {
 		name          string
-		args          args
-		builtSts      func(categoryRepo *mocks.CategoryRepository)
+		arg           *domain.Category
+		expectedErr   bool
+		prepare       func(categoryRepo *mocks.CategoryRepository)
 		checkResponse func(t *testing.T, err error)
 	}{
 		{
-			name: "fail on get category",
-			args: args{
-				category: category,
-			},
-			builtSts: func(categoryRepo *mocks.CategoryRepository) {
+			name:        "failure_find_category_by_id_returns_error",
+			arg:         sample.NewCategory(),
+			expectedErr: true,
+			prepare: func(categoryRepo *mocks.CategoryRepository) {
 				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 			checkResponse: func(t *testing.T, err error) {
@@ -83,27 +78,39 @@ func Test_CategoryUsecase_Update(t *testing.T) {
 			},
 		},
 		{
-			name: "fail on update",
-			args: args{
-				category: category,
-			},
-			builtSts: func(categoryRepo *mocks.CategoryRepository) {
+			name:        "failure_update_category_returns_error",
+			arg:         sample.NewCategory(),
+			expectedErr: true,
+			prepare: func(categoryRepo *mocks.CategoryRepository) {
+				category := sample.NewCategory()
 				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(category, nil).Once()
 				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+		},
+		{
+			name: "success",
+			arg:  sample.NewCategory(),
+			prepare: func(categoryRepo *mocks.CategoryRepository) {
+				category := sample.NewCategory()
+				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(category, nil).Once()
+				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
 			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			categoryRepo := new(mocks.CategoryRepository)
-			tc.builtSts(categoryRepo)
+			tc.prepare(categoryRepo)
 			u := usecases.NewCategoryUsecase(categoryRepo, time.Second*2)
-			err := u.Update(context.TODO(), tc.args.category)
-			tc.checkResponse(t, err)
+			err := u.Update(context.TODO(), tc.arg)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 			categoryRepo.AssertExpectations(t)
 		})
 	}
