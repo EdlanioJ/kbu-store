@@ -498,6 +498,7 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 	for i := range testCases {
 		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			storeRepo := new(mocks.StoreRepository)
 			msgProducer := new(mocks.MessengerProducer)
 			f := fields{storeRepo, msgProducer}
@@ -516,60 +517,72 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 }
 
 func Test_StoreUsecase_Update(t *testing.T) {
-	s := getStore()
-
+	store := sample.NewStore()
+	type fields struct {
+		storeRepo   *mocks.StoreRepository
+		msgProducer *mocks.MessengerProducer
+	}
 	testCases := []struct {
-		name          string
-		arg           *domain.Store
-		builtSts      func(storeRepo *mocks.StoreRepository, msgProducer *mocks.MessengerProducer)
-		checkResponse func(t *testing.T, err error)
+		name        string
+		arg         *domain.Store
+		expectedErr bool
+		prepare     func(f fields)
 	}{
 		{
-			name: "fail error on store's repo",
-			arg:  s,
-			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.MessengerProducer) {
-				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+			name:        "fail error on store's repo",
+			arg:         store,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name: "fail error on store's repo update",
-			arg:  s,
-			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.MessengerProducer) {
-				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(s, nil).Once()
-				storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+			name:        "fail error on store's repo update",
+			arg:         store,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name: "should fail if publish returns an error",
-			arg:  s,
-			builtSts: func(storeRepo *mocks.StoreRepository, msgProducer *mocks.MessengerProducer) {
-				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(s, nil).Once()
-				storeRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
-				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
-
+			name:        "should fail if publish returns an error",
+			arg:         store,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
 			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+		},
+		{
+			name: "success",
+			arg:  store,
+			prepare: func(f fields) {
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			storeRepo := new(mocks.StoreRepository)
 			msgProducer := new(mocks.MessengerProducer)
-			tc.builtSts(storeRepo, msgProducer)
+			f := fields{storeRepo, msgProducer}
+			tc.prepare(f)
 			u := usecases.NewStoreUsecase(storeRepo, nil, nil, msgProducer, time.Second*2)
 			err := u.Update(context.TODO(), tc.arg)
-			tc.checkResponse(t, err)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			storeRepo.AssertExpectations(t)
+			msgProducer.AssertExpectations(t)
 		})
 	}
 }
