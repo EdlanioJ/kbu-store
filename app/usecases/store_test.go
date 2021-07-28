@@ -166,69 +166,55 @@ func Test_StoreUsecase_Get(t *testing.T) {
 }
 
 func Test_StoreUsecase_Index(t *testing.T) {
-	type args struct {
-		page  int
-		limit int
-		sort  string
-	}
-	s := getStore()
-
-	a := args{
-		page:  1,
-		limit: 10,
-		sort:  "created_at",
-	}
 	testCases := []struct {
 		name          string
-		args          args
-		builtSts      func(storeRepo *mocks.StoreRepository)
+		args          sample.HttpListRequest
+		expectedErr   bool
+		prepare       func(storeRepo *mocks.StoreRepository)
 		checkResponse func(t *testing.T, res domain.Stores, count int64, err error)
 	}{
 		{
-			name: "should fail if find all stores returns error",
-			args: args{
-				page:  0,
-				limit: 0,
-				sort:  "",
-			},
-			builtSts: func(storeRepo *mocks.StoreRepository) {
+			name:        "failure_find_all_returns_error",
+			args:        sample.HttpListRequest{},
+			expectedErr: true,
+			prepare: func(storeRepo *mocks.StoreRepository) {
 				storeRepo.On("FindAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
 					Return(nil, int64(0), errors.New("Unexpexted Error")).
 					Once()
 			},
-			checkResponse: func(t *testing.T, res domain.Stores, count int64, err error) {
-				assert.Len(t, res, 0)
-				assert.Equal(t, count, int64(0))
-				assert.Error(t, err)
-			},
 		},
 		{
-			name: "should succeed",
-			args: a,
-			builtSts: func(storeRepo *mocks.StoreRepository) {
+			name: "success",
+			args: sample.HttpListRequest{},
+			prepare: func(storeRepo *mocks.StoreRepository) {
+				store := sample.NewStore()
 				stores := make(domain.Stores, 0)
-				stores = append(stores, s)
+				stores = append(stores, store)
 				storeRepo.On("FindAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
 					Return(stores, int64(1), nil).
 					Once()
 			},
-			checkResponse: func(t *testing.T, res domain.Stores, count int64, err error) {
-				assert.Len(t, res, 1)
-				assert.Equal(t, count, int64(1))
-				assert.NoError(t, err)
-			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			storeRepo := new(mocks.StoreRepository)
-
-			tc.builtSts(storeRepo)
+			tc.prepare(storeRepo)
 			u := usecases.NewStoreUsecase(storeRepo, nil, nil, nil, time.Second*2)
+			res, count, err := u.Index(context.TODO(), tc.args.Sort, tc.args.Limit, tc.args.Page)
 
-			res, count, err := u.Index(context.TODO(), tc.args.sort, tc.args.limit, tc.args.page)
-			tc.checkResponse(t, res, count, err)
+			if tc.expectedErr {
+				assert.Len(t, res, 0)
+				assert.Equal(t, count, int64(0))
+				assert.Error(t, err)
+			} else {
+				assert.Len(t, res, 1)
+				assert.Equal(t, count, int64(1))
+				assert.NoError(t, err)
+			}
 
 			storeRepo.AssertExpectations(t)
 		})
