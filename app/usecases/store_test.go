@@ -120,49 +120,46 @@ func Test_StoreUsecase_Create(t *testing.T) {
 }
 
 func Test_StoreUsecase_Get(t *testing.T) {
-	s := getStore()
-
 	testCases := []struct {
-		name          string
-		arg           string
-		builtSts      func(storeRepo *mocks.StoreRepository)
-		checkResponse func(t *testing.T, res *domain.Store, err error)
+		name        string
+		arg         string
+		expectedErr bool
+		prepare     func(storeRepo *mocks.StoreRepository)
 	}{
 		{
-			name: "should fail if find store by id returns error",
-			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository) {
+			name:        "Failure_find_store_by_id_returns_error",
+			arg:         uuid.NewV4().String(),
+			expectedErr: true,
+			prepare: func(storeRepo *mocks.StoreRepository) {
 				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
-			checkResponse: func(t *testing.T, res *domain.Store, err error) {
-				assert.Error(t, err)
-				assert.Nil(t, res)
-			},
 		},
-
 		{
-			name: "should succeed",
+			name: "success",
 			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository) {
+			prepare: func(storeRepo *mocks.StoreRepository) {
+				s := sample.NewStore()
 				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(s, nil).Once()
-			},
-			checkResponse: func(t *testing.T, res *domain.Store, err error) {
-				assert.NoError(t, err)
-				assert.NotNil(t, res)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			storeRepo := new(mocks.StoreRepository)
-
-			tc.builtSts(storeRepo)
+			tc.prepare(storeRepo)
 			u := usecases.NewStoreUsecase(storeRepo, nil, nil, nil, time.Second*2)
-
 			res, err := u.Get(context.TODO(), tc.arg)
-			tc.checkResponse(t, res, err)
 
+			if tc.expectedErr {
+				assert.Error(t, err)
+				assert.Nil(t, res)
+			} else {
+				assert.NoError(t, err)
+				assert.NotNil(t, res)
+			}
 			storeRepo.AssertExpectations(t)
 		})
 	}
@@ -262,8 +259,7 @@ func Test_StoreUsecase_Block(t *testing.T) {
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.MessengerProducer) {
 				store := s
-				store.Status = domain.StoreStatusActive
-				store.UserID = "invalid_id"
+				store.Status = domain.StoreStatusBlock
 				storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
@@ -362,8 +358,7 @@ func Test_StoreUsecase_Active(t *testing.T) {
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.MessengerProducer) {
 				store := s
-				store.Status = domain.StoreStatusPending
-				store.UserID = "invalid_id"
+				store.Status = domain.StoreStatusActive
 				storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
@@ -463,8 +458,7 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 			arg:  uuid.NewV4().String(),
 			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.MessengerProducer) {
 				store := s
-				store.Status = domain.StoreStatusActive
-				store.UserID = "invalid_id"
+				store.Status = domain.StoreStatusDisable
 				storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
