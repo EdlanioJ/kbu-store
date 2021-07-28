@@ -517,7 +517,7 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 }
 
 func Test_StoreUsecase_Update(t *testing.T) {
-	store := sample.NewStore()
+
 	type fields struct {
 		storeRepo   *mocks.StoreRepository
 		msgProducer *mocks.MessengerProducer
@@ -529,37 +529,40 @@ func Test_StoreUsecase_Update(t *testing.T) {
 		prepare     func(f fields)
 	}{
 		{
-			name:        "fail error on store's repo",
-			arg:         store,
+			name:        "failure_find_store_by_id_returns_error",
+			arg:         sample.NewStore(),
 			expectedErr: true,
 			prepare: func(f fields) {
 				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name:        "fail error on store's repo update",
-			arg:         store,
+			name:        "failure_update_store_returns_error",
+			arg:         sample.NewStore(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
-				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				foundStore := sample.NewStore()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(foundStore, nil).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
-			name:        "should fail if publish returns an error",
-			arg:         store,
+			name:        "failure_publish_msg_returns_error",
+			arg:         sample.NewStore(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
+				foundStore := sample.NewStore()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(foundStore, nil).Once()
 				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
-				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpected Error"))
 			},
 		},
 		{
 			name: "success",
-			arg:  store,
+			arg:  sample.NewStore(),
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(store, nil).Once()
+				foundStore := sample.NewStore()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(foundStore, nil).Once()
 				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(nil).Once()
 				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 			},
