@@ -6,6 +6,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/interfaces"
+	"github.com/shopspring/decimal"
 )
 
 type StoreUsecase struct {
@@ -48,10 +49,8 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 		return domain.ErrNotFound
 	}
 
-	account, err := domain.NewAccount(0)
-	if err != nil {
-		return err
-	}
+	account := domain.NewAccount()
+	account.Balance = decimal.NewFromFloat(0)
 
 	err = u.accountRepo.Store(ctx, account)
 	if err != nil {
