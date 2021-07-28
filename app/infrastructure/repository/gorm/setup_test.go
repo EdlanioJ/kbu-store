@@ -33,19 +33,6 @@ func dbMock() (*gorm.DB, sqlmock.Sqlmock) {
 	return gormDB, mock
 }
 
-func getAccount() *domain.Account {
-	account, _ := domain.NewAccount(20.75)
-	return account
-}
-
-func getCategory() *domain.Category {
-	id := uuid.NewV4().String()
-	name := "Type 001"
-	category, _ := domain.NewCategory(id, name, domain.CategoryStatusInactive)
-
-	return category
-}
-
 func getStore() *domain.Store {
 	store := &domain.Store{
 		Base: domain.Base{
