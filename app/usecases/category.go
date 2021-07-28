@@ -19,28 +19,22 @@ func NewCategoryUsecase(c domain.CategoryRepository, t time.Duration) *CategoryU
 	}
 }
 
-func (u *CategoryUsecase) Create(c context.Context, param *domain.Category) (err error) {
+func (u *CategoryUsecase) Create(c context.Context, category *domain.Category) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
-
-	category, err := domain.NewCategory(param.ID, param.Name, param.Status)
-	if err != nil {
-		return
-	}
 
 	err = u.categoryRepo.Store(ctx, category)
 	return
 }
 
-func (u *CategoryUsecase) Update(c context.Context, Category *domain.Category) (err error) {
+func (u *CategoryUsecase) Update(c context.Context, category *domain.Category) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
 	defer cancel()
 
-	existedCategory, err := u.categoryRepo.FindByID(ctx, Category.ID)
+	_, err = u.categoryRepo.FindByID(ctx, category.ID)
 	if err != nil {
 		return
 	}
 
-	Category.Status = existedCategory.Status
-	return u.categoryRepo.Update(ctx, Category)
+	return u.categoryRepo.Update(ctx, category)
 }

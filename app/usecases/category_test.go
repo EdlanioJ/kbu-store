@@ -10,67 +10,57 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/usecases"
 	"github.com/EdlanioJ/kbu-store/app/utils/mocks"
+	"github.com/EdlanioJ/kbu-store/app/utils/sample"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 func Test_CategoryUsecase_Create(t *testing.T) {
-	a := getCategory()
 
 	testCases := []struct {
-		name          string
-		arg           *domain.Category
-		builtSts      func(categoryRepo *mocks.CategoryRepository)
-		checkResponse func(t *testing.T, err error)
+		name        string
+		arg         *domain.Category
+		expectedErr bool
+		prepare     func(categoryRepo *mocks.CategoryRepository)
 	}{
 		{
-			name: "fail on new category",
-			arg: &domain.Category{
-				Name: "Category",
-			},
-			builtSts: func(_ *mocks.CategoryRepository) {
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "fail on categories's repo",
-			arg:  a,
-			builtSts: func(categoryRepo *mocks.CategoryRepository) {
+			name:        "fail on categories's repo",
+			arg:         sample.NewCategory(),
+			expectedErr: true,
+			prepare: func(categoryRepo *mocks.CategoryRepository) {
 				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
 			},
 		},
 		{
 			name: "success",
-			arg:  a,
-			builtSts: func(categoryRepo *mocks.CategoryRepository) {
+			arg:  sample.NewCategory(),
+			prepare: func(categoryRepo *mocks.CategoryRepository) {
 				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.NoError(t, err)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			categoryRepo := new(mocks.CategoryRepository)
-			tc.builtSts(categoryRepo)
+			tc.prepare(categoryRepo)
 			u := usecases.NewCategoryUsecase(categoryRepo, time.Second*2)
 			fmt.Println(tc.arg)
 			err := u.Create(context.TODO(), tc.arg)
-			tc.checkResponse(t, err)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 			categoryRepo.AssertExpectations(t)
 		})
 	}
 }
 
 func Test_CategoryUsecase_Update(t *testing.T) {
-	category := getCategory()
+	category := sample.NewCategory()
 	type args struct {
 		category *domain.Category
 	}
