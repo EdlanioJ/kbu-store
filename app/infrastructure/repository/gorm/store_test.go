@@ -8,17 +8,18 @@ import (
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository/gorm"
+	"github.com/EdlanioJ/kbu-store/app/utils/sample"
 	"github.com/lib/pq"
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_GormStoreRepository(t *testing.T) {
-	t.Run("should test store repo on create", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
+func TestStoreRepository(t *testing.T) {
+	t.Parallel()
+	db, mock := dbMock()
+	repo := gorm.NewStoreRepository(db)
 
+	t.Run("Create", func(t *testing.T) {
+		store := sample.NewStore()
 		query := `INSERT INTO "stores" ("id","created_at","updated_at","name","description","status","user_id","account_id","category_id","tags","lat","lng") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
 
 		mock.ExpectBegin()
@@ -28,15 +29,10 @@ func Test_GormStoreRepository(t *testing.T) {
 		mock.ExpectCommit()
 
 		err := repo.Create(context.TODO(), store)
-		is.NoError(err)
+		assert.NoError(t, err)
 	})
-
-	t.Run("should test store repo on get by id", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
-
+	t.Run("FindByID", func(t *testing.T) {
+		store := sample.NewStore()
 		query := `SELECT * FROM "stores" WHERE id = $1 ORDER BY "stores"."id"`
 
 		row := sqlmock.
@@ -48,16 +44,11 @@ func Test_GormStoreRepository(t *testing.T) {
 			WillReturnRows(row)
 
 		res, err := repo.FindByID(context.TODO(), store.ID)
-		is.NoError(err)
-		is.NotNil(res)
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
-
-	t.Run("should test store repo on get by name", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
-
+	t.Run("FindByName", func(t *testing.T) {
+		store := sample.NewStore()
 		query := `SELECT * FROM "stores" WHERE name = $1 ORDER BY "stores"."id"`
 
 		row := sqlmock.
@@ -69,15 +60,11 @@ func Test_GormStoreRepository(t *testing.T) {
 			WillReturnRows(row)
 
 		res, err := repo.FindByName(context.TODO(), store.Name)
-		is.NoError(err)
-		is.NotNil(res)
+		assert.NoError(t, err)
+		assert.NotNil(t, res)
 	})
-	t.Run("should test store repo on find all", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
-
+	t.Run("FindAll", func(t *testing.T) {
+		store := sample.NewStore()
 		page := 2
 		limit := 10
 		sort := "created_at DESC"
@@ -93,19 +80,14 @@ func Test_GormStoreRepository(t *testing.T) {
 			WillReturnRows(row)
 		mock.ExpectQuery(regexp.QuoteMeta(queryCount)).
 			WillReturnRows(countRow)
+
 		list, total, err := repo.FindAll(context.TODO(), sort, limit, page)
-
-		is.NoError(err)
-		is.Equal(total, int64(1))
-		is.Len(list, 1)
+		assert.NoError(t, err)
+		assert.Equal(t, total, int64(1))
+		assert.Len(t, list, 1)
 	})
-
-	t.Run("should test store repo on update", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
-
+	t.Run("Update", func(t *testing.T) {
+		store := sample.NewStore()
 		query := `UPDATE "stores" SET "created_at"=$1,"updated_at"=$2,"name"=$3,"description"=$4,"status"=$5,"user_id"=$6,"account_id"=$7,"category_id"=$8,"tags"=$9,"lat"=$10,"lng"=$11 WHERE "id" = $12`
 
 		mock.ExpectBegin()
@@ -115,16 +97,10 @@ func Test_GormStoreRepository(t *testing.T) {
 		mock.ExpectCommit()
 
 		err := repo.Update(context.TODO(), store)
-
-		is.NoError(err)
+		assert.NoError(t, err)
 	})
-
-	t.Run("should test store repo on delete", func(t *testing.T) {
-		is := assert.New(t)
-		db, mock := dbMock()
-		store := getStore()
-		repo := gorm.NewStoreRepository(db)
-
+	t.Run("Delete", func(t *testing.T) {
+		store := sample.NewStore()
 		query := `DELETE FROM "stores" WHERE id = $1`
 
 		mock.ExpectBegin()
@@ -134,7 +110,6 @@ func Test_GormStoreRepository(t *testing.T) {
 		mock.ExpectCommit()
 
 		err := repo.Delete(context.TODO(), store.ID)
-
-		is.NoError(err)
+		assert.NoError(t, err)
 	})
 }
