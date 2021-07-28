@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -26,15 +25,15 @@ type Stores []*Store
 // A Store belong to the domain layer.
 type Store struct {
 	Base        `valid:"required"`
-	Name        string   `json:"name" valid:"notnull"`
-	Description string   `json:"description" valid:"-"`
-	Status      string   `json:"status" valid:"notnull,status"`
-	UserID      string   `json:"user_id" valid:"notnull,uuidv4"`
-	AccountID   string   `json:"account_id" valid:"notnull,uuidv4"`
-	CategoryID  string   `json:"category_id" valid:"notnull,uuidv4"`
-	Image       string   `json:"image" valid:"-"`
-	Tags        []string `json:"tags" valid:"-"`
-	Position    Position `json:"location" valid:"-"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Status      string   `json:"status"`
+	UserID      string   `json:"user_id"`
+	AccountID   string   `json:"account_id"`
+	CategoryID  string   `json:"category_id"`
+	Image       string   `json:"image"`
+	Tags        []string `json:"tags"`
+	Position    Position `json:"location"`
 }
 
 type (
@@ -61,17 +60,6 @@ type (
 	}
 )
 
-// Store entity validator
-func (s *Store) isValid() (err error) {
-	govalidator.TagMap["status"] = govalidator.Validator(func(str string) bool {
-		return govalidator.IsIn(str, StoreStatusActive, StoreStatusPending, StoreStatusDisable, StoreStatusBlock)
-	})
-
-	_, err = govalidator.ValidateStruct(s)
-
-	return
-}
-
 // Block set store entity status to block
 func (s *Store) Block() (err error) {
 	if s.Status == StoreStatusBlock {
@@ -83,8 +71,6 @@ func (s *Store) Block() (err error) {
 	}
 
 	s.Status = StoreStatusBlock
-
-	err = s.isValid()
 	return
 }
 
@@ -95,8 +81,6 @@ func (s *Store) Activate() (err error) {
 	}
 
 	s.Status = StoreStatusActive
-
-	err = s.isValid()
 	return
 }
 
@@ -111,8 +95,6 @@ func (s *Store) Disable() (err error) {
 	}
 
 	s.Status = StoreStatusDisable
-
-	err = s.isValid()
 	return
 }
 
@@ -124,28 +106,11 @@ func (s *Store) ToJson() (res []byte) {
 }
 
 // NewStore creates a store entity
-func NewStore(name, description, userID string, categoryID string, accountID string, tags []string, lat, lng float64) (store *Store, err error) {
-	store = &Store{
-		Name:        name,
-		Description: description,
-		UserID:      userID,
-		AccountID:   accountID,
-		CategoryID:  categoryID,
-		Tags:        tags,
-	}
+func NewStore() (store *Store) {
+	store = new(Store)
 
 	store.ID = uuid.NewV4().String()
-	store.Position = Position{
-		Lat: lat,
-		Lng: lng,
-	}
 	store.Status = StoreStatusPending
 	store.CreatedAt = time.Now()
-
-	err = store.isValid()
-
-	if err != nil {
-		return nil, err
-	}
 	return
 }

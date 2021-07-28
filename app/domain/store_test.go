@@ -9,223 +9,98 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestNewStore(t *testing.T) {
-	t.Run("should fail if validation fails", func(t *testing.T) {
-		categoryID := uuid.NewV4().String()
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
+func Test_Store(t *testing.T) {
+	t.Parallel()
 
-		store, err := domain.NewStore("", "", "", categoryID, account.ID, tags, 0, 0)
-
-		assert.Nil(t, store)
-		assert.Error(t, err)
-	})
-
-	t.Run("should succeed", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
+	t.Run("new_store", func(t *testing.T) {
+		store := domain.NewStore()
 
 		assert.NotNil(t, store)
-		assert.Nil(t, err)
+		assert.NotEmpty(t, store.ID)
+		assert.Equal(t, store.Status, domain.StoreStatusPending)
 	})
-}
 
-func TestBock(t *testing.T) {
-	t.Run("should fail if status already bocked", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
+	t.Run("block", func(t *testing.T) {
+		t.Parallel()
+		t.Run("failure_already_blocked", func(t *testing.T) {
+			store := domain.NewStore()
+			store.Status = domain.StoreStatusBlock
+			err := store.Block()
 
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
+			assert.Error(t, err)
+		})
+
+		t.Run("failure_still_pending", func(t *testing.T) {
+			store := domain.NewStore()
+			err := store.Block()
+
+			assert.Error(t, err)
+		})
+
+		t.Run("success", func(t *testing.T) {
+			store := domain.NewStore()
+			store.Status = domain.StoreStatusActive
+			err := store.Block()
+
+			assert.Nil(t, err)
+		})
+	})
+
+	t.Run("activate", func(t *testing.T) {
+		t.Parallel()
+		t.Run("failure_already_actived", func(t *testing.T) {
+			store := domain.NewStore()
+			store.Status = domain.StoreStatusActive
+			err := store.Activate()
+
+			assert.Error(t, err)
+		})
+
+		t.Run("success", func(t *testing.T) {
+			store := domain.NewStore()
+			err := store.Activate()
+
+			assert.Nil(t, err)
+		})
+	})
+
+	t.Run("disable", func(t *testing.T) {
+		t.Parallel()
+		t.Run("failure_already_disabled", func(t *testing.T) {
+			store := domain.NewStore()
+			store.Status = domain.StoreStatusDisable
+			err := store.Disable()
+
+			assert.Error(t, err)
+		})
+		t.Run("failure_is_blocked", func(t *testing.T) {
+			store := domain.NewStore()
+			store.Status = domain.StoreStatusBlock
+			err := store.Disable()
+
+			assert.Error(t, err)
+		})
+		t.Run("success", func(t *testing.T) {
+			store := domain.NewStore()
+			err := store.Disable()
+
+			assert.Nil(t, err)
+		})
+	})
+	t.Run("to_json", func(t *testing.T) {
+		store := domain.NewStore()
+		store.Name = "store 001"
+		store.Description = "store description 001"
+		store.AccountID = uuid.NewV4().String()
+		store.CategoryID = uuid.NewV4().String()
+		store.UserID = uuid.NewV4().String()
+		store.Tags = []string{"tag 001", "tag 002"}
+
+		data := store.ToJson()
+		assert.NotNil(t, data)
+		newStore := new(domain.Store)
+		err := json.Unmarshal(data, newStore)
 		assert.NoError(t, err)
-		store.Status = domain.StoreStatusBlock
-		store.ID = "001"
-		err = store.Block()
-
-		assert.Error(t, err)
+		assert.Equal(t, store.ID, newStore.ID)
 	})
-
-	t.Run("should fail if status is still pending", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		assert.NoError(t, err)
-		store.ID = "001"
-		err = store.Block()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should fail if validation fails", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		assert.NoError(t, err)
-		store.ID = "001"
-		store.Status = domain.StoreStatusActive
-		err = store.Block()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should succeed", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		store.Status = domain.StoreStatusActive
-		err := store.Block()
-
-		assert.Nil(t, err)
-	})
-}
-
-func TestActivate(t *testing.T) {
-	t.Run("should fail if status is already active", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		assert.NoError(t, err)
-		store.Status = domain.StoreStatusActive
-		err = store.Activate()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should fail if validation fails", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		assert.NoError(t, err)
-
-		store.ID = "001"
-		err = store.Activate()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should succeed", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, err := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		assert.NoError(t, err)
-		err = store.Activate()
-
-		assert.Nil(t, err)
-	})
-}
-
-func TestDisable(t *testing.T) {
-	t.Run("should fail if store status already disable", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		store.Status = domain.StoreStatusDisable
-		err := store.Disable()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should fail if store status is blocked", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-		store.Status = domain.StoreStatusBlock
-		err := store.Disable()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should fail if validation fails", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-
-		store.ID = "001"
-		err := store.Disable()
-
-		assert.Error(t, err)
-	})
-
-	t.Run("should succeed", func(t *testing.T) {
-		name := "store 001"
-		description := "store description 001"
-		externalID := uuid.NewV4().String()
-		categoryID := uuid.NewV4().String()
-		account, _ := domain.NewAccount(200)
-		tags := []string{"tag 001", "tag 002"}
-		store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-
-		err := store.Disable()
-
-		assert.Nil(t, err)
-	})
-}
-
-func Test_StoreDomain_ToJson(t *testing.T) {
-	name := "store 001"
-	description := "store description 001"
-	externalID := uuid.NewV4().String()
-	categoryID := uuid.NewV4().String()
-	account, _ := domain.NewAccount(200)
-	tags := []string{"tag 001", "tag 002"}
-	store, _ := domain.NewStore(name, description, externalID, categoryID, account.ID, tags, 0, 0)
-
-	data := store.ToJson()
-	assert.NotNil(t, data)
-	newStore := new(domain.Store)
-	err := json.Unmarshal(data, newStore)
-	assert.NoError(t, err)
-	assert.Equal(t, store.ID, newStore.ID)
 }
