@@ -9,144 +9,109 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/usecases"
 	"github.com/EdlanioJ/kbu-store/app/utils/mocks"
+	"github.com/EdlanioJ/kbu-store/app/utils/sample"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
 func Test_StoreUsecase_Create(t *testing.T) {
-	type args struct {
-		name        string
-		description string
-		categoryID  string
-		externalID  string
-		tags        []string
-	}
-
-	s := getStore()
-	c := getCategory()
-
-	a := args{
-		name:        s.Name,
-		description: s.Description,
-		categoryID:  s.CategoryID,
-		externalID:  s.UserID,
-		tags:        s.Tags,
+	args := sample.NewStoreUsecaseRequest()
+	validCategory := sample.NewCategory()
+	validCategory.Status = domain.CategoryStatusActive
+	invalidCategory := sample.NewCategory()
+	invalidArgs := sample.NewStoreUsecaseRequest()
+	invalidArgs.Name = ""
+	type fields struct {
+		storeRepo    *mocks.StoreRepository
+		accountRepo  *mocks.AccountRepository
+		categoryRepo *mocks.CategoryRepository
+		msgProducer  *mocks.MessengerProducer
 	}
 	testCases := []struct {
-		name          string
-		args          args
-		builtSts      func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, msgProducer *mocks.MessengerProducer)
-		checkResponse func(t *testing.T, err error)
+		name        string
+		args        sample.StoreUsecaseCreateRequest
+		expectedErr bool
+		prepare     func(f fields)
 	}{
 		{
-			name: "should fail if get category by id returns error",
-			args: a,
-			builtSts: func(_ *mocks.StoreRepository, _ *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(nil, errors.New("Unexpexted Error")).Once()
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+			name:        "failure_find_category_by_id_returns_error",
+			args:        args,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name: "should fail if get category by id returns with invalid status",
-			args: a,
-			builtSts: func(_ *mocks.StoreRepository, _ *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+			name:        "failure_find_category_by_id_returns_invalid_category",
+			args:        args,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(invalidCategory, nil).Once()
 			},
 		},
 		{
-			name: "should fail if create account repo returns error",
-			args: a,
-			builtSts: func(_ *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				c.Status = domain.StoreStatusActive
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-				accountRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+			name:        "failure_create_account_returns_error",
+			args:        args,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+			},
+		},
+		{
+			name:        "failure_create_store_returns_error",
+			args:        args,
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
+				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+			},
+		},
+		{
+			name:        "failure_produce_returns_error",
+			args:        args,
+			expectedErr: true,
+			prepare: func(f fields) {
 
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if new store returns error",
-			args: args{
-				name:        "",
-				description: s.Description,
-				categoryID:  s.CategoryID,
-				externalID:  s.UserID,
-				tags:        s.Tags,
-			},
-			builtSts: func(_ *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-				accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
+				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
 			},
 		},
 		{
-			name: "should fail if create store repo returns error",
-			args: a,
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, _ *mocks.MessengerProducer) {
-				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-				accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-				storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should fail if produce returns an error",
-			args: a,
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, msgProducer *mocks.MessengerProducer) {
-				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-				accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-				storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
-				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
-			},
-		},
-		{
-			name: "should succeed",
-			args: a,
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, categoryRepo *mocks.CategoryRepository, msgProducer *mocks.MessengerProducer) {
-				c.Status = domain.CategoryStatusActive
-				categoryRepo.On("FindByID", mock.Anything, s.CategoryID).Return(c, nil).Once()
-				accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-				storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
-				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.NoError(t, err)
+			name:        "success",
+			args:        args,
+			expectedErr: false,
+			prepare: func(f fields) {
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
+				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 			},
 		},
 	}
 
-	for _, ts := range testCases {
-		t.Run(ts.name, func(t *testing.T) {
+	for i := range testCases {
+		tc := testCases[i]
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			accountRepo := new(mocks.AccountRepository)
 			categoryRepo := new(mocks.CategoryRepository)
 			storeRepo := new(mocks.StoreRepository)
 			msgProducer := new(mocks.MessengerProducer)
-			ts.builtSts(storeRepo, accountRepo, categoryRepo, msgProducer)
+			f := fields{storeRepo, accountRepo, categoryRepo, msgProducer}
+			tc.prepare(f)
 			u := usecases.NewStoreUsecase(storeRepo, accountRepo, categoryRepo, msgProducer, time.Second*2)
 
-			err := u.Store(context.TODO(), ts.args.name, ts.args.description, ts.args.categoryID, ts.args.externalID, ts.args.tags, 0, 0)
-			ts.checkResponse(t, err)
+			err := u.Store(context.TODO(), tc.args.Name, tc.args.Description, tc.args.CategoryID, tc.args.UserID, tc.args.Tags, 0, 0)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 			accountRepo.AssertExpectations(t)
 			categoryRepo.AssertExpectations(t)
 			storeRepo.AssertExpectations(t)

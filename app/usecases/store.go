@@ -13,24 +13,30 @@ type StoreUsecase struct {
 	accountRepo      domain.AccountRepository
 	categoryRepo     domain.CategoryRepository
 	msgProducer      interfaces.MessengerProducer
-	contextTimeout   time.Duration
+	timeout          time.Duration
 	NewStoreTopic    string
 	UpdateStoreTopic string
 	DeleteStoreTopic string
 }
 
-func NewStoreUsecase(s domain.StoreRepository, a domain.AccountRepository, c domain.CategoryRepository, m interfaces.MessengerProducer, t time.Duration) *StoreUsecase {
+func NewStoreUsecase(
+	storeRepo domain.StoreRepository,
+	accountRepo domain.AccountRepository,
+	categoryRepo domain.CategoryRepository,
+	msgProducer interfaces.MessengerProducer,
+	timeout time.Duration,
+) *StoreUsecase {
 	return &StoreUsecase{
-		storeRepo:      s,
-		accountRepo:    a,
-		categoryRepo:   c,
-		msgProducer:    m,
-		contextTimeout: t,
+		storeRepo:    storeRepo,
+		accountRepo:  accountRepo,
+		categoryRepo: categoryRepo,
+		msgProducer:  msgProducer,
+		timeout:      timeout,
 	}
 }
 
 func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	category, err := u.categoryRepo.FindByID(ctx, categoryID)
@@ -52,10 +58,15 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 		return err
 	}
 
-	store, err := domain.NewStore(name, description, externalID, category.ID, account.ID, tags, lat, lng)
-	if err != nil {
-		return err
-	}
+	store := domain.NewStore()
+	store.Name = name
+	store.Description = description
+	store.UserID = externalID
+	store.CategoryID = category.ID
+	store.AccountID = account.ID
+	store.Tags = tags
+	store.Position.Lat = lat
+	store.Position.Lng = lng
 
 	err = u.storeRepo.Create(ctx, store)
 	if err != nil {
@@ -67,7 +78,7 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 }
 
 func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	res, err = u.storeRepo.FindByID(ctx, id)
@@ -79,7 +90,7 @@ func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err
 }
 
 func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (res domain.Stores, total int64, err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	if limit <= 0 {
@@ -102,7 +113,7 @@ func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (r
 }
 
 func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -125,7 +136,7 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 }
 
 func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -148,7 +159,7 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 }
 
 func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer func() {
 		cancel()
 	}()
@@ -173,7 +184,7 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 }
 
 func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
@@ -193,7 +204,7 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 }
 
 func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
-	ctx, cancel := context.WithTimeout(c, u.contextTimeout)
+	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
 	store, err := u.storeRepo.FindByID(ctx, id)

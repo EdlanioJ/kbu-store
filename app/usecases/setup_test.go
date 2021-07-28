@@ -24,10 +24,3 @@ func getStore() *domain.Store {
 
 	return store
 }
-
-func getCategory() *domain.Category {
-
-	mockStorType, _ := domain.NewCategory(uuid.NewV4().String(), "Store type 001", domain.CategoryStatusPending)
-
-	return mockStorType
-}

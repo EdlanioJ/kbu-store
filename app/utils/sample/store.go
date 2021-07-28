@@ -103,3 +103,21 @@ func NewHttpListReq() HttpListRequest {
 		Limit: 5,
 	}
 }
+
+type StoreUsecaseCreateRequest struct {
+	Name        string
+	Description string
+	CategoryID  string
+	UserID      string
+	Tags        []string
+}
+
+func NewStoreUsecaseRequest() StoreUsecaseCreateRequest {
+	return StoreUsecaseCreateRequest{
+		Name:        "Store 001",
+		Description: "Store description 001",
+		CategoryID:  uuid.NewV4().String(),
+		UserID:      uuid.NewV4().String(),
+		Tags:        []string{"tag002", "tag003"},
+	}
+}
