@@ -24,7 +24,7 @@ func Test_CategoryUsecase_Create(t *testing.T) {
 		prepare     func(categoryRepo *mocks.CategoryRepository)
 	}{
 		{
-			name:        "fail on categories's repo",
+			name:        "failure_store_category_returns_error",
 			arg:         sample.NewCategory(),
 			expectedErr: true,
 			prepare: func(categoryRepo *mocks.CategoryRepository) {
