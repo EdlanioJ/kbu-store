@@ -591,107 +591,104 @@ func Test_StoreUsecase_Update(t *testing.T) {
 }
 
 func Test_StoreUsecase_Delete(t *testing.T) {
-
-	s := getStore()
+	type fields struct {
+		storeRepo   *mocks.StoreRepository
+		accountRepo *mocks.AccountRepository
+		msgProducer *mocks.MessengerProducer
+	}
 
 	testCases := []struct {
-		name          string
-		arg           string
-		builtSts      func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, msgProducer *mocks.MessengerProducer)
-		checkResponse func(t *testing.T, err error)
+		name        string
+		arg         string
+		expectedErr bool
+		prepare     func(f fields)
 	}{
 		{
-			name: "should fail if find store by id returns an error",
-			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.AccountRepository, _ *mocks.MessengerProducer) {
-				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+			name:        "failure_find_store_by_id_returns_error",
+			arg:         uuid.NewV4().String(),
+			expectedErr: true,
+			prepare: func(f fields) {
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-
-			name: "should fail if delete store returns an error",
-			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository, _ *mocks.AccountRepository, _ *mocks.MessengerProducer) {
-				store := s
+			name:        "failure_delete_store_returns_error",
+			arg:         uuid.NewV4().String(),
+			expectedErr: true,
+			prepare: func(f fields) {
+				store := sample.NewStore()
 				store.Status = domain.StoreStatusActive
-				storeRepo.
+				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name: "should fail if delete account returns an error",
-			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, _ *mocks.MessengerProducer) {
-				store := s
+			name:        "failure_delete_account_returns_error",
+			arg:         uuid.NewV4().String(),
+			expectedErr: true,
+			prepare: func(f fields) {
+				store := sample.NewStore()
 				store.Status = domain.StoreStatusActive
-				storeRepo.
+				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
-				accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+				f.accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
 			},
 		},
 		{
-			name: "should fail if delete store returns an error",
-			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, _ *mocks.MessengerProducer) {
-				store := s
+			name:        "failure_publish_msg_returns_error",
+			arg:         uuid.NewV4().String(),
+			expectedErr: true,
+			prepare: func(f fields) {
+				store := sample.NewStore()
 				store.Status = domain.StoreStatusActive
-				storeRepo.
+				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
-				storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+				f.accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpected Error"))
 			},
 		},
 		{
-			name: "should fail if publish returns an error",
+			name: "success",
 			arg:  uuid.NewV4().String(),
-			builtSts: func(storeRepo *mocks.StoreRepository, accountRepo *mocks.AccountRepository, msgProducer *mocks.MessengerProducer) {
-				store := s
+			prepare: func(f fields) {
+				store := sample.NewStore()
 				store.Status = domain.StoreStatusActive
-				storeRepo.
+				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
-				storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
-				msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
-
-			},
-			checkResponse: func(t *testing.T, err error) {
-				assert.Error(t, err)
+				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+				f.accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
 			},
 		},
 	}
 
-	for _, tc := range testCases {
+	for i := range testCases {
+		tc := testCases[i]
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			storeRepo := new(mocks.StoreRepository)
 			accountRepo := new(mocks.AccountRepository)
 			msgProducer := new(mocks.MessengerProducer)
-			tc.builtSts(storeRepo, accountRepo, msgProducer)
-
+			f := fields{storeRepo, accountRepo, msgProducer}
+			tc.prepare(f)
 			u := usecases.NewStoreUsecase(storeRepo, accountRepo, nil, msgProducer, time.Second*2)
 			err := u.Delete(context.TODO(), tc.arg)
-			tc.checkResponse(t, err)
+			if tc.expectedErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+
+			storeRepo.AssertExpectations(t)
+			accountRepo.AssertExpectations(t)
+			msgProducer.AssertExpectations(t)
 		})
 	}
 }
