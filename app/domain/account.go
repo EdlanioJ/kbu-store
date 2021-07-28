@@ -2,18 +2,18 @@ package domain
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"math"
 	"time"
 
-	"github.com/asaskevich/govalidator"
 	uuid "github.com/satori/go.uuid"
 	"github.com/shopspring/decimal"
 )
 
 // Account struct
 type Account struct {
-	Base    `valid:"required"`
-	Balance decimal.Decimal `json:"balance,omitempty" valid:"-"`
+	Base
+	Balance decimal.Decimal `json:"balance"`
 }
 
 type (
@@ -25,56 +25,34 @@ type (
 	}
 )
 
-// Account entity validator
-func (a *Account) isValid() (err error) {
-	_, err = govalidator.ValidateStruct(a)
-
-	if err != nil {
-		return
-	}
-
-	if a.Balance.LessThan(decimal.NewFromFloat(0)) {
-		return errors.New("balance must positive number")
-	}
-
-	return
-}
-
 // NewAccount creates an *Account struct
-func NewAccount(balance float64) (account *Account, err error) {
-	account = &Account{
-		Balance: decimal.NewFromFloat(balance),
-	}
-
+func NewAccount() (account *Account) {
+	account = new(Account)
 	account.ID = uuid.NewV4().String()
 	account.CreatedAt = time.Now()
-	err = account.isValid()
-
-	if err != nil {
-		return nil, err
-	}
 
 	return
 }
 
 func (a *Account) Deposit(amount float64) (err error) {
-	if govalidator.IsNegative(amount) {
-		return errors.New("value must be a positive number")
+	if math.Signbit(amount) {
+		return fmt.Errorf("%f must be a positive number", amount)
 	}
 	a.Balance = a.Balance.Add(decimal.NewFromFloat(amount))
-
-	err = a.isValid()
 
 	return
 }
 
 func (a *Account) Withdow(amount float64) (err error) {
-	if govalidator.IsNegative(amount) {
-		return errors.New("value must be a positive number")
+	if math.Signbit(amount) {
+		return fmt.Errorf("%f must be a positive number", amount)
 	}
-	a.Balance = a.Balance.Sub(decimal.NewFromFloat(amount))
 
-	err = a.isValid()
+	if a.Balance.LessThan(decimal.NewFromFloat(amount)) {
+		return fmt.Errorf("balance is less than amount: %f", amount)
+	}
+
+	a.Balance = a.Balance.Sub(decimal.NewFromFloat(amount))
 
 	return
 }
