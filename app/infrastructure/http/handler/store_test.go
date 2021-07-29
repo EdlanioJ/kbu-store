@@ -86,7 +86,7 @@ func Test_StoreHandler_Index(t *testing.T) {
 			args:       args,
 			statusCode: fiber.StatusInternalServerError,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Index", mock.Anything, args.Sort, args.Limit, args.Page).Return(nil, int64(0), errors.New("Unexpexted Error")).Once()
+				storeUsecase.On("Index", mock.Anything, args.Sort, args.Limit, args.Page).Return(nil, int64(0), errors.New("Unexpected Error")).Once()
 			},
 		},
 		{

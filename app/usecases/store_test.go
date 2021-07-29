@@ -39,7 +39,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			args:        args,
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(nil, errors.New("Unexpexted Error")).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -56,7 +56,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			expectedErr: true,
 			prepare: func(f fields) {
 				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
-				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -66,7 +66,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			prepare: func(f fields) {
 				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
-				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -78,7 +78,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
-				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error"))
+				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpected Error"))
 			},
 		},
 		{
@@ -131,7 +131,7 @@ func Test_StoreUsecase_Get(t *testing.T) {
 			arg:         uuid.NewV4().String(),
 			expectedErr: true,
 			prepare: func(storeRepo *mocks.StoreRepository) {
-				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -179,7 +179,7 @@ func Test_StoreUsecase_Index(t *testing.T) {
 			expectedErr: true,
 			prepare: func(storeRepo *mocks.StoreRepository) {
 				storeRepo.On("FindAll", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("int"), mock.AnythingOfType("int")).
-					Return(nil, int64(0), errors.New("Unexpexted Error")).
+					Return(nil, int64(0), errors.New("Unexpected Error")).
 					Once()
 			},
 		},
@@ -237,7 +237,7 @@ func Test_StoreUsecase_Block(t *testing.T) {
 			arg:         uuid.NewV4().String(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -262,7 +262,7 @@ func Test_StoreUsecase_Block(t *testing.T) {
 				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -423,7 +423,7 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 			arg:         uuid.NewV4().String(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 
 			},
 		},
@@ -449,7 +449,7 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -519,7 +519,7 @@ func Test_StoreUsecase_Update(t *testing.T) {
 			arg:         sample.NewStore(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -594,7 +594,7 @@ func Test_StoreUsecase_Delete(t *testing.T) {
 			arg:         uuid.NewV4().String(),
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -607,7 +607,7 @@ func Test_StoreUsecase_Delete(t *testing.T) {
 				f.storeRepo.
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
-				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
+				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -621,7 +621,7 @@ func Test_StoreUsecase_Delete(t *testing.T) {
 					On("FindByID", mock.Anything, mock.AnythingOfType("string")).
 					Return(store, nil).Once()
 				f.storeRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(nil).Once()
-				f.accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpexted Error")).Once()
+				f.accountRepo.On("Delete", mock.Anything, mock.AnythingOfType("string")).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{

@@ -27,7 +27,7 @@ func Test_CategoryUsecase_Create(t *testing.T) {
 			arg:         sample.NewCategory(),
 			expectedErr: true,
 			prepare: func(categoryRepo *mocks.CategoryRepository) {
-				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				categoryRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
@@ -71,7 +71,7 @@ func Test_CategoryUsecase_Update(t *testing.T) {
 			arg:         sample.NewCategory(),
 			expectedErr: true,
 			prepare: func(categoryRepo *mocks.CategoryRepository) {
-				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpexted Error")).Once()
+				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 			checkResponse: func(t *testing.T, err error) {
 				assert.Error(t, err)
@@ -84,7 +84,7 @@ func Test_CategoryUsecase_Update(t *testing.T) {
 			prepare: func(categoryRepo *mocks.CategoryRepository) {
 				category := sample.NewCategory()
 				categoryRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(category, nil).Once()
-				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpexted Error")).Once()
+				categoryRepo.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
