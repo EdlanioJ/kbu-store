@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
-	"github.com/lib/pq"
 )
 
 type storeRepository struct {
@@ -30,7 +29,6 @@ func (r *storeRepository) getAll(ctx context.Context, query string, args ...inte
 
 		var lat float64
 		var lng float64
-		var tags pq.StringArray
 		err = rows.Scan(
 			&s.ID,
 			&s.CreatedAt,
@@ -41,14 +39,14 @@ func (r *storeRepository) getAll(ctx context.Context, query string, args ...inte
 			&s.AccountID,
 			&s.CategoryID,
 			&s.UserID,
-			&tags,
+			&s.Image,
+			&s.Tags,
 			&lat,
 			&lng,
 		)
 		if err != nil {
 			return nil, err
 		}
-		s.Tags = tags
 		s.Position = domain.Position{
 			Lat: lat,
 			Lng: lng,
@@ -60,8 +58,8 @@ func (r *storeRepository) getAll(ctx context.Context, query string, args ...inte
 }
 
 func (r *storeRepository) Store(ctx context.Context, s *domain.Store) (err error) {
-	query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
-	res, err := r.db.ExecContext(ctx, query, s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng)
+	query := `INSERT INTO stores (id,created_at,updated_at,name,description,status,user_id,account_id,category_id,image,tags,lat,lng) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
+	res, err := r.db.ExecContext(ctx, query, s.ID, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, s.Image, s.Tags, s.Position.Lat, s.Position.Lng)
 	if err != nil {
 		return
 	}
@@ -129,8 +127,8 @@ func (r *storeRepository) FindAll(ctx context.Context, sort string, limit, page 
 }
 
 func (r *storeRepository) Update(ctx context.Context, s *domain.Store) (err error) {
-	query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11 WHERE id = $12`
-	res, err := r.db.ExecContext(ctx, query, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, pq.StringArray(s.Tags), s.Position.Lat, s.Position.Lng, s.ID)
+	query := `UPDATE stores SET created_at=$1,updated_at=$2,name=$3,description=$4,status=$5,user_id=$6,account_id=$7,category_id=$8,tags=$9,lat=$10,lng=$11,image=$12 WHERE id = $13`
+	res, err := r.db.ExecContext(ctx, query, s.CreatedAt, s.UpdatedAt, s.Name, s.Description, s.Status, s.UserID, s.AccountID, s.CategoryID, s.Tags, s.Position.Lat, s.Position.Lng, s.Image, s.ID)
 	if err != nil {
 		return
 	}
