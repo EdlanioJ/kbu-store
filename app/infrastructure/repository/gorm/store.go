@@ -3,7 +3,6 @@ package gorm
 import (
 	"context"
 
-	"github.com/EdlanioJ/kbu-store/app/db/model"
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"gorm.io/gorm"
 )
@@ -19,62 +18,56 @@ func NewStoreRepository(db *gorm.DB) *storeRepository {
 }
 
 func (r *storeRepository) Create(ctx context.Context, store *domain.Store) (err error) {
-	storeModel := &model.Store{}
-	storeModel.FromStoreDomain(store)
-
 	err = r.db.WithContext(ctx).
-		Create(storeModel).
+		Table("stores").
+		Create(store).
 		Error
 	return
 }
 
 func (r *storeRepository) FindByID(ctx context.Context, id string) (res *domain.Store, err error) {
-	store := &model.Store{}
+	res = &domain.Store{}
 
 	err = r.db.WithContext(ctx).
+		Table("stores").
 		Where("id = ?", id).
-		First(store).
+		First(res).
 		Error
 
-	res = store.ToStoreDomain()
 	return
 }
 
 func (r *storeRepository) FindByName(ctx context.Context, name string) (res *domain.Store, err error) {
-	store := &model.Store{}
+	res = &domain.Store{}
 
 	err = r.db.WithContext(ctx).
+		Table("stores").
 		Where("name = ?", name).
-		First(store).
+		First(res).
 		Error
 
-	res = store.ToStoreDomain()
 	return
 }
 
 func (r *storeRepository) FindAll(ctx context.Context, sort string, limit, page int) (res domain.Stores, total int64, err error) {
-	var stores []*model.Store
+	var stores []*domain.Store
 
 	err = r.db.WithContext(ctx).
+		Table("stores").
 		Offset((page - 1) * limit).
 		Limit(limit).
 		Order(sort).
 		Find(&stores).
 		Count(&total).Error
 
-	res = make([]*domain.Store, 0)
-	for _, value := range stores {
-		res = append(res, value.ToStoreDomain())
-	}
+	res = stores
 	return
 }
 
 func (r *storeRepository) Update(ctx context.Context, store *domain.Store) (err error) {
-	storeEntity := &model.Store{}
-	storeEntity.FromStoreDomain(store)
-
 	err = r.db.WithContext(ctx).
-		Save(storeEntity).
+		Table("stores").
+		Save(store).
 		Error
 
 	return
@@ -82,7 +75,8 @@ func (r *storeRepository) Update(ctx context.Context, store *domain.Store) (err 
 
 func (r *storeRepository) Delete(ctx context.Context, id string) (err error) {
 	err = r.db.WithContext(ctx).
-		Delete(&model.Store{}, "id = ?", id).
+		Table("stores").
+		Delete(&domain.Store{}, "id = ?", id).
 		Error
 
 	return

@@ -20,11 +20,11 @@ func TestStoreRepository(t *testing.T) {
 
 	t.Run("Create", func(t *testing.T) {
 		store := sample.NewStore()
-		query := `INSERT INTO "stores" ("id","created_at","updated_at","name","description","status","user_id","account_id","category_id","tags","lat","lng") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+		query := `INSERT INTO "stores" ("id","created_at","updated_at","name","description","status","user_id","account_id","category_id","image","tags","lat","lng") VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)`
 
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(query)).
-			WithArgs(store.ID, store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng).
+			WithArgs(store.ID, store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, store.Image, store.Tags, store.Position.Lat, store.Position.Lng).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
@@ -36,8 +36,8 @@ func TestStoreRepository(t *testing.T) {
 		query := `SELECT * FROM "stores" WHERE id = $1 ORDER BY "stores"."id"`
 
 		row := sqlmock.
-			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng"}).
-			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.CategoryID, store.Name, store.Position.Lat, store.Position.Lng)
+			NewRows([]string{"id", "created_at", "updated_at", "name", "status", "description", "account_id", "category_id", "external_id", "lat", "lng", "image"}).
+			AddRow(store.ID, store.CreatedAt, store.UpdatedAt, store.Name, store.Status, store.Description, store.AccountID, store.CategoryID, store.Name, store.Position.Lat, store.Position.Lng, store.Image)
 
 		mock.ExpectQuery(regexp.QuoteMeta(query)).
 			WithArgs(store.ID).
@@ -88,11 +88,11 @@ func TestStoreRepository(t *testing.T) {
 	})
 	t.Run("Update", func(t *testing.T) {
 		store := sample.NewStore()
-		query := `UPDATE "stores" SET "created_at"=$1,"updated_at"=$2,"name"=$3,"description"=$4,"status"=$5,"user_id"=$6,"account_id"=$7,"category_id"=$8,"tags"=$9,"lat"=$10,"lng"=$11 WHERE "id" = $12`
+		query := `UPDATE "stores" SET "created_at"=$1,"updated_at"=$2,"name"=$3,"description"=$4,"status"=$5,"user_id"=$6,"account_id"=$7,"category_id"=$8,"image"=$9,"tags"=$10,"lat"=$11,"lng"=$12 WHERE "id" = $13`
 
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta(query)).
-			WithArgs(store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng, store.ID).
+			WithArgs(store.CreatedAt, sqlmock.AnyArg(), store.Name, store.Description, store.Status, store.UserID, store.AccountID, store.CategoryID, store.Image, pq.StringArray(store.Tags), store.Position.Lat, store.Position.Lng, store.ID).
 			WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 
