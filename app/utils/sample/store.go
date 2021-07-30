@@ -22,6 +22,8 @@ func NewStore() *domain.Store {
 		UserID:      uuid.NewV4().String(),
 		AccountID:   uuid.NewV4().String(),
 		CategoryID:  uuid.NewV4().String(),
+		Image:       "image.png",
+		Tags:        []string{"Tag001", "Tag002"},
 		Position: domain.Position{
 			Lat: -8.8368200,
 			Lng: 13.2343200,
