@@ -1,6 +1,6 @@
 package domain
 
 type Position struct {
-	Lat float64 `json:"lat" valid:"latitude,optional"`
-	Lng float64 `json:"lng" valid:"longitude,optional"`
+	Lat float64 `json:"lat" gorm:"type:decimal(11,8)"`
+	Lng float64 `json:"lng" gorm:"type:decimal(11,8)"`
 }

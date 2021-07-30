@@ -15,8 +15,8 @@ const (
 // Category struct
 type Category struct {
 	Base
-	Name   string `json:"name"`
-	Status string `json:"status"`
+	Name   string `json:"name" gorm:"column:name;type:varchar;not null"`
+	Status string `json:"status" gorm:"type:varchar(20)"`
 }
 
 type (

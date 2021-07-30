@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/lib/pq"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -24,16 +25,16 @@ type Stores []*Store
 
 // A Store belong to the domain layer.
 type Store struct {
-	Base        `valid:"required"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Status      string   `json:"status"`
-	UserID      string   `json:"user_id"`
-	AccountID   string   `json:"account_id"`
-	CategoryID  string   `json:"category_id"`
-	Image       string   `json:"image"`
-	Tags        []string `json:"tags"`
-	Position    Position `json:"location"`
+	Base
+	Name        string         `json:"name" gorm:"column:name;type:varchar;not null"`
+	Description string         `json:"description" gorm:"type:varchar(255)"`
+	Status      string         `json:"status" gorm:"type:varchar(20)"`
+	UserID      string         `json:"user_id" gorm:"column:user_id;type:uuid"`
+	AccountID   string         `json:"account_id" gorm:"column:account_id;type:uuid"`
+	CategoryID  string         `json:"category_id" gorm:"column:category_id;type:uuid"`
+	Image       string         `json:"image" gorm:"column:image;type:varchar(255)"`
+	Tags        pq.StringArray `json:"tags" gorm:"column:tags;type:text[]"`
+	Position    `json:"location"`
 }
 
 type (

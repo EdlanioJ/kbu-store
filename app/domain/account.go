@@ -13,7 +13,7 @@ import (
 // Account struct
 type Account struct {
 	Base
-	Balance decimal.Decimal `json:"balance"`
+	Balance decimal.Decimal `json:"balance" gorm:"type:decimal(20,8)"`
 }
 
 type (
