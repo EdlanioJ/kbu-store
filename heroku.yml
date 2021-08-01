@@ -1,6 +1,4 @@
 build:
    docker:
-    release:
-       dockerfile: .docker/heroku/Dockerfile
-    web: Dockerfile
-
+    web: kbu-store http
+    worker: Dockerfile.prod
