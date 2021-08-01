@@ -34,7 +34,7 @@ var doc = `{
     "paths": {
         "/stores": {
             "get": {
-                "description": "Get a list of stores",
+                "description": "Get list of stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -44,7 +44,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get all stores",
+                "summary": "Index store",
                 "parameters": [
                     {
                         "type": "integer",
@@ -87,7 +87,7 @@ var doc = `{
                 }
             },
             "post": {
-                "description": "Create store",
+                "description": "Create new store",
                 "consumes": [
                     "application/json"
                 ],
@@ -97,7 +97,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Create  a new store",
+                "summary": "Create store",
                 "parameters": [
                     {
                         "description": "Create store",
@@ -137,71 +137,9 @@ var doc = `{
                 }
             }
         },
-        "/stores/active/{id}": {
-            "patch": {
-                "description": "Activate one stores",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "stores"
-                ],
-                "summary": "update store",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "store ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Create store",
-                        "name": "category",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.UpdateStoreRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": ""
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/stores/{id}": {
             "get": {
-                "description": "Get one stores by id",
+                "description": "Get a stores by id",
                 "consumes": [
                     "application/json"
                 ],
@@ -211,7 +149,7 @@ var doc = `{
                 "tags": [
                     "stores"
                 ],
-                "summary": "Get stores by id",
+                "summary": "Get stores",
                 "parameters": [
                     {
                         "type": "string",
@@ -292,11 +230,71 @@ var doc = `{
                         }
                     }
                 }
+            },
+            "patch": {
+                "description": "Uptate a stores",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stores"
+                ],
+                "summary": "Update store",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "store ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Create store",
+                        "name": "category",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handler.UpdateStoreRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": ""
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/handler.ErrorResponse"
+                        }
+                    }
+                }
             }
         },
         "/stores/{id}/activate": {
             "patch": {
-                "description": "Activate one stores",
+                "description": "Activate a stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -343,7 +341,7 @@ var doc = `{
         },
         "/stores/{id}/block": {
             "patch": {
-                "description": "Block one stores",
+                "description": "Block a stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -390,7 +388,7 @@ var doc = `{
         },
         "/stores/{id}/disable": {
             "patch": {
-                "description": "Disable one stores",
+                "description": "Disable a stores",
                 "consumes": [
                     "application/json"
                 ],
@@ -437,42 +435,14 @@ var doc = `{
         }
     },
     "definitions": {
-        "domain.Category": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.Position": {
-            "type": "object",
-            "properties": {
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
-                }
-            }
-        },
         "domain.Store": {
             "type": "object",
             "properties": {
                 "account_id": {
                     "type": "string"
                 },
-                "category": {
-                    "$ref": "#/definitions/domain.Category"
+                "category_id": {
+                    "type": "string"
                 },
                 "created_at": {
                     "type": "string"
@@ -486,8 +456,11 @@ var doc = `{
                 "image": {
                     "type": "string"
                 },
-                "location": {
-                    "$ref": "#/definitions/domain.Position"
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
                 },
                 "name": {
                     "type": "string"

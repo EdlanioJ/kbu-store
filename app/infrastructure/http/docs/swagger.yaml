@@ -1,29 +1,11 @@
 basePath: /api/v1
 definitions:
-  domain.Category:
-    properties:
-      created_at:
-        type: string
-      id:
-        type: string
-      name:
-        type: string
-      status:
-        type: string
-    type: object
-  domain.Position:
-    properties:
-      lat:
-        type: number
-      lng:
-        type: number
-    type: object
   domain.Store:
     properties:
       account_id:
         type: string
-      category:
-        $ref: '#/definitions/domain.Category'
+      category_id:
+        type: string
       created_at:
         type: string
       description:
@@ -32,8 +14,10 @@ definitions:
         type: string
       image:
         type: string
-      location:
-        $ref: '#/definitions/domain.Position'
+      lat:
+        type: number
+      lng:
+        type: number
       name:
         type: string
       status:
@@ -102,7 +86,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of stores
+      description: Get list of stores
       parameters:
       - default: 1
         description: Page
@@ -132,13 +116,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get all stores
+      summary: Index store
       tags:
       - stores
     post:
       consumes:
       - application/json
-      description: Create store
+      description: Create new store
       parameters:
       - description: Create store
         in: body
@@ -165,7 +149,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Create  a new store
+      summary: Create store
       tags:
       - stores
   /stores/{id}:
@@ -202,7 +186,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get one stores by id
+      description: Get a stores by id
       parameters:
       - description: store ID
         in: path
@@ -228,107 +212,13 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: Get stores by id
+      summary: Get stores
       tags:
       - stores
-  /stores/{id}/activate:
     patch:
       consumes:
       - application/json
-      description: Activate one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Activate stores
-      tags:
-      - stores
-  /stores/{id}/block:
-    patch:
-      consumes:
-      - application/json
-      description: Block one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Block stores
-      tags:
-      - stores
-  /stores/{id}/disable:
-    patch:
-      consumes:
-      - application/json
-      description: Disable one stores
-      parameters:
-      - description: store ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: ""
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/handler.ErrorResponse'
-      summary: Disable stores
-      tags:
-      - stores
-  /stores/active/{id}:
-    patch:
-      consumes:
-      - application/json
-      description: Activate one stores
+      description: Uptate a stores
       parameters:
       - description: store ID
         in: path
@@ -362,7 +252,100 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/handler.ErrorResponse'
-      summary: update store
+      summary: Update store
+      tags:
+      - stores
+  /stores/{id}/activate:
+    patch:
+      consumes:
+      - application/json
+      description: Activate a stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Activate stores
+      tags:
+      - stores
+  /stores/{id}/block:
+    patch:
+      consumes:
+      - application/json
+      description: Block a stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Block stores
+      tags:
+      - stores
+  /stores/{id}/disable:
+    patch:
+      consumes:
+      - application/json
+      description: Disable a stores
+      parameters:
+      - description: store ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: ""
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Disable stores
       tags:
       - stores
 swagger: "2.0"

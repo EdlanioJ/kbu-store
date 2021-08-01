@@ -19,8 +19,8 @@ func NewStoreHandler(us domain.StoreUsecase) *storeHandler {
 	}
 }
 
-// @Summary Create  a new store
-// @Description Create store
+// @Summary Create store
+// @Description Create new store
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -46,8 +46,8 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusCreated)
 }
 
-// @Summary Get all stores
-// @Description Get a list of stores
+// @Summary Index store
+// @Description Get list of stores
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -71,8 +71,8 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 	return c.JSON(list)
 }
 
-// @Summary Get stores by id
-// @Description Get one stores by id
+// @Summary Get stores
+// @Description Get a stores by id
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -98,7 +98,7 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 }
 
 // @Summary Activate stores
-// @Description Activate one stores
+// @Description Activate a stores
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -125,7 +125,7 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 }
 
 // @Summary Block stores
-// @Description Block one stores
+// @Description Block a stores
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -152,7 +152,7 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 }
 
 // @Summary Disable stores
-// @Description Disable one stores
+// @Description Disable a stores
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -205,8 +205,8 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
-// @Summary update store
-// @Description Activate one stores
+// @Summary Update store
+// @Description Uptate a stores
 // @Tags stores
 // @Accept json
 // @Produce json
@@ -217,7 +217,7 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 // @Failure 400 {object} ErrorResponse
 // @Failure 422 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
-// @Router /stores/active/{id} [patch]
+// @Router /stores/{id} [patch]
 func (h *storeHandler) Update(c *fiber.Ctx) error {
 	ctx := c.Context()
 	reqBody := new(UpdateStoreRequest)

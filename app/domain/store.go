@@ -33,7 +33,7 @@ type Store struct {
 	AccountID   string         `json:"account_id" gorm:"column:account_id;type:uuid"`
 	CategoryID  string         `json:"category_id" gorm:"column:category_id;type:uuid"`
 	Image       string         `json:"image" gorm:"column:image;type:varchar(255)"`
-	Tags        pq.StringArray `json:"tags" gorm:"column:tags;type:text[]"`
+	Tags        pq.StringArray `json:"tags" swaggertype:"array,string" gorm:"column:tags;type:text[]"`
 	Position    `json:"location"`
 }
 

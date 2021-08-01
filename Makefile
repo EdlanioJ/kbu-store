@@ -21,7 +21,7 @@ build:
 	GOOS=linux GOARCH=386 go build -ldflags="-s -w" -o kbu-store ./app/main.go
 
 swag:
-	swag init -g "./app/infrastructure/http/server.go" -d "./" -o "./app/infrastructure/http/docs"
+	swag init -g "./infrastructure/http/server.go" -d "./app" -o "./app/infrastructure/http/docs"
 
 mock:
 	mockery --output "./app/utils/mocks" --dir "./app/domain/" --all
