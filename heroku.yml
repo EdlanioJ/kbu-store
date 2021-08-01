@@ -1,4 +1,5 @@
 build:
-   docker:
+  docker:
+    web: Dockerfile.prod
+  run:
     web: kbu-store http
-    worker: Dockerfile.prod
