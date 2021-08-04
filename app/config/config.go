@@ -19,6 +19,12 @@ type Grpc struct {
 	MetricPort int `mapstructure:"METRIC_PORT"`
 }
 
+type Jaeger struct {
+	Host        string `mapstructure:"HOST"`
+	ServiceName string `mapstructure:"SERVICE_NAME"`
+	LogSpans    bool   `mapstructure:"LOG_SPANS"`
+}
+
 type Config struct {
 	Timeout int    `mapstructure:"TIMEOUT"`
 	Port    int    `mapstructure:"PORT"`
@@ -27,6 +33,7 @@ type Config struct {
 	DnsTest string `mapstructure:"DB_CONNECTION_TEST"`
 	Kafka   Kafka  `mapstructure:"KAFKA"`
 	Grpc    Grpc   `mapstructure:"GRPC"`
+	Jaeger  Jaeger `mapstructure:"JEAGER"`
 }
 
 func LoadConfig(path ...string) (cfg *Config, err error) {
