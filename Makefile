@@ -28,7 +28,7 @@ mock:
 	mockery --output "./app/utils/mocks" --dir "./app/interfaces/" --all
 
 migrate.create:
-	migrate create -ext sql -dir app/db/migration -seq init_schema
+	migrate create -ext sql -dir app/db/migration -seq schema
 
 migrate.up:
 	migrate -path app/db/migration -database ${DATABASE} -verbose up
