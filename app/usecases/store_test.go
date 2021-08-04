@@ -503,7 +503,6 @@ func Test_StoreUsecase_Disable(t *testing.T) {
 }
 
 func Test_StoreUsecase_Update(t *testing.T) {
-
 	type fields struct {
 		storeRepo   *mocks.StoreRepository
 		msgProducer *mocks.MessengerProducer

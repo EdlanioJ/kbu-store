@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
+	"github.com/opentracing/opentracing-go"
 	kafka "github.com/segmentio/kafka-go"
+	log "github.com/sirupsen/logrus"
 )
 
 type KafkaProducer struct {
@@ -13,8 +15,10 @@ type KafkaProducer struct {
 
 func NewKafkaProducer(cfg *config.Config) *KafkaProducer {
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers:  cfg.Kafka.Brokers,
-		Balancer: &kafka.LeastBytes{},
+		Brokers:     cfg.Kafka.Brokers,
+		Balancer:    &kafka.LeastBytes{},
+		Logger:      kafka.LoggerFunc(log.Debugf),
+		ErrorLogger: kafka.LoggerFunc(log.Errorf),
 	})
 
 	return &KafkaProducer{
@@ -23,6 +27,9 @@ func NewKafkaProducer(cfg *config.Config) *KafkaProducer {
 }
 
 func (k *KafkaProducer) Publish(ctx context.Context, msg, topic string) error {
+	span, ctx := opentracing.StartSpanFromContext(ctx, "kafkaProducer.Publish")
+	defer span.Finish()
+
 	message := kafka.Message{
 		Topic: topic,
 		Value: []byte(msg),

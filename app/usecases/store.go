@@ -6,6 +6,7 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/interfaces"
+	"github.com/opentracing/opentracing-go"
 	"github.com/shopspring/decimal"
 )
 
@@ -39,6 +40,9 @@ func NewStoreUsecase(
 func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
+
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Store")
+	defer span.Finish()
 
 	category, err := u.categoryRepo.FindByID(ctx, categoryID)
 	if err != nil {
@@ -80,6 +84,9 @@ func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Get")
+	defer span.Finish()
+
 	res, err = u.storeRepo.FindByID(ctx, id)
 	if err != nil {
 		return
@@ -91,6 +98,9 @@ func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err
 func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (res domain.Stores, total int64, err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
+
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Index")
+	defer span.Finish()
 
 	if limit <= 0 {
 		limit = 10
@@ -115,6 +125,9 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Block")
+	defer span.Finish()
+
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -138,6 +151,9 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Activate")
+	defer span.Finish()
+
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
 		return err
@@ -159,9 +175,10 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 
 func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
-	defer func() {
-		cancel()
-	}()
+	defer cancel()
+
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Disable")
+	defer span.Finish()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {
@@ -186,6 +203,9 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Update")
+	defer span.Finish()
+
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
 	if err != nil {
 		return err
@@ -205,6 +225,9 @@ func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error
 func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
+
+	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Delete")
+	defer span.Finish()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/validators"
 	"github.com/gofiber/fiber/v2"
+	"github.com/opentracing/opentracing-go"
 )
 
 type storeHandler struct {
@@ -31,7 +32,9 @@ func NewStoreHandler(us domain.StoreUsecase) *storeHandler {
 // @Failure 422 {object} ErrorResponse
 // @Router /stores [post]
 func (h *storeHandler) Store(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Store")
+	defer span.Finish()
+
 	cr := new(CreateStoreRequest)
 	if err := c.BodyParser(cr); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(ErrorResponse{
@@ -58,10 +61,12 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /stores [get]
 func (h *storeHandler) Index(c *fiber.Ctx) error {
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Index")
+	defer span.Finish()
+
 	sort := c.Query("sort")
 	page, _ := strconv.Atoi(c.Query("page"))
 	limit, _ := strconv.Atoi(c.Query("limit"))
-	ctx := c.Context()
 
 	list, total, err := h.storeUsecase.Index(ctx, sort, limit, page)
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
@@ -83,7 +88,9 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [get]
 func (h *storeHandler) Get(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Get")
+	defer span.Finish()
+
 	id := c.Params("id")
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
@@ -109,7 +116,9 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/activate [patch]
 func (h *storeHandler) Activate(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Activate")
+	defer span.Finish()
+
 	id := c.Params("id")
 
 	err := validators.ValidateUUIDV4("id", id)
@@ -136,7 +145,9 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/block [patch]
 func (h *storeHandler) Block(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Block")
+	defer span.Finish()
+
 	id := c.Params("id")
 
 	err := validators.ValidateUUIDV4("id", id)
@@ -163,7 +174,9 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/disable [patch]
 func (h *storeHandler) Disable(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Disable")
+	defer span.Finish()
+
 	id := c.Params("id")
 
 	err := validators.ValidateUUIDV4("id", id)
@@ -190,7 +203,9 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [delete]
 func (h *storeHandler) Delete(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Delete")
+	defer span.Finish()
+
 	id := c.Params("id")
 
 	err := validators.ValidateUUIDV4("id", id)
@@ -219,7 +234,9 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [patch]
 func (h *storeHandler) Update(c *fiber.Ctx) error {
-	ctx := c.Context()
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Update")
+	defer span.Finish()
+
 	reqBody := new(UpdateStoreRequest)
 	id := c.Params("id")
 
