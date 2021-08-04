@@ -44,7 +44,7 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 
 	err := h.storeUsecase.Store(ctx, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusCreated)
 }
@@ -69,10 +69,10 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 	limit, _ := strconv.Atoi(c.Query("limit"))
 
 	list, total, err := h.storeUsecase.Index(ctx, sort, limit, page)
-	c.Response().Header.Add("X-total", fmt.Sprint(total))
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
+	c.Response().Header.Add("X-total", fmt.Sprint(total))
 	return c.JSON(list)
 }
 
@@ -94,12 +94,12 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 	id := c.Params("id")
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	res, err := h.storeUsecase.Get(ctx, id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.JSON(res)
 }
@@ -123,12 +123,12 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	err = h.storeUsecase.Active(ctx, id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
@@ -152,12 +152,12 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	err = h.storeUsecase.Block(ctx, id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
@@ -181,12 +181,12 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	err = h.storeUsecase.Disable(ctx, id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
@@ -210,12 +210,12 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	err = h.storeUsecase.Delete(ctx, id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }
@@ -242,7 +242,7 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 
 	err := validators.ValidateUUIDV4("id", id)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 
 	if err := c.BodyParser(reqBody); err != nil {
@@ -256,7 +256,7 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 
 	err = h.storeUsecase.Update(ctx, store)
 	if err != nil {
-		return err
+		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusNoContent)
 }

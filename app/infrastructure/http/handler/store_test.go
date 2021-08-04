@@ -60,7 +60,7 @@ func Test_StoreHandler_Store(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Post("/", handler.Store)
 			req := httptest.NewRequest(fiber.MethodPost, "/", strings.NewReader(tc.arg))
@@ -110,7 +110,7 @@ func Test_StoreHandler_Index(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Get("/", handler.Index)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/?sort=%s&page=%d&limit=%d", tc.args.Sort, tc.args.Page, tc.args.Limit), nil)
@@ -165,7 +165,7 @@ func Test_StoreHandler_Get(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Get("/:id", handler.Get)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/%s", tc.arg), nil)
@@ -215,7 +215,7 @@ func Test_StoreHandler_Activate(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/activate", handler.Activate)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/activate", tc.arg), nil)
@@ -266,7 +266,7 @@ func Test_StoreHandler_Block(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/block", handler.Block)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/block", tc.arg), nil)
@@ -317,7 +317,7 @@ func Test_StoreHandler_Disable(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id/disable", handler.Disable)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/disable", tc.arg), nil)
@@ -368,7 +368,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Delete("/:id", handler.Delete)
 			req := httptest.NewRequest(fiber.MethodDelete, fmt.Sprintf("/%s", tc.arg), nil)
@@ -432,7 +432,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(storeUsecase)
 			}
-			app := fiber.New(fiber.Config{ErrorHandler: handler.ErrorHandler()})
+			app := fiber.New()
 			handler := handler.NewStoreHandler(storeUsecase)
 			app.Patch("/:id", handler.Update)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s", tc.id), strings.NewReader(tc.request))

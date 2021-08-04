@@ -12,12 +12,10 @@ type ErrorResponse struct {
 	Message string `json:"msg"`
 }
 
-func ErrorHandler() fiber.ErrorHandler {
-	return func(c *fiber.Ctx, e error) error {
-		return c.Status(getStatusCode(e)).JSON(ErrorResponse{
-			Message: e.Error(),
-		})
-	}
+func errorHandler(c *fiber.Ctx, e error) error {
+	return c.Status(getStatusCode(e)).JSON(ErrorResponse{
+		Message: e.Error(),
+	})
 }
 
 func getStatusCode(err error) int {

@@ -35,9 +35,7 @@ func NewHttpServer() *httpServer {
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 // @BasePath /api/v1
 func (s *httpServer) Serve() {
-	app := fiber.New(fiber.Config{
-		ErrorHandler: handler.ErrorHandler(),
-	})
+	app := fiber.New()
 
 	prometheus := fiberprometheus.New("kbu-store")
 	prometheus.RegisterAt(app, "/metrics")
