@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS stores (
   account_id uuid NOT NULL,
   category_id uuid NOT NULL,
   user_id uuid NOT NULL,
+  image character varying(255),
   tags text [] NULL,
   lat numeric(10, 8) NULL,
   lng numeric(11, 8) NULL
