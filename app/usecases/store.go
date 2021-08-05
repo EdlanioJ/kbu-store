@@ -37,14 +37,14 @@ func NewStoreUsecase(
 	}
 }
 
-func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, externalID string, tags []string, lat, lng float64) (err error) {
+func (u *StoreUsecase) Store(c context.Context, createParam *domain.CreateStoreRequest) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Store")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecase.Store")
 	defer span.Finish()
 
-	category, err := u.categoryRepo.FindByID(ctx, categoryID)
+	category, err := u.categoryRepo.FindByID(ctx, createParam.CategoryID)
 	if err != nil {
 		return err
 	}
@@ -61,15 +61,7 @@ func (u *StoreUsecase) Store(c context.Context, name, description, categoryID, e
 		return err
 	}
 
-	store := domain.NewStore()
-	store.Name = name
-	store.Description = description
-	store.UserID = externalID
-	store.CategoryID = category.ID
-	store.AccountID = account.ID
-	store.Tags = tags
-	store.Position.Lat = lat
-	store.Position.Lng = lng
+	store := domain.NewStore(createParam)
 
 	err = u.storeRepo.Create(ctx, store)
 	if err != nil {
@@ -84,7 +76,7 @@ func (u *StoreUsecase) Get(c context.Context, id string) (res *domain.Store, err
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Get")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Get")
 	defer span.Finish()
 
 	res, err = u.storeRepo.FindByID(ctx, id)
@@ -99,7 +91,7 @@ func (u *StoreUsecase) Index(c context.Context, sort string, limit, page int) (r
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Index")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Index")
 	defer span.Finish()
 
 	if limit <= 0 {
@@ -125,7 +117,7 @@ func (u *StoreUsecase) Block(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Block")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Block")
 	defer span.Finish()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -151,7 +143,7 @@ func (u *StoreUsecase) Active(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Activate")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Activate")
 	defer span.Finish()
 
 	store, err := u.storeRepo.FindByID(ctx, id)
@@ -199,19 +191,20 @@ func (u *StoreUsecase) Disable(c context.Context, id string) (err error) {
 	return u.msgProducer.Publish(ctx, string(storeJson), u.UpdateStoreTopic)
 }
 
-func (u *StoreUsecase) Update(c context.Context, store *domain.Store) (err error) {
+func (u *StoreUsecase) Update(c context.Context, updateParam *domain.UpdateStoreRequest) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Update")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Update")
 	defer span.Finish()
+
+	store := new(domain.Store)
+	store.FromUpdateRequest(updateParam)
 
 	_, err = u.storeRepo.FindByID(ctx, store.ID)
 	if err != nil {
 		return err
 	}
-
-	store.UpdatedAt = time.Now()
 
 	err = u.storeRepo.Update(ctx, store)
 	if err != nil {
@@ -226,7 +219,7 @@ func (u *StoreUsecase) Delete(c context.Context, id string) (err error) {
 	ctx, cancel := context.WithTimeout(c, u.timeout)
 	defer cancel()
 
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeUsecãse.Delete")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreUsecãse.Delete")
 	defer span.Finish()
 
 	store, err := u.storeRepo.FindByID(ctx, id)

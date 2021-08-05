@@ -5,7 +5,6 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/pb"
-	"github.com/EdlanioJ/kbu-store/app/infrastructure/http/handler"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -69,8 +68,8 @@ func NewPBUpdateStoreRequest() *pb.UpdateStoreRequest {
 		Longitude:   13.2343200,
 	}
 }
-func NewHttpCreateStoreRequest() handler.CreateStoreRequest {
-	return handler.CreateStoreRequest{
+func NewCreateStoreRequest() *domain.CreateStoreRequest {
+	return &domain.CreateStoreRequest{
 		Name:        "Store 001",
 		Description: "Store description",
 		CategoryID:  uuid.NewV4().String(),
@@ -81,10 +80,12 @@ func NewHttpCreateStoreRequest() handler.CreateStoreRequest {
 	}
 }
 
-func NewHttpUpdateStoreRequest() handler.UpdateStoreRequest {
-	return handler.UpdateStoreRequest{
+func NewUpdateStoreRequest() *domain.UpdateStoreRequest {
+	return &domain.UpdateStoreRequest{
+		ID:          uuid.NewV4().String(),
 		Name:        "store 002",
 		Description: "description 002",
+		Image:       "image.png",
 		CategoryID:  uuid.NewV4().String(),
 		Tags:        []string{"tag002", "tag003"},
 		Lat:         -8.8867698,

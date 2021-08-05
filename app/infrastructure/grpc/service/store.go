@@ -45,16 +45,16 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Create")
 	defer span.Finish()
 
-	err := s.storeUsecase.Store(
-		ctx,
-		in.GetName(),
-		in.GetDescription(),
-		in.GetCategoryID(),
-		in.GetExternalID(),
-		in.GetTags(),
-		in.GetLatitude(),
-		in.GetLongitude(),
-	)
+	cr := new(domain.CreateStoreRequest)
+	cr.Name = in.GetName()
+	cr.Description = in.GetDescription()
+	cr.CategoryID = in.GetCategoryID()
+	cr.UserID = in.GetExternalID()
+	cr.Tags = in.GetTags()
+	cr.Lat = in.GetLatitude()
+	cr.Lng = in.GetLongitude()
+
+	err := s.storeUsecase.Store(ctx, cr)
 	if err != nil {
 		return nil, err
 	}
@@ -170,39 +170,18 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Update")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetID())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetID())
-	if err != nil {
-		return nil, err
-	}
+	ur := new(domain.UpdateStoreRequest)
 
-	err = validators.ValidateUUIDV4("category", in.GetCategoryID())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateLatitude(in.GetLatitude())
-	if err != nil {
-		return nil, err
-	}
+	ur.ID = in.GetID()
+	ur.Name = in.GetName()
+	ur.Description = in.GetDescription()
+	ur.Tags = in.GetTags()
+	ur.Lat = in.GetLatitude()
+	ur.Image = in.GetImage()
+	ur.Lng = in.GetLongitude()
+	ur.CategoryID = in.GetCategoryID()
 
-	err = validators.ValidateLongitude(in.GetLongitude())
-	if err != nil {
-		return nil, err
-	}
-
-	store := new(domain.Store)
-	store.ID = in.GetID()
-	store.Name = in.GetName()
-	store.Description = in.GetDescription()
-	store.Tags = in.GetTags()
-	store.Position.Lat = in.GetLatitude()
-	store.Position.Lng = in.GetLongitude()
-	store.CategoryID = in.GetCategoryID()
-
-	err = s.storeUsecase.Update(ctx, store)
+	err := s.storeUsecase.Update(ctx, ur)
 	if err != nil {
 		return nil, err
 	}

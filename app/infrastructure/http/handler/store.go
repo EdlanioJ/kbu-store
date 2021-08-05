@@ -25,24 +25,24 @@ func NewStoreHandler(us domain.StoreUsecase) *storeHandler {
 // @Tags stores
 // @Accept json
 // @Produce json
-// @Param category body CreateStoreRequest true "Create store"
+// @Param category body domain.CreateStoreRequest true "Create store"
 // @Success 201 {string} string "Created"
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
 // @Failure 422 {object} ErrorResponse
 // @Router /stores [post]
 func (h *storeHandler) Store(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Store")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Store")
 	defer span.Finish()
 
-	cr := new(CreateStoreRequest)
+	cr := new(domain.CreateStoreRequest)
 	if err := c.BodyParser(cr); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(ErrorResponse{
 			Message: err.Error(),
 		})
 	}
 
-	err := h.storeUsecase.Store(ctx, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng)
+	err := h.storeUsecase.Store(ctx, cr)
 	if err != nil {
 		return errorHandler(c, err)
 	}
@@ -61,7 +61,7 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 // @Failure 500 {object} ErrorResponse
 // @Router /stores [get]
 func (h *storeHandler) Index(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Index")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Index")
 	defer span.Finish()
 
 	sort := c.Query("sort")
@@ -88,7 +88,7 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [get]
 func (h *storeHandler) Get(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Get")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Get")
 	defer span.Finish()
 
 	id := c.Params("id")
@@ -116,7 +116,7 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/activate [patch]
 func (h *storeHandler) Activate(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Activate")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Activate")
 	defer span.Finish()
 
 	id := c.Params("id")
@@ -145,7 +145,7 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/block [patch]
 func (h *storeHandler) Block(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Block")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Block")
 	defer span.Finish()
 
 	id := c.Params("id")
@@ -174,7 +174,7 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id}/disable [patch]
 func (h *storeHandler) Disable(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Disable")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Disable")
 	defer span.Finish()
 
 	id := c.Params("id")
@@ -203,7 +203,7 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [delete]
 func (h *storeHandler) Delete(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Delete")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Delete")
 	defer span.Finish()
 
 	id := c.Params("id")
@@ -226,7 +226,7 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 // @Accept json
 // @Produce json
 // @Param id path string true "store ID"
-// @Param category body UpdateStoreRequest true "Create store"
+// @Param category body domain.UpdateStoreRequest true "Create store"
 // @Success 204
 // @Failure 500 {object} ErrorResponse
 // @Failure 400 {object} ErrorResponse
@@ -234,10 +234,10 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Router /stores/{id} [patch]
 func (h *storeHandler) Update(c *fiber.Ctx) error {
-	span, ctx := opentracing.StartSpanFromContext(c.Context(), "storeHandler.Update")
+	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Update")
 	defer span.Finish()
 
-	reqBody := new(UpdateStoreRequest)
+	ur := new(domain.UpdateStoreRequest)
 	id := c.Params("id")
 
 	err := validators.ValidateUUIDV4("id", id)
@@ -245,16 +245,14 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 		return errorHandler(c, err)
 	}
 
-	if err := c.BodyParser(reqBody); err != nil {
+	if err := c.BodyParser(ur); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(ErrorResponse{
 			Message: err.Error(),
 		})
 	}
 
-	store := reqBody.ToDomainStore()
-	store.ID = id
-
-	err = h.storeUsecase.Update(ctx, store)
+	ur.ID = id
+	err = h.storeUsecase.Update(ctx, ur)
 	if err != nil {
 		return errorHandler(c, err)
 	}

@@ -16,12 +16,12 @@ import (
 )
 
 func Test_StoreUsecase_Create(t *testing.T) {
-	args := sample.NewStoreUsecaseRequest()
+	arg := sample.NewCreateStoreRequest()
 	validCategory := sample.NewCategory()
 	validCategory.Status = domain.CategoryStatusActive
 	invalidCategory := sample.NewCategory()
-	invalidArgs := sample.NewStoreUsecaseRequest()
-	invalidArgs.Name = ""
+	invalidArg := sample.NewCreateStoreRequest()
+	invalidArg.Name = ""
 	type fields struct {
 		storeRepo    *mocks.StoreRepository
 		accountRepo  *mocks.AccountRepository
@@ -30,52 +30,52 @@ func Test_StoreUsecase_Create(t *testing.T) {
 	}
 	testCases := []struct {
 		name        string
-		args        sample.StoreUsecaseCreateRequest
+		arg         *domain.CreateStoreRequest
 		expectedErr bool
 		prepare     func(f fields)
 	}{
 		{
 			name:        "failure_find_category_by_id_returns_error",
-			args:        args,
+			arg:         arg,
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(nil, errors.New("Unexpected Error")).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(nil, errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
 			name:        "failure_find_category_by_id_returns_invalid_category",
-			args:        args,
+			arg:         arg,
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(invalidCategory, nil).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(invalidCategory, nil).Once()
 			},
 		},
 		{
 			name:        "failure_create_account_returns_error",
-			args:        args,
+			arg:         arg,
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
 			name:        "failure_create_store_returns_error",
-			args:        args,
+			arg:         arg,
 			expectedErr: true,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error")).Once()
 			},
 		},
 		{
 			name:        "failure_produce_returns_error",
-			args:        args,
+			arg:         arg,
 			expectedErr: true,
 			prepare: func(f fields) {
 
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(errors.New("Unexpected Error"))
@@ -83,10 +83,10 @@ func Test_StoreUsecase_Create(t *testing.T) {
 		},
 		{
 			name:        "success",
-			args:        args,
+			arg:         arg,
 			expectedErr: false,
 			prepare: func(f fields) {
-				f.categoryRepo.On("FindByID", mock.Anything, args.CategoryID).Return(validCategory, nil).Once()
+				f.categoryRepo.On("FindByID", mock.Anything, arg.CategoryID).Return(validCategory, nil).Once()
 				f.accountRepo.On("Store", mock.Anything, mock.Anything).Return(nil).Once()
 				f.storeRepo.On("Create", mock.Anything, mock.Anything).Return(nil).Once()
 				f.msgProducer.On("Publish", mock.Anything, mock.AnythingOfType("string"), mock.AnythingOfType("string")).Return(nil)
@@ -106,7 +106,7 @@ func Test_StoreUsecase_Create(t *testing.T) {
 			tc.prepare(f)
 			u := usecases.NewStoreUsecase(storeRepo, accountRepo, categoryRepo, msgProducer, time.Second*2)
 
-			err := u.Store(context.TODO(), tc.args.Name, tc.args.Description, tc.args.CategoryID, tc.args.UserID, tc.args.Tags, 0, 0)
+			err := u.Store(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Error(t, err)
 			} else {
@@ -509,13 +509,13 @@ func Test_StoreUsecase_Update(t *testing.T) {
 	}
 	testCases := []struct {
 		name        string
-		arg         *domain.Store
+		arg         *domain.UpdateStoreRequest
 		expectedErr bool
 		prepare     func(f fields)
 	}{
 		{
 			name:        "failure_find_store_by_id_returns_error",
-			arg:         sample.NewStore(),
+			arg:         sample.NewUpdateStoreRequest(),
 			expectedErr: true,
 			prepare: func(f fields) {
 				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(nil, errors.New("Unexpected Error")).Once()
@@ -523,7 +523,7 @@ func Test_StoreUsecase_Update(t *testing.T) {
 		},
 		{
 			name:        "failure_update_store_returns_error",
-			arg:         sample.NewStore(),
+			arg:         sample.NewUpdateStoreRequest(),
 			expectedErr: true,
 			prepare: func(f fields) {
 				foundStore := sample.NewStore()
@@ -533,7 +533,7 @@ func Test_StoreUsecase_Update(t *testing.T) {
 		},
 		{
 			name:        "failure_publish_msg_returns_error",
-			arg:         sample.NewStore(),
+			arg:         sample.NewUpdateStoreRequest(),
 			expectedErr: true,
 			prepare: func(f fields) {
 				foundStore := sample.NewStore()
@@ -544,7 +544,7 @@ func Test_StoreUsecase_Update(t *testing.T) {
 		},
 		{
 			name: "success",
-			arg:  sample.NewStore(),
+			arg:  sample.NewUpdateStoreRequest(),
 			prepare: func(f fields) {
 				foundStore := sample.NewStore()
 				f.storeRepo.On("FindByID", mock.Anything, mock.AnythingOfType("string")).Return(foundStore, nil).Once()

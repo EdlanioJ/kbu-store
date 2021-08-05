@@ -19,7 +19,7 @@ import (
 )
 
 func Test_StoreHandler_Store(t *testing.T) {
-	cr := sample.NewHttpCreateStoreRequest()
+	cr := sample.NewCreateStoreRequest()
 	c, err := json.Marshal(cr)
 	assert.NoError(t, err)
 	testCases := []struct {
@@ -39,7 +39,7 @@ func Test_StoreHandler_Store(t *testing.T) {
 			arg:        string(c),
 			statusCode: fiber.StatusBadRequest,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return((domain.ErrBadParam)).Once()
+				storeUsecase.On("Store", mock.Anything, cr).Return((domain.ErrBadParam)).Once()
 			},
 		},
 		{
@@ -47,7 +47,7 @@ func Test_StoreHandler_Store(t *testing.T) {
 			arg:        string(c),
 			statusCode: fiber.StatusCreated,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Store", mock.Anything, cr.Name, cr.Description, cr.CategoryID, cr.UserID, cr.Tags, cr.Lat, cr.Lng).Return(nil).Once()
+				storeUsecase.On("Store", mock.Anything, cr).Return(nil).Once()
 			},
 		},
 	}
@@ -382,7 +382,7 @@ func Test_StoreHandler_Delete(t *testing.T) {
 }
 
 func Test_StoreHandler_Update(t *testing.T) {
-	ur := sample.NewHttpUpdateStoreRequest()
+	ur := sample.NewUpdateStoreRequest()
 
 	c, _ := json.Marshal(ur)
 	testCases := []struct {

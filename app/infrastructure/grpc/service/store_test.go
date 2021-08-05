@@ -31,13 +31,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store",
 					mock.Anything,
-					mock.AnythingOfType("string"),
-					mock.AnythingOfType("string"),
-					mock.AnythingOfType("string"),
-					mock.AnythingOfType("string"),
 					mock.Anything,
-					mock.AnythingOfType("float64"),
-					mock.AnythingOfType("float64"),
 				).Return(errors.New("Unexpected Error"))
 			},
 		},
@@ -48,13 +42,7 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
 				storeUsecase.On("Store",
 					mock.Anything,
-					arg.Name,
-					arg.Description,
-					arg.CategoryID,
-					arg.ExternalID,
-					arg.Tags,
-					arg.Latitude,
-					arg.Longitude,
+					mock.Anything,
 				).Return(nil)
 			},
 		},
@@ -426,31 +414,6 @@ func Test_StoreGrpcService_Update(t *testing.T) {
 		prepare     func(storeUsecase *mocks.StoreUsecase)
 		expectedErr bool
 	}{
-		{
-			name:        "failure_empty_store_id",
-			arg:         emptyStoreId,
-			expectedErr: true,
-		},
-		{
-			name:        "failure_invalid_store_id",
-			arg:         invalidStoreId,
-			expectedErr: true,
-		},
-		{
-			name:        "failure_invalid_category_id",
-			arg:         invalidCategoryId,
-			expectedErr: true,
-		},
-		{
-			name:        "failure_invalid_latitude",
-			arg:         invalidLatitude,
-			expectedErr: true,
-		},
-		{
-			name:        "failure_invalid_longitude",
-			arg:         invalidLongitude,
-			expectedErr: true,
-		},
 		{
 			name:        "failure_usecase_returns_error",
 			arg:         arg,

@@ -37,6 +37,27 @@ type Store struct {
 	Position    `json:"location"`
 }
 
+type CreateStoreRequest struct {
+	Name        string   `json:"name" validate:"required,alphanumunicode"`
+	Description string   `json:"description" validate:"required,alphanumunicode"`
+	CategoryID  string   `json:"category_id" validate:"required,uuid4"`
+	UserID      string   `json:"user_id" validate:"required,uuid4"`
+	Tags        []string `json:"tags"`
+	Lat         float64  `json:"latitude" validate:"latitude"`
+	Lng         float64  `json:"longitude" validate:"longitude"`
+}
+
+type UpdateStoreRequest struct {
+	ID          string   `json:"-" validate:"required,uuid4"`
+	Name        string   `json:"name" validate:"alphanumunicode"`
+	Description string   `json:"description" validate:"alphanumunicode"`
+	CategoryID  string   `json:"category_id" validate:"uuid4"`
+	Image       string   `json:"image"`
+	Tags        []string `json:"tags" validate:"uuid4"`
+	Lat         float64  `json:"latitude" validate:"latitude"`
+	Lng         float64  `json:"longitude" validate:"longitude"`
+}
+
 type (
 	// StoreRepository represent the store's repository contract
 	StoreRepository interface {
@@ -50,10 +71,10 @@ type (
 
 	// StoreUsecase represent the store's usecase contract
 	StoreUsecase interface {
-		Store(ctx context.Context, name, description, CategoryID, externalID string, tags []string, lat, lng float64) error
+		Store(ctx context.Context, param *CreateStoreRequest) error
 		Index(ctx context.Context, sort string, limit, page int) (Stores, int64, error)
 		Get(ctx context.Context, id string) (*Store, error)
-		Update(ctx context.Context, store *Store) error
+		Update(ctx context.Context, param *UpdateStoreRequest) error
 		Delete(ctx context.Context, id string) error
 		Block(ctx context.Context, id string) error
 		Active(ctx context.Context, id string) error
@@ -107,11 +128,30 @@ func (s *Store) ToJson() (res []byte) {
 }
 
 // NewStore creates a store entity
-func NewStore() (store *Store) {
+func NewStore(param *CreateStoreRequest) (store *Store) {
 	store = new(Store)
 
 	store.ID = uuid.NewV4().String()
+	store.Name = param.Name
+	store.Description = param.Description
+	store.CategoryID = param.CategoryID
+	store.UserID = param.UserID
+	store.Tags = param.Tags
+	store.Position.Lat = param.Lat
+	store.Position.Lng = param.Lng
 	store.Status = StoreStatusPending
 	store.CreatedAt = time.Now()
 	return
+}
+
+func (s *Store) FromUpdateRequest(param *UpdateStoreRequest) {
+	s.ID = param.ID
+	s.Name = param.Name
+	s.Description = param.Description
+	s.CategoryID = param.CategoryID
+	s.Image = param.Image
+	s.Tags = param.Tags
+	s.Position.Lat = param.Lat
+	s.Position.Lng = param.Lng
+	s.UpdatedAt = time.Now()
 }

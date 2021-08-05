@@ -123,13 +123,13 @@ func (_m *StoreUsecase) Index(ctx context.Context, sort string, limit int, page 
 	return r0, r1, r2
 }
 
-// Store provides a mock function with given fields: ctx, name, description, CategoryID, externalID, tags, lat, lng
-func (_m *StoreUsecase) Store(ctx context.Context, name string, description string, CategoryID string, externalID string, tags []string, lat float64, lng float64) error {
-	ret := _m.Called(ctx, name, description, CategoryID, externalID, tags, lat, lng)
+// Store provides a mock function with given fields: ctx, param
+func (_m *StoreUsecase) Store(ctx context.Context, param *domain.CreateStoreRequest) error {
+	ret := _m.Called(ctx, param)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, string, string, string, string, []string, float64, float64) error); ok {
-		r0 = rf(ctx, name, description, CategoryID, externalID, tags, lat, lng)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.CreateStoreRequest) error); ok {
+		r0 = rf(ctx, param)
 	} else {
 		r0 = ret.Error(0)
 	}
@@ -137,13 +137,13 @@ func (_m *StoreUsecase) Store(ctx context.Context, name string, description stri
 	return r0
 }
 
-// Update provides a mock function with given fields: ctx, store
-func (_m *StoreUsecase) Update(ctx context.Context, store *domain.Store) error {
-	ret := _m.Called(ctx, store)
+// Update provides a mock function with given fields: ctx, param
+func (_m *StoreUsecase) Update(ctx context.Context, param *domain.UpdateStoreRequest) error {
+	ret := _m.Called(ctx, param)
 
 	var r0 error
-	if rf, ok := ret.Get(0).(func(context.Context, *domain.Store) error); ok {
-		r0 = rf(ctx, store)
+	if rf, ok := ret.Get(0).(func(context.Context, *domain.UpdateStoreRequest) error); ok {
+		r0 = rf(ctx, param)
 	} else {
 		r0 = ret.Error(0)
 	}
