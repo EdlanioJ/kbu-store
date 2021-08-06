@@ -9,6 +9,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/interceptors"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/pb"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/service"
+	"github.com/go-playground/validator/v10"
 	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
@@ -32,6 +33,7 @@ type grpcServer struct {
 	Port         int
 	MetricPort   int
 	StoreUsecase domain.StoreUsecase
+	Validate     *validator.Validate
 }
 
 func NewGrpcServer() *grpcServer {
@@ -49,7 +51,7 @@ func (s *grpcServer) Serve() {
 	))
 	reflection.Register(grpcServer)
 
-	storeService := service.NewStoreServer(s.StoreUsecase)
+	storeService := service.NewStoreServer(s.StoreUsecase, s.Validate)
 
 	pb.RegisterStoreServiceServer(grpcServer, storeService)
 

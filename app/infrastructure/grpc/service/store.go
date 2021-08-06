@@ -5,20 +5,23 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/domain"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/pb"
-	"github.com/EdlanioJ/kbu-store/app/validators"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/opentracing/opentracing-go"
+	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type storeService struct {
 	storeUsecase domain.StoreUsecase
+	validate     *validator.Validate
 	pb.UnimplementedStoreServiceServer
 }
 
-func NewStoreServer(u domain.StoreUsecase) pb.StoreServiceServer {
+func NewStoreServer(usecase domain.StoreUsecase, validate *validator.Validate) pb.StoreServiceServer {
 	return &storeService{
-		storeUsecase: u,
+		storeUsecase: usecase,
+		validate:     validate,
 	}
 }
 
@@ -54,8 +57,18 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 	cr.Lat = in.GetLatitude()
 	cr.Lng = in.GetLongitude()
 
+	if err := s.validate.StructCtx(ctx, cr); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.StructCtx: %v", err)
+		return nil, err
+	}
+
 	err := s.storeUsecase.Store(ctx, cr)
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Store: %v", err)
 		return nil, err
 	}
 
@@ -66,16 +79,18 @@ func (s *storeService) Get(ctx context.Context, in *pb.StoreRequest) (*pb.Store,
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Get")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetId())
-	if err != nil {
+	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.VarCtx: %v", err)
 		return nil, err
 	}
-	err = validators.ValidateUUIDV4("id", in.GetId())
-	if err != nil {
-		return nil, err
-	}
+
 	res, err := s.storeUsecase.Get(ctx, in.GetId())
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Get: %v", err)
 		return nil, err
 	}
 
@@ -91,6 +106,9 @@ func (s *storeService) List(ctx context.Context, in *pb.ListStoreRequest) (*pb.L
 
 	res, total, err := s.storeUsecase.Index(ctx, in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Index: %v", err)
 		return nil, err
 	}
 	for _, item := range res {
@@ -107,17 +125,18 @@ func (s *storeService) Activate(ctx context.Context, in *pb.StoreRequest) (*empt
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Activate")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetId())
-	if err != nil {
+	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.VarCtx: %v", err)
 		return nil, err
 	}
 
-	err = s.storeUsecase.Active(ctx, in.GetId())
+	err := s.storeUsecase.Active(ctx, in.GetId())
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Active: %v", err)
 		return nil, err
 	}
 
@@ -128,17 +147,18 @@ func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.E
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Block")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetId())
-	if err != nil {
+	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.VarCtx: %v", err)
 		return nil, err
 	}
 
-	err = s.storeUsecase.Block(ctx, in.GetId())
+	err := s.storeUsecase.Block(ctx, in.GetId())
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Block: %v", err)
 		return nil, err
 	}
 
@@ -149,17 +169,18 @@ func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Disable")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetId())
-	if err != nil {
+	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.VarCtx: %v", err)
 		return nil, err
 	}
 
-	err = s.storeUsecase.Disable(ctx, in.GetId())
+	err := s.storeUsecase.Disable(ctx, in.GetId())
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Disable: %v", err)
 		return nil, err
 	}
 
@@ -181,8 +202,17 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 	ur.Lng = in.GetLongitude()
 	ur.CategoryID = in.GetCategoryID()
 
+	if err := s.validate.StructCtx(ctx, ur); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.StructCtx: %v", err)
+		return nil, err
+	}
 	err := s.storeUsecase.Update(ctx, ur)
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Update: %v", err)
 		return nil, err
 	}
 
@@ -193,17 +223,18 @@ func (s *storeService) Delete(ctx context.Context, in *pb.StoreRequest) (*empty.
 	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Delete")
 	defer span.Finish()
 
-	err := validators.ValidateRequired("id", in.GetId())
-	if err != nil {
-		return nil, err
-	}
-	err = validators.ValidateUUIDV4("id", in.GetId())
-	if err != nil {
+	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("validate.VarCtx: %v", err)
 		return nil, err
 	}
 
-	err = s.storeUsecase.Delete(ctx, in.GetId())
+	err := s.storeUsecase.Delete(ctx, in.GetId())
 	if err != nil {
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Delete: %v", err)
 		return nil, err
 	}
 

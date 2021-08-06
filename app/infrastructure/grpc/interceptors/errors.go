@@ -19,7 +19,7 @@ func NewErrorInterceptor() *ErrorInterceptor {
 	return &ErrorInterceptor{}
 }
 func (i *ErrorInterceptor) Unary() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req interface{}, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		resp, err := handler(ctx, req)
 		if err != nil {
 			return resp, appError(err)
@@ -41,7 +41,6 @@ func appError(err error) error {
 		return status.Error(codes.NotFound, domain.ErrNotFound.Error())
 	case domain.ErrActived,
 		domain.ErrBlocked,
-		domain.ErrBadParam,
 		domain.ErrInactived,
 		domain.ErrIsPending:
 		return status.Error(codes.FailedPrecondition, err.Error())

@@ -10,6 +10,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/grpc/service"
 	"github.com/EdlanioJ/kbu-store/app/utils/mocks"
 	"github.com/EdlanioJ/kbu-store/app/utils/sample"
+	"github.com/go-playground/validator/v10"
 	"github.com/golang/protobuf/ptypes/empty"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -18,12 +19,19 @@ import (
 func Test_StoreGrpcService_Create(t *testing.T) {
 	t.Parallel()
 	arg := sample.NewPBCreateStoreRequest()
+	invalidArg := sample.NewPBCreateStoreRequest()
+	invalidArg.Name = ""
 	testCases := []struct {
 		name        string
 		arg         *pb.CreateStoreRequest
 		prepare     func(storeUsecase *mocks.StoreUsecase)
 		expectedErr bool
 	}{
+		{
+			name:        "failure_validate_returns_error",
+			arg:         invalidArg,
+			expectedErr: true,
+		},
 		{
 			name:        "failure_usecase_returns_error",
 			arg:         arg,
@@ -56,7 +64,8 @@ func Test_StoreGrpcService_Create(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Create(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Error(t, err)
@@ -123,7 +132,8 @@ func Test_StoreGrpcService_Get(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Get(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Error(t, err)
@@ -179,7 +189,8 @@ func Test_StoreGrpcService_List(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.List(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)
@@ -247,7 +258,8 @@ func Test_StoreGrpcService_Activate(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Activate(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)
@@ -314,7 +326,8 @@ func Test_StoreGrpcService_Block(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Block(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)
@@ -381,7 +394,8 @@ func Test_StoreGrpcService_Disable(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Disable(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)
@@ -397,16 +411,8 @@ func Test_StoreGrpcService_Disable(t *testing.T) {
 func Test_StoreGrpcService_Update(t *testing.T) {
 	t.Parallel()
 	arg := sample.NewPBUpdateStoreRequest()
-	emptyStoreId := sample.NewPBUpdateStoreRequest()
-	emptyStoreId.ID = ""
-	invalidStoreId := sample.NewPBUpdateStoreRequest()
-	invalidStoreId.ID = "invalid_id"
-	invalidCategoryId := sample.NewPBUpdateStoreRequest()
-	invalidCategoryId.CategoryID = "invalid_id"
-	invalidLatitude := sample.NewPBUpdateStoreRequest()
-	invalidLatitude.Latitude = 12345
-	invalidLongitude := sample.NewPBUpdateStoreRequest()
-	invalidLongitude.Longitude = 12345
+	invalidArg := sample.NewPBUpdateStoreRequest()
+	invalidArg.ID = "invalid_id"
 
 	testCases := []struct {
 		name        string
@@ -415,11 +421,18 @@ func Test_StoreGrpcService_Update(t *testing.T) {
 		expectedErr bool
 	}{
 		{
+			name:        "failure_validate_returns_error",
+			arg:         invalidArg,
+			expectedErr: true,
+		},
+		{
 			name:        "failure_usecase_returns_error",
 			arg:         arg,
 			expectedErr: true,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unexpected Error"))
+				storeUsecase.
+					On("Update", mock.Anything, mock.Anything).
+					Return(errors.New("Unexpected Error"))
 			},
 		},
 
@@ -428,7 +441,9 @@ func Test_StoreGrpcService_Update(t *testing.T) {
 			arg:         arg,
 			expectedErr: false,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(nil)
+				storeUsecase.
+					On("Update", mock.Anything, mock.Anything).
+					Return(nil)
 			},
 		},
 	}
@@ -441,7 +456,8 @@ func Test_StoreGrpcService_Update(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Update(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)
@@ -508,7 +524,8 @@ func Test_StoreGrpcService_Delete(t *testing.T) {
 			if tc.prepare != nil {
 				tc.prepare(usecase)
 			}
-			s := service.NewStoreServer(usecase)
+			validate := validator.New()
+			s := service.NewStoreServer(usecase, validate)
 			res, err := s.Delete(context.TODO(), tc.arg)
 			if tc.expectedErr {
 				assert.Nil(t, res)

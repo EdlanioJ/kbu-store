@@ -54,7 +54,9 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 
 	err := h.storeUsecase.Store(ctx, cr)
 	if err != nil {
-		log.Errorf("storeUsecase.Store: %v", err)
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Store: %v", err)
 		return errorHandler(c, err)
 	}
 	return c.SendStatus(fiber.StatusCreated)
@@ -81,7 +83,9 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 
 	list, total, err := h.storeUsecase.Index(ctx, sort, limit, page)
 	if err != nil {
-		log.Errorf("storeUsecase.Index: %v", err)
+		log.
+			WithContext(ctx).
+			Errorf("storeUsecase.Index: %v", err)
 		return errorHandler(c, err)
 	}
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
