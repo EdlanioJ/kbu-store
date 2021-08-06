@@ -105,7 +105,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateStoreRequest"
+                            "$ref": "#/definitions/domain.CreateStoreRequest"
                         }
                     }
                 ],
@@ -169,7 +169,10 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -214,7 +217,10 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -257,7 +263,7 @@ var doc = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateStoreRequest"
+                            "$ref": "#/definitions/domain.UpdateStoreRequest"
                         }
                     }
                 ],
@@ -321,7 +327,10 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -368,7 +377,10 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -415,7 +427,10 @@ var doc = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -435,6 +450,41 @@ var doc = `{
         }
     },
     "definitions": {
+        "domain.CreateStoreRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "description",
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Store": {
             "type": "object",
             "properties": {
@@ -479,13 +529,16 @@ var doc = `{
                 }
             }
         },
-        "handler.CreateStoreRequest": {
+        "domain.UpdateStoreRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 },
                 "latitude": {
@@ -502,43 +555,20 @@ var doc = `{
                     "items": {
                         "type": "string"
                     }
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
         "handler.ErrorResponse": {
             "type": "object",
             "properties": {
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.UpdateStoreRequest": {
-            "type": "object",
-            "properties": {
-                "category_id": {
+                "field": {
                     "type": "string"
                 },
-                "description": {
+                "message": {
                     "type": "string"
                 },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "value": {
+                    "type": "object"
                 }
             }
         }

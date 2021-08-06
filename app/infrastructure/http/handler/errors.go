@@ -13,7 +13,7 @@ import (
 type ErrorResponse struct {
 	Message string      `json:"message"`
 	Field   string      `json:"field,omitempty"`
-	Value   interface{} `json:"value,omitempty"`
+	Value   interface{} `json:"value,omitempty" swaggertype:"object"`
 }
 
 type HttpError struct {

@@ -89,7 +89,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateStoreRequest"
+                            "$ref": "#/definitions/domain.CreateStoreRequest"
                         }
                     }
                 ],
@@ -153,7 +153,10 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -198,7 +201,10 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -241,7 +247,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateStoreRequest"
+                            "$ref": "#/definitions/domain.UpdateStoreRequest"
                         }
                     }
                 ],
@@ -305,7 +311,10 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -352,7 +361,10 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -399,7 +411,10 @@
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/handler.ErrorResponse"
+                            }
                         }
                     },
                     "404": {
@@ -419,6 +434,41 @@
         }
     },
     "definitions": {
+        "domain.CreateStoreRequest": {
+            "type": "object",
+            "required": [
+                "category_id",
+                "description",
+                "name",
+                "user_id"
+            ],
+            "properties": {
+                "category_id": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "latitude": {
+                    "type": "number"
+                },
+                "longitude": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Store": {
             "type": "object",
             "properties": {
@@ -463,13 +513,16 @@
                 }
             }
         },
-        "handler.CreateStoreRequest": {
+        "domain.UpdateStoreRequest": {
             "type": "object",
             "properties": {
                 "category_id": {
                     "type": "string"
                 },
                 "description": {
+                    "type": "string"
+                },
+                "image": {
                     "type": "string"
                 },
                 "latitude": {
@@ -486,43 +539,20 @@
                     "items": {
                         "type": "string"
                     }
-                },
-                "user_id": {
-                    "type": "string"
                 }
             }
         },
         "handler.ErrorResponse": {
             "type": "object",
             "properties": {
-                "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.UpdateStoreRequest": {
-            "type": "object",
-            "properties": {
-                "category_id": {
+                "field": {
                     "type": "string"
                 },
-                "description": {
+                "message": {
                     "type": "string"
                 },
-                "latitude": {
-                    "type": "number"
-                },
-                "longitude": {
-                    "type": "number"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "tags": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
+                "value": {
+                    "type": "object"
                 }
             }
         }

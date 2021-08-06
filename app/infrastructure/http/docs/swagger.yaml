@@ -1,5 +1,29 @@
 basePath: /api/v1
 definitions:
+  domain.CreateStoreRequest:
+    properties:
+      category_id:
+        type: string
+      description:
+        type: string
+      latitude:
+        type: number
+      longitude:
+        type: number
+      name:
+        type: string
+      tags:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: string
+    required:
+    - category_id
+    - description
+    - name
+    - user_id
+    type: object
   domain.Store:
     properties:
       account_id:
@@ -29,11 +53,13 @@ definitions:
       user_id:
         type: string
     type: object
-  handler.CreateStoreRequest:
+  domain.UpdateStoreRequest:
     properties:
       category_id:
         type: string
       description:
+        type: string
+      image:
         type: string
       latitude:
         type: number
@@ -45,30 +71,15 @@ definitions:
         items:
           type: string
         type: array
-      user_id:
-        type: string
     type: object
   handler.ErrorResponse:
     properties:
-      msg:
+      field:
         type: string
-    type: object
-  handler.UpdateStoreRequest:
-    properties:
-      category_id:
+      message:
         type: string
-      description:
-        type: string
-      latitude:
-        type: number
-      longitude:
-        type: number
-      name:
-        type: string
-      tags:
-        items:
-          type: string
-        type: array
+      value:
+        type: object
     type: object
 info:
   contact:
@@ -129,7 +140,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/handler.CreateStoreRequest'
+          $ref: '#/definitions/domain.CreateStoreRequest'
       produces:
       - application/json
       responses:
@@ -171,7 +182,9 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
+            items:
+              $ref: '#/definitions/handler.ErrorResponse'
+            type: array
         "404":
           description: Not Found
           schema:
@@ -203,7 +216,9 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
+            items:
+              $ref: '#/definitions/handler.ErrorResponse'
+            type: array
         "404":
           description: Not Found
           schema:
@@ -230,7 +245,7 @@ paths:
         name: category
         required: true
         schema:
-          $ref: '#/definitions/handler.UpdateStoreRequest'
+          $ref: '#/definitions/domain.UpdateStoreRequest'
       produces:
       - application/json
       responses:
@@ -274,7 +289,9 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
+            items:
+              $ref: '#/definitions/handler.ErrorResponse'
+            type: array
         "404":
           description: Not Found
           schema:
@@ -305,7 +322,9 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
+            items:
+              $ref: '#/definitions/handler.ErrorResponse'
+            type: array
         "404":
           description: Not Found
           schema:
@@ -336,7 +355,9 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/handler.ErrorResponse'
+            items:
+              $ref: '#/definitions/handler.ErrorResponse'
+            type: array
         "404":
           description: Not Found
           schema:
