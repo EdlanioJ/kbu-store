@@ -10,6 +10,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/http/middleware"
 	fiberprometheus "github.com/ansrivas/fiberprometheus/v2"
 	swagger "github.com/arsmn/fiber-swagger/v2"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
@@ -19,6 +20,7 @@ import (
 type httpServer struct {
 	Port         int
 	StoreUsecase domain.StoreUsecase
+	Validate     *validator.Validate
 }
 
 func NewHttpServer() *httpServer {
@@ -49,7 +51,7 @@ func (s *httpServer) Serve() {
 
 	v1.Get("/docs/*", swagger.Handler)
 
-	storeHandler := handler.NewStoreHandler(s.StoreUsecase)
+	storeHandler := handler.NewStoreHandler(s.StoreUsecase, s.Validate)
 	storeRoutes := v1.Group("/stores")
 
 	storeRoutes.Post("/", storeHandler.Store)

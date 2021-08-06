@@ -13,8 +13,8 @@ var (
 	ErrActived = errors.New("Is already active")
 	// ErrInactived is already inactive
 	ErrInactived = errors.New("Is already inactive")
-	// ErrBadParam invalid param
-	ErrBadParam = errors.New("Param is not valid")
+	// ErrBadRequest bad request
+	ErrBadRequest = errors.New("Bad request")
 	// ErrInternal internal server error
 	ErrInternal = errors.New("internal server error")
 )

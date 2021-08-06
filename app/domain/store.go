@@ -38,8 +38,8 @@ type Store struct {
 }
 
 type CreateStoreRequest struct {
-	Name        string   `json:"name" validate:"required,alphanumunicode"`
-	Description string   `json:"description" validate:"required,alphanumunicode"`
+	Name        string   `json:"name" validate:"required,min=3,max=250"`
+	Description string   `json:"description" validate:"required,min=3,max=250"`
 	CategoryID  string   `json:"category_id" validate:"required,uuid4"`
 	UserID      string   `json:"user_id" validate:"required,uuid4"`
 	Tags        []string `json:"tags"`
@@ -49,11 +49,11 @@ type CreateStoreRequest struct {
 
 type UpdateStoreRequest struct {
 	ID          string   `json:"-" validate:"required,uuid4"`
-	Name        string   `json:"name" validate:"alphanumunicode"`
-	Description string   `json:"description" validate:"alphanumunicode"`
+	Name        string   `json:"name" validate:"min=3,max=250"`
+	Description string   `json:"description" validate:"min=3,max=250"`
 	CategoryID  string   `json:"category_id" validate:"uuid4"`
 	Image       string   `json:"image"`
-	Tags        []string `json:"tags" validate:"uuid4"`
+	Tags        []string `json:"tags"`
 	Lat         float64  `json:"latitude" validate:"latitude"`
 	Lng         float64  `json:"longitude" validate:"longitude"`
 }

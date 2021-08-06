@@ -8,6 +8,7 @@ require (
 	github.com/ansrivas/fiberprometheus/v2 v2.1.2
 	github.com/arsmn/fiber-swagger/v2 v2.13.0
 	github.com/asaskevich/govalidator v0.0.0-20210307081110-f21760c49a8d
+	github.com/go-playground/validator/v10 v10.8.0
 	github.com/gofiber/fiber/v2 v2.14.0
 	github.com/gofiber/helmet/v2 v2.1.7
 	github.com/golang/protobuf v1.5.2

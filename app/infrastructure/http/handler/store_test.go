@@ -12,6 +12,7 @@ import (
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/http/handler"
 	"github.com/EdlanioJ/kbu-store/app/utils/mocks"
 	"github.com/EdlanioJ/kbu-store/app/utils/sample"
+	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
 	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
@@ -20,8 +21,13 @@ import (
 
 func Test_StoreHandler_Store(t *testing.T) {
 	cr := sample.NewCreateStoreRequest()
+	invalidCreateStore := sample.NewCreateStoreRequest()
+	invalidCreateStore.Name = ""
 	c, err := json.Marshal(cr)
 	assert.NoError(t, err)
+	ic, err := json.Marshal(invalidCreateStore)
+	assert.NoError(t, err)
+
 	testCases := []struct {
 		name          string
 		arg           string
@@ -31,15 +37,20 @@ func Test_StoreHandler_Store(t *testing.T) {
 	}{
 		{
 			name:       "failure_parser_body",
-			arg:        "{error: this is wrong}",
-			statusCode: fiber.StatusUnprocessableEntity,
+			arg:        `{error: this is wrong}`,
+			statusCode: fiber.StatusBadRequest,
+		},
+		{
+			name:       "failure_validate_create_request",
+			arg:        string(ic),
+			statusCode: fiber.StatusBadRequest,
 		},
 		{
 			name:       "failure_usecase_returns_error",
 			arg:        string(c),
-			statusCode: fiber.StatusBadRequest,
+			statusCode: fiber.StatusInternalServerError,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Store", mock.Anything, cr).Return((domain.ErrBadParam)).Once()
+				storeUsecase.On("Store", mock.Anything, cr).Return((domain.ErrInternal)).Once()
 			},
 		},
 		{
@@ -61,7 +72,8 @@ func Test_StoreHandler_Store(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Post("/", handler.Store)
 			req := httptest.NewRequest(fiber.MethodPost, "/", strings.NewReader(tc.arg))
 			req.Header.Set("Content-Type", "application/json")
@@ -111,7 +123,8 @@ func Test_StoreHandler_Index(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Get("/", handler.Index)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/?sort=%s&page=%d&limit=%d", tc.args.Sort, tc.args.Page, tc.args.Limit), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -166,7 +179,8 @@ func Test_StoreHandler_Get(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Get("/:id", handler.Get)
 			req := httptest.NewRequest(fiber.MethodGet, fmt.Sprintf("/%s", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -216,7 +230,8 @@ func Test_StoreHandler_Activate(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Patch("/:id/activate", handler.Activate)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/activate", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -267,7 +282,8 @@ func Test_StoreHandler_Block(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Patch("/:id/block", handler.Block)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/block", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -318,7 +334,8 @@ func Test_StoreHandler_Disable(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Patch("/:id/disable", handler.Disable)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s/disable", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -369,7 +386,8 @@ func Test_StoreHandler_Delete(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Delete("/:id", handler.Delete)
 			req := httptest.NewRequest(fiber.MethodDelete, fmt.Sprintf("/%s", tc.arg), nil)
 			req.Header.Set("Content-Type", "application/json")
@@ -402,7 +420,13 @@ func Test_StoreHandler_Update(t *testing.T) {
 			name:       "failure_parser_body",
 			id:         uuid.NewV4().String(),
 			request:    "{error: this is wrong}",
-			statusCode: fiber.StatusUnprocessableEntity,
+			statusCode: fiber.StatusBadRequest,
+		},
+		{
+			name:       "failure_validate_returns_error",
+			id:         "invalid_id",
+			request:    string(c),
+			statusCode: fiber.StatusBadRequest,
 		},
 		{
 			name:       "failure_usecase_returns_error",
@@ -410,7 +434,7 @@ func Test_StoreHandler_Update(t *testing.T) {
 			request:    string(c),
 			statusCode: fiber.StatusInternalServerError,
 			prepare: func(storeUsecase *mocks.StoreUsecase) {
-				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(errors.New("error"))
+				storeUsecase.On("Update", mock.Anything, mock.Anything).Return(errors.New("Unextpected Error"))
 			},
 		},
 		{
@@ -433,7 +457,8 @@ func Test_StoreHandler_Update(t *testing.T) {
 				tc.prepare(storeUsecase)
 			}
 			app := fiber.New()
-			handler := handler.NewStoreHandler(storeUsecase)
+			validator := validator.New()
+			handler := handler.NewStoreHandler(storeUsecase, validator)
 			app.Patch("/:id", handler.Update)
 			req := httptest.NewRequest(fiber.MethodPatch, fmt.Sprintf("/%s", tc.id), strings.NewReader(tc.request))
 			req.Header.Set("Content-Type", "application/json")

@@ -5,10 +5,14 @@ import (
 
 	"github.com/EdlanioJ/kbu-store/app/config"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/http"
+	"github.com/EdlanioJ/kbu-store/app/infrastructure/jaeger"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/kafka"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository"
 	"github.com/EdlanioJ/kbu-store/app/infrastructure/repository/gorm"
 	"github.com/EdlanioJ/kbu-store/app/usecases"
+	"github.com/go-playground/validator/v10"
+	"github.com/opentracing/opentracing-go"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -24,6 +28,14 @@ var httpCmd = &cobra.Command{
 			panic(err)
 		}
 
+		tracer, closer, err := jaeger.InitJaeger(cfg)
+		if err != nil {
+			log.Fatal("cannot create tracer ", err)
+		}
+
+		opentracing.SetGlobalTracer(tracer)
+		defer closer.Close()
+
 		database := repository.GORMConnection(cfg)
 
 		httpServer := http.NewHttpServer()
@@ -33,8 +45,10 @@ var httpCmd = &cobra.Command{
 			httpServer.Port = httpPort
 		}
 
-		tc := time.Duration(cfg.Timeout) * time.Second
 		kafkaProducer := kafka.NewKafkaProducer(cfg)
+		defer kafkaProducer.Close()
+
+		tc := time.Duration(cfg.Timeout) * time.Second
 		storeRepo := gorm.NewStoreRepository(database)
 		accountRepo := gorm.NewAccountRepository(database)
 		categoryRepo := gorm.NewCategoryRepository(database)
@@ -52,6 +66,7 @@ var httpCmd = &cobra.Command{
 		storeUsecase.DeleteStoreTopic = cfg.Kafka.DeleteStoreTopic
 
 		httpServer.StoreUsecase = storeUsecase
+		httpServer.Validate = validator.New()
 
 		httpServer.Serve()
 	},
