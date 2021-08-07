@@ -45,8 +45,9 @@ func (s *storeService) newPBStore(store *domain.Store) *pb.Store {
 }
 
 func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Create")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Create")
 	defer span.Finish()
+	createMessages.Inc()
 
 	cr := new(domain.CreateStoreRequest)
 	cr.Name = in.GetName()
@@ -61,6 +62,7 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 		log.
 			WithContext(ctx).
 			Errorf("validate.StructCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -69,20 +71,24 @@ func (s *storeService) Create(ctx context.Context, in *pb.CreateStoreRequest) (*
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Store: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
 
 func (s *storeService) Get(ctx context.Context, in *pb.StoreRequest) (*pb.Store, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Get")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Get")
 	defer span.Finish()
+	getMessages.Inc()
 
 	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -91,30 +97,35 @@ func (s *storeService) Get(ctx context.Context, in *pb.StoreRequest) (*pb.Store,
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Get: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
 	store := s.newPBStore(res)
+	successMessages.Inc()
 	return store, nil
 }
 
 func (s *storeService) List(ctx context.Context, in *pb.ListStoreRequest) (*pb.ListStoreResponse, error) {
-	var stores []*pb.Store
-
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.List")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.List")
 	defer span.Finish()
+	listMessages.Inc()
+
+	var stores []*pb.Store
 
 	res, total, err := s.storeUsecase.Index(ctx, in.GetSort(), int(in.GetLimit()), int(in.GetPage()))
 	if err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Index: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 	for _, item := range res {
 		stores = append(stores, s.newPBStore(item))
 	}
 
+	successMessages.Inc()
 	return &pb.ListStoreResponse{
 		Stores: stores,
 		Total:  total,
@@ -122,13 +133,15 @@ func (s *storeService) List(ctx context.Context, in *pb.ListStoreRequest) (*pb.L
 }
 
 func (s *storeService) Activate(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Activate")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Activate")
 	defer span.Finish()
+	activateMessages.Inc()
 
 	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -137,20 +150,24 @@ func (s *storeService) Activate(ctx context.Context, in *pb.StoreRequest) (*empt
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Active: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
 
 func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Block")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Block")
 	defer span.Finish()
+	blockMessages.Inc()
 
 	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -159,20 +176,24 @@ func (s *storeService) Block(ctx context.Context, in *pb.StoreRequest) (*empty.E
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Block: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
 
 func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Disable")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Disable")
 	defer span.Finish()
+	disableMessages.Inc()
 
 	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -181,15 +202,18 @@ func (s *storeService) Disable(ctx context.Context, in *pb.StoreRequest) (*empty
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Disable: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
 
 func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Update")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Update")
 	defer span.Finish()
+	updateMessages.Inc()
 
 	ur := new(domain.UpdateStoreRequest)
 
@@ -206,6 +230,7 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 		log.
 			WithContext(ctx).
 			Errorf("validate.StructCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 	err := s.storeUsecase.Update(ctx, ur)
@@ -213,20 +238,24 @@ func (s *storeService) Update(ctx context.Context, in *pb.UpdateStoreRequest) (*
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Update: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
 
 func (s *storeService) Delete(ctx context.Context, in *pb.StoreRequest) (*empty.Empty, error) {
-	span, ctx := opentracing.StartSpanFromContext(ctx, "storeService.Delete")
+	span, ctx := opentracing.StartSpanFromContext(ctx, "StoreService.Delete")
 	defer span.Finish()
+	deleteMessages.Inc()
 
 	if err := s.validate.VarCtx(ctx, in.GetId(), "uuid4"); err != nil {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
@@ -235,8 +264,10 @@ func (s *storeService) Delete(ctx context.Context, in *pb.StoreRequest) (*empty.
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Delete: %v", err)
+		errorMessages.Inc()
 		return nil, err
 	}
 
+	successMessages.Inc()
 	return &empty.Empty{}, nil
 }
