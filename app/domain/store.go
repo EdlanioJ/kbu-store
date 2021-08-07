@@ -89,7 +89,7 @@ func (s *Store) Block() (err error) {
 	}
 
 	if s.Status == StoreStatusPending {
-		return ErrIsPending
+		return ErrPending
 	}
 
 	s.Status = StoreStatusBlock

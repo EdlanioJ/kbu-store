@@ -42,7 +42,7 @@ func appError(err error) error {
 	case domain.ErrActived,
 		domain.ErrBlocked,
 		domain.ErrInactived,
-		domain.ErrIsPending:
+		domain.ErrPending:
 		return status.Error(codes.FailedPrecondition, err.Error())
 	default:
 		return status.Error(codes.Internal, domain.ErrInternal.Error())

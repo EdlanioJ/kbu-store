@@ -37,7 +37,7 @@ func getHttpError(err error) HttpError {
 	case errors.Is(err, domain.ErrActived),
 		errors.Is(err, domain.ErrBlocked),
 		errors.Is(err, domain.ErrInactived),
-		errors.Is(err, domain.ErrIsPending):
+		errors.Is(err, domain.ErrPending):
 		return HttpError{
 			Status: fiber.StatusConflict,
 			Error:  ErrorResponse{Message: err.Error()},

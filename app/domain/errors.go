@@ -4,17 +4,17 @@ import "errors"
 
 var (
 	// ErrNotFound not found
-	ErrNotFound = errors.New("Not found")
-	// ErrBlocked already blocked
-	ErrBlocked = errors.New("Already blocked")
-	// ErrIsPending is still pending
-	ErrIsPending = errors.New("Is still pending")
-	// ErrActived is already active
-	ErrActived = errors.New("Is already active")
-	// ErrInactived is already inactive
-	ErrInactived = errors.New("Is already inactive")
+	ErrNotFound = errors.New("entity not found")
+	// ErrBlocked entity is blocked
+	ErrBlocked = errors.New("entity is blocked")
+	// ErrIsPending entity is pending
+	ErrPending = errors.New("entity is pending")
+	// ErrActived entity is active
+	ErrActived = errors.New("entity is active")
+	// ErrInactived entity is inactive
+	ErrInactived = errors.New("entity is disable")
 	// ErrBadRequest bad request
-	ErrBadRequest = errors.New("Bad request")
+	ErrBadRequest = errors.New("bad request")
 	// ErrInternal internal server error
 	ErrInternal = errors.New("internal server error")
 )
