@@ -38,10 +38,14 @@ func NewStoreHandler(usecase domain.StoreUsecase, validate *validator.Validate) 
 func (h *storeHandler) Store(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Store")
 	defer span.Finish()
+	createRequests.Inc()
 
 	cr := new(domain.CreateStoreRequest)
 	if err := c.BodyParser(cr); err != nil {
-		log.Error(err)
+		log.
+			WithContext(ctx).
+			Errorf("c.BodyParser: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -49,6 +53,7 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.StructCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -57,9 +62,13 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Store: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusCreated)
+
 }
 
 // @Summary Index store
@@ -76,6 +85,7 @@ func (h *storeHandler) Store(c *fiber.Ctx) error {
 func (h *storeHandler) Index(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Index")
 	defer span.Finish()
+	indexRequests.Inc()
 
 	sort := c.Query("sort")
 	page, _ := strconv.Atoi(c.Query("page"))
@@ -86,9 +96,12 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Index: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
 	c.Response().Header.Add("X-total", fmt.Sprint(total))
+	successRequests.Inc()
 	return c.JSON(list)
 }
 
@@ -106,6 +119,7 @@ func (h *storeHandler) Index(c *fiber.Ctx) error {
 func (h *storeHandler) Get(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Get")
 	defer span.Finish()
+	getRequests.Inc()
 
 	id := c.Params("id")
 
@@ -114,6 +128,7 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -122,8 +137,11 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Get: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.JSON(res)
 }
 
@@ -141,6 +159,7 @@ func (h *storeHandler) Get(c *fiber.Ctx) error {
 func (h *storeHandler) Activate(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Activate")
 	defer span.Finish()
+	ativateRequests.Inc()
 
 	id := c.Params("id")
 
@@ -149,6 +168,7 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -157,8 +177,11 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Active: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -176,6 +199,7 @@ func (h *storeHandler) Activate(c *fiber.Ctx) error {
 func (h *storeHandler) Block(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Block")
 	defer span.Finish()
+	blockRequests.Inc()
 
 	id := c.Params("id")
 
@@ -184,6 +208,7 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -192,8 +217,11 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Block: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -211,6 +239,7 @@ func (h *storeHandler) Block(c *fiber.Ctx) error {
 func (h *storeHandler) Disable(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Disable")
 	defer span.Finish()
+	disableRequests.Inc()
 
 	id := c.Params("id")
 
@@ -219,6 +248,7 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -227,8 +257,11 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Disable: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -246,6 +279,7 @@ func (h *storeHandler) Disable(c *fiber.Ctx) error {
 func (h *storeHandler) Delete(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Delete")
 	defer span.Finish()
+	deleteRequests.Inc()
 
 	id := c.Params("id")
 
@@ -254,6 +288,7 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.VarCtx %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -262,8 +297,11 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Delete: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusNoContent)
 }
 
@@ -284,6 +322,7 @@ func (h *storeHandler) Delete(c *fiber.Ctx) error {
 func (h *storeHandler) Update(c *fiber.Ctx) error {
 	span, ctx := opentracing.StartSpanFromContext(c.Context(), "StoreHandler.Update")
 	defer span.Finish()
+	updateRequests.Inc()
 
 	ur := new(domain.UpdateStoreRequest)
 	id := c.Params("id")
@@ -292,6 +331,7 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("c.BodyParser: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 
@@ -300,6 +340,7 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("validate.StructCtx: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
 	err := h.storeUsecase.Update(ctx, ur)
@@ -307,7 +348,10 @@ func (h *storeHandler) Update(c *fiber.Ctx) error {
 		log.
 			WithContext(ctx).
 			Errorf("storeUsecase.Update: %v", err)
+		errorRequests.Inc()
 		return errorHandler(c, err)
 	}
+
+	successRequests.Inc()
 	return c.SendStatus(fiber.StatusNoContent)
 }
