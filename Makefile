@@ -3,7 +3,7 @@
 DATABASE="postgresql://postgres:root@db:5432/kbu_store?sslmode=disable"
 
 test:
-	go test ./...
+	go test -race ./...
 
 test.cover:
 	go test ./... -v -covermode=count -coverprofile=coverage.out
