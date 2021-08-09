@@ -1,8 +1,8 @@
 <h1 align="center">KBU Store Microservice</h1>
-<div align="center">
+
 [![GitHub release](https://img.shields.io/github/tag/EdlanioJ/kbu-store.svg)](https://GitHub.com/EdlanioJ/kbu-store/releases/) 
 [![Coverage Status](https://coveralls.io/repos/github/EdlanioJ/kbu-store/badge.svg?branch=main)](https://coveralls.io/github/EdlanioJ/kbu-store?branch=main)
-</div>
+
 </hr>
 
 <br>
