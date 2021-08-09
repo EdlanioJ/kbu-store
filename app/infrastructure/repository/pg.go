@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 
 	"github.com/EdlanioJ/kbu-store/app/config"
 	_ "github.com/lib/pq"
@@ -13,9 +14,17 @@ func SqlConnection(cfg *config.Config) *sql.DB {
 	var err error
 
 	if cfg.Env != "test" {
-		db, err = sql.Open("postgres", cfg.Dns)
+		dns := fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v",
+			cfg.PG.Host,
+			cfg.PG.Port,
+			cfg.PG.User,
+			cfg.PG.Password,
+			cfg.PG.Name,
+			cfg.PG.SslMode,
+		)
+		db, err = sql.Open("postgres", dns)
 	} else {
-		db, err = sql.Open("sqlite", cfg.DnsTest)
+		db, err = sql.Open("sqlite", cfg.DBTest)
 	}
 	if err != nil {
 		panic(err)

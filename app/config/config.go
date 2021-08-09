@@ -25,12 +25,21 @@ type Jaeger struct {
 	LogSpans    bool   `mapstructure:"LOG_SPANS"`
 }
 
+type PG struct {
+	Host     string `mapstructure:"HOST"`
+	Port     int    `mapstructure:"PORT"`
+	User     string `mapstructure:"USER"`
+	Name     string `mapstructure:"NAME"`
+	Password string `mapstructure:"PASS"`
+	SslMode  string `mapstructure:"SSL_MODE"`
+}
+
 type Config struct {
 	Timeout int    `mapstructure:"TIMEOUT"`
 	Port    int    `mapstructure:"PORT"`
 	Env     string `mapstructure:"ENV"`
-	Dns     string `mapstructure:"DB_CONNECTION"`
-	DnsTest string `mapstructure:"DB_CONNECTION_TEST"`
+	PG      PG     `mapstructure:"PG"`
+	DBTest  string `mapstructure:"DB_TEST"`
 	Kafka   Kafka  `mapstructure:"KAFKA"`
 	Grpc    Grpc   `mapstructure:"GRPC"`
 	Jaeger  Jaeger `mapstructure:"JEAGER"`
