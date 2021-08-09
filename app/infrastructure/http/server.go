@@ -51,8 +51,15 @@ func (s *httpServer) Serve() {
 
 	v1.Get("/docs/*", swagger.Handler)
 
+	s.routes(v1)
+	app.Use(middleware.NotFound())
+
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", s.Port)))
+}
+
+func (s *httpServer) routes(route fiber.Router) {
 	storeHandler := handler.NewStoreHandler(s.StoreUsecase, s.Validate)
-	storeRoutes := v1.Group("/stores")
+	storeRoutes := route.Group("/stores")
 
 	storeRoutes.Post("/", storeHandler.Store)
 	storeRoutes.Get("/", storeHandler.Index)
@@ -62,8 +69,4 @@ func (s *httpServer) Serve() {
 	storeRoutes.Patch("/:id/block", storeHandler.Block)
 	storeRoutes.Patch("/:id/disable", storeHandler.Disable)
 	storeRoutes.Delete("/:id", storeHandler.Delete)
-
-	app.Use(middleware.NotFound())
-
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", s.Port)))
 }
